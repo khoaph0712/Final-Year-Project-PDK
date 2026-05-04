@@ -1,0 +1,11 @@
+{
+  "model": "tiny_cnn",
+  "accuracy": 0.48133333333333334,
+  "f1_macro": 0.43029350975526387,
+  "epochs": 8,
+  "batch_size": 64,
+  "lr": 0.001,
+  "train_objects": 8000,
+  "test_objects": 3000,
+  "device": "cpu"
+}

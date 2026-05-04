@@ -1,0 +1,56 @@
+{
+  "expo": {
+    "name": "WasteWise",
+    "slug": "wastewise",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "wastewise",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.fyp.wastewise",
+      "infoPlist": {
+        "NSCameraUsageDescription": "WasteWise needs camera access to classify waste in real time.",
+        "NSLocationWhenInUseUsageDescription": "WasteWise uses your location to find the nearest recycling bins.",
+        "NSPhotoLibraryUsageDescription": "WasteWise can scan items from your photo library."
+      }
+    },
+    "android": {
+      "package": "com.fyp.wastewise",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font",
+      [
+        "react-native-vision-camera",
+        {
+          "cameraPermissionText": "WasteWise needs camera access to classify waste in real time.",
+          "enableCodeScanner": false
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "WasteWise uses your location to suggest the nearest bin."
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "12619de7-e314-496f-a069-2f8dab6189b6"
+      }
+    },
+    "owner": "khoaphung"
+  }
+}

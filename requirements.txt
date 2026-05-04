@@ -1,0 +1,32 @@
+# Core training + evaluation
+ultralytics==8.3.40
+# torch 2.11 forces new ONNX exporter via onnxscript/onnx_ir which
+# conflicts with onnx 1.16.2 + ml_dtypes 0.3.2. Pin to 2.4.1 for stability.
+torch==2.4.1
+torchvision==0.19.1
+
+# Data pipeline
+roboflow==1.1.47
+pyyaml>=6.0
+pandas>=2.1.0
+numpy>=1.26.0
+
+# Plotting / reporting
+matplotlib>=3.8.0
+seaborn>=0.13.0
+scikit-learn>=1.4.0
+
+# Model export (TFLite / ONNX) — versions compatible with torch==2.4.1
+ml_dtypes==0.3.2
+onnx==1.16.2
+onnxruntime==1.18.1
+onnxslim==0.1.34
+# Ultralytics TFLite export chain (install in same venv as ultralytics)
+onnx2tf==1.22.3
+onnx_graphsurgeon>=0.3.26
+sng4onnx>=1.0.1
+tflite-support==0.1.0a1
+tf_keras==2.16.0
+# TF is heavy but required for TFLite export from Ultralytics.
+# If install is slow on Windows, use:  pip install tensorflow==2.16.1
+tensorflow==2.16.1

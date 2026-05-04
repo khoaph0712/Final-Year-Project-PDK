@@ -1,0 +1,26 @@
+.venv/
+.venv*/
+venv/
+ENV/
+__pycache__/
+*.pyc
+
+# Large data / weights / datasets (keep out of git)
+runs/*/weights/*.pt
+runs/*/weights/*.onnx
+runs/*/weights/*.tflite
+runs/*/weights/*_saved_model/
+runs/*/quality_check/
+
+merged_dataset*/
+rf_*/
+temp_*/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Secrets
+.env

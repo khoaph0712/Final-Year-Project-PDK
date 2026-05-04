@@ -1,0 +1,72 @@
+[
+  {
+    "class_id": 5,
+    "class_name": "organic",
+    "most_distinct_feature_indices": [
+      4,
+      6,
+      5
+    ],
+    "distinctiveness_score": 28.125158309936523
+  },
+  {
+    "class_id": 3,
+    "class_name": "paper",
+    "most_distinct_feature_indices": [
+      3,
+      0,
+      5
+    ],
+    "distinctiveness_score": 18.912986755371094
+  },
+  {
+    "class_id": 6,
+    "class_name": "other",
+    "most_distinct_feature_indices": [
+      4,
+      3,
+      0
+    ],
+    "distinctiveness_score": 14.882298469543457
+  },
+  {
+    "class_id": 2,
+    "class_name": "metal",
+    "most_distinct_feature_indices": [
+      5,
+      6,
+      2
+    ],
+    "distinctiveness_score": 13.193377494812012
+  },
+  {
+    "class_id": 0,
+    "class_name": "plastic",
+    "most_distinct_feature_indices": [
+      5,
+      6,
+      4
+    ],
+    "distinctiveness_score": 8.915107727050781
+  },
+  {
+    "class_id": 1,
+    "class_name": "glass",
+    "most_distinct_feature_indices": [
+      3,
+      6,
+      2
+    ],
+    "distinctiveness_score": 8.566264152526855
+  },
+  {
+    "class_id": 4,
+    "class_name": "cardboard",
+    "most_distinct_feature_indices": [
+      5,
+      2,
+      4
+    ],
+    "distinctiveness_score": 7.188756465911865
+  }
+]

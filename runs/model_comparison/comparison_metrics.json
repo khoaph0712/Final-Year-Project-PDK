@@ -1,0 +1,26 @@
+[
+  {
+    "model": "rf",
+    "accuracy": 0.4746666666666667,
+    "f1_macro": 0.4547745009992498,
+    "family": "ML"
+  },
+  {
+    "model": "tiny_cnn",
+    "accuracy": 0.48133333333333334,
+    "f1_macro": 0.43029350975526387,
+    "family": "DL"
+  },
+  {
+    "model": "svm_rbf",
+    "accuracy": 0.4493333333333333,
+    "f1_macro": 0.42146288583137836,
+    "family": "ML"
+  },
+  {
+    "model": "logreg",
+    "accuracy": 0.36333333333333334,
+    "f1_macro": 0.32310852529695583,
+    "family": "ML"
+  }
+]
