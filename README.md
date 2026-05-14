@@ -4,6 +4,24 @@ Real-time waste classification using **YOLOv8n (Ultralytics)** trained on a merg
 Roboflow dataset, exported to **TFLite / ONNX**, and deployed on a **React Native
 (Expo) mobile app** with on-device inference.
 
+## Final project status
+
+- Final dataset: `merged_dataset_v3\data.yaml`.
+- Final pipeline/report guide: `docs\FINAL_PROJECT_PIPELINE_REPORT.md`.
+- Classical ML baseline: enhanced 6-class capped run in `runs\ml\feature_ml_enhanced_6class_4k\`.
+- Main deployment model: YOLOv8n run in `runs\dl\trash_yolov8n_v3\`.
+- Mobile app: Expo Dev Client app in `mobile\`, using bundled Float16/Float32 TFLite models.
+- No-UI manual tester: `scripts\predict_images.py`.
+
+Current headline results:
+
+| System | Metric | Result |
+|---|---|---:|
+| Classical ML best model (`extra_trees`) | Accuracy | 0.6312 |
+| Classical ML best model (`extra_trees`) | F1-macro | 0.6113 |
+| YOLOv8n detector | Test mAP@0.5 | 0.7559 |
+| YOLOv8n detector | Test mAP@0.5:0.95 | 0.5754 |
+
 ```
 C:\FYP_v2
 ├── merged_dataset_v2\             # legacy 7-class dataset (optional; v3 is default in scripts)
@@ -60,20 +78,27 @@ python scripts\plot_training.py
 
 ## 1.5 · Feature extraction + ML comparison (for analysis/report)
 
-Run handcrafted feature analysis first (spatial + frequency domains) and classic ML baselines:
+Run handcrafted feature analysis first and classic ML baselines. The final enhanced setup uses
+6 classes, excludes `other`, caps train crops at `4000` per class, and extracts 637 features:
+spatial, frequency/FFT, color, and HOG.
 
 ```powershell
-python scripts\feature_ml_analysis.py --data merged_dataset_v3\data.yaml
+.\.venv311\Scripts\python.exe scripts\feature_ml_analysis.py `
+  --data merged_dataset_v3\data.yaml `
+  --out runs\ml\feature_ml_enhanced_6class_4k `
+  --exclude-classes other `
+  --max-per-class-train 4000 `
+  --max-per-class-test 800
 ```
 
-Outputs are written to `runs/ml/feature_ml_analysis/` (override with `--out`):
+Outputs are written to `runs/ml/feature_ml_enhanced_6class_4k/`:
 
 - `metrics_summary.json` — Accuracy/F1 summary by model
 - `classification_reports.json` — full per-class precision/recall/F1
 - `object_difference.json` — class-wise distinct feature comments
 - `class_support.json` — train/test sample count per class (to detect imbalance)
 - `confusion_*.png` — confusion matrix per model
-- `chart_domain_importance.png` — spatial vs frequency contribution chart (importance-based)
+- `chart_domain_importance.png` — spatial/frequency/color/HOG contribution chart
 - `chart_model_comparison.png` — model comparison chart
 - `REPORT.md` — rationale, chart comments, and conclusions
 
@@ -81,7 +106,8 @@ Also exports domain summaries to `ml/frequency_analysis/`:
 
 - `spatial_summary.csv` — spatial features by class
 - `frequency_summary.csv` — frequency features by class
-- `domain_comparison.csv` — spatial vs frequency comparison metrics
+- `color_summary.csv` — color features by class
+- `domain_comparison.csv` — feature-group comparison metrics
 
 ## 1.6 · Deep-learning baseline + ML-vs-DL comparison
 
@@ -94,7 +120,9 @@ python scripts\deep_learning_baseline.py --data merged_dataset_v3\data.yaml
 Then generate a unified comparison report:
 
 ```powershell
-python scripts\compare_ml_dl.py
+.\.venv311\Scripts\python.exe scripts\compare_ml_dl.py `
+  --ml-metrics runs\ml\feature_ml_enhanced_6class_4k\metrics_summary.json `
+  --out runs\comparisons\model_comparison
 ```
 
 Outputs:
@@ -145,6 +173,30 @@ npx expo prebuild --clean
 npm run android     # or: npm run ios
 ```
 
+## 4 · Reproduce the final project pipeline
+
+Run all final pipeline stages from one PowerShell script:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\run_final_pipeline.ps1
+```
+
+The full pipeline can be slow because it runs feature extraction, ML training, the CNN baseline,
+YOLO evaluation, and export. To run a faster report-refresh pass:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\run_final_pipeline.ps1 -SkipFeatureMl -SkipTinyCnn -SkipYoloEval -SkipExport
+```
+
+To test your own images without a UI:
+
+```powershell
+.\.venv311\Scripts\python.exe scripts\predict_images.py --source C:\path\to\test_images --conf 0.10
+```
+
+This writes annotated images and `predictions_summary.json` under `runs\manual_tests\yolo_predictions\`,
+including sorting output such as `recyclable`, `organic`, `general waste`, or `no detection`.
+
 ---
 
 ## Retraining tips (if the quality check is underwhelming)
@@ -157,4 +209,3 @@ yolo detect train `
   epochs=50 imgsz=800 batch=16 `
   project=runs\dl name=trash_yolov8n_v4 exist_ok=True
 ```
-

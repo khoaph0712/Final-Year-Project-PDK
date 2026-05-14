@@ -65,7 +65,7 @@ export default function Settings() {
                   title={m}
                   variant={active ? "primary" : "ghost"}
                   onPress={() => setMode(m)}
-                  style={{ flex: 1, textTransform: "capitalize" as any }}
+                  style={{ flex: 1 }}
                 />
               );
             })}
@@ -80,13 +80,13 @@ export default function Settings() {
             DETECTION
           </Text>
           <Row
-            label="Use INT8 quantised model"
-            description="Faster and smaller — slightly lower accuracy."
+            label="Use Float16 model"
+            description="Faster and smaller than Float32. Turn off for maximum accuracy."
             right={
               <Switch
-                value={settings.useInt8}
-                onValueChange={(v) => setSetting("useInt8", v)}
-                thumbColor={settings.useInt8 ? colors.primary : colors.border}
+                value={settings.useFloat16}
+                onValueChange={(v) => setSetting("useFloat16", v)}
+                thumbColor={settings.useFloat16 ? colors.primary : colors.border}
               />
             }
           />
@@ -147,3 +147,4 @@ export default function Settings() {
     </Screen>
   );
 }
+

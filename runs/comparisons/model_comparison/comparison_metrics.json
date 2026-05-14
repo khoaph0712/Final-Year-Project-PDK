@@ -1,8 +1,26 @@
 [
   {
+    "model": "extra_trees",
+    "accuracy": 0.6312380038387716,
+    "f1_macro": 0.6113196945876368,
+    "family": "ML"
+  },
+  {
     "model": "rf",
-    "accuracy": 0.4746666666666667,
-    "f1_macro": 0.4547745009992498,
+    "accuracy": 0.6317178502879078,
+    "f1_macro": 0.6111427222089945,
+    "family": "ML"
+  },
+  {
+    "model": "linear_svm",
+    "accuracy": 0.5959692898272553,
+    "f1_macro": 0.5642009866674557,
+    "family": "ML"
+  },
+  {
+    "model": "logreg",
+    "accuracy": 0.5863723608445297,
+    "f1_macro": 0.5558321731236254,
     "family": "ML"
   },
   {
@@ -10,17 +28,5 @@
     "accuracy": 0.48133333333333334,
     "f1_macro": 0.43029350975526387,
     "family": "DL"
-  },
-  {
-    "model": "svm_rbf",
-    "accuracy": 0.4493333333333333,
-    "f1_macro": 0.42146288583137836,
-    "family": "ML"
-  },
-  {
-    "model": "logreg",
-    "accuracy": 0.36333333333333334,
-    "f1_macro": 0.32310852529695583,
-    "family": "ML"
   }
 ]

@@ -24,7 +24,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import yaml
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import ExtraTreesClassifier, RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import (
     ConfusionMatrixDisplay,
@@ -35,7 +35,7 @@ from sklearn.metrics import (
 )
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
-from sklearn.svm import SVC
+from sklearn.svm import LinearSVC
 
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -67,6 +67,35 @@ FEATURE_FREQ_NAMES = [
 ]
 N_SPATIAL = len(FEATURE_SPATIAL_NAMES)
 N_FREQ = len(FEATURE_FREQ_NAMES)
+FEATURE_COLOR_NAMES = (
+    [f"hsv_h_hist_{i + 1}" for i in range(16)]
+    + [f"hsv_s_hist_{i + 1}" for i in range(8)]
+    + [f"hsv_v_hist_{i + 1}" for i in range(8)]
+    + [
+        "b_mean",
+        "g_mean",
+        "r_mean",
+        "b_std",
+        "g_std",
+        "r_std",
+        "h_mean",
+        "s_mean",
+        "v_mean",
+        "h_std",
+        "s_std",
+        "v_std",
+    ]
+)
+FEATURE_HOG_NAMES = [f"hog_{i + 1}" for i in range(576)]
+N_COLOR = len(FEATURE_COLOR_NAMES)
+N_HOG = len(FEATURE_HOG_NAMES)
+FEATURE_GROUPS = [
+    ("Spatial", FEATURE_SPATIAL_NAMES),
+    ("Frequency", FEATURE_FREQ_NAMES),
+    ("Color", FEATURE_COLOR_NAMES),
+    ("HOG", FEATURE_HOG_NAMES),
+]
+ALL_FEATURE_NAMES = [name for _, names in FEATURE_GROUPS for name in names]
 
 
 @dataclass
@@ -164,10 +193,55 @@ def extract_frequency_features(crop_bgr: np.ndarray, bins: int = 8) -> np.ndarra
     return np.array(features + [high_freq_energy], dtype=np.float32)
 
 
+def extract_color_features(crop_bgr: np.ndarray) -> np.ndarray:
+    resized = cv2.resize(crop_bgr, (64, 64), interpolation=cv2.INTER_AREA)
+    hsv = cv2.cvtColor(resized, cv2.COLOR_BGR2HSV)
+
+    h_hist = cv2.calcHist([hsv], [0], None, [16], [0, 180]).flatten()
+    s_hist = cv2.calcHist([hsv], [1], None, [8], [0, 256]).flatten()
+    v_hist = cv2.calcHist([hsv], [2], None, [8], [0, 256]).flatten()
+    hist = np.concatenate([h_hist, s_hist, v_hist]).astype(np.float32)
+    hist = hist / (float(np.sum(hist)) + 1e-9)
+
+    bgr_mean, bgr_std = cv2.meanStdDev(resized)
+    hsv_mean, hsv_std = cv2.meanStdDev(hsv)
+    stats = np.concatenate(
+        [
+            bgr_mean.flatten(),
+            bgr_std.flatten(),
+            hsv_mean.flatten(),
+            hsv_std.flatten(),
+        ]
+    ).astype(np.float32)
+    return np.concatenate([hist, stats], axis=0)
+
+
+def extract_hog_features(crop_bgr: np.ndarray) -> np.ndarray:
+    gray = cv2.cvtColor(crop_bgr, cv2.COLOR_BGR2GRAY)
+    gray = cv2.resize(gray, (64, 64), interpolation=cv2.INTER_AREA)
+    hog = cv2.HOGDescriptor(
+        _winSize=(64, 64),
+        _blockSize=(16, 16),
+        _blockStride=(16, 16),
+        _cellSize=(8, 8),
+        _nbins=9,
+    )
+    return hog.compute(gray).flatten().astype(np.float32)
+
+
 def extract_combined_features(crop_bgr: np.ndarray) -> np.ndarray:
     spatial = extract_spatial_features(crop_bgr)
     frequency = extract_frequency_features(crop_bgr)
-    return np.concatenate([spatial, frequency], axis=0)
+    color = extract_color_features(crop_bgr)
+    hog = extract_hog_features(crop_bgr)
+    return np.concatenate([spatial, frequency, color, hog], axis=0)
+
+
+def feature_slice(start_group: int, end_group: int | None = None) -> slice:
+    offsets = np.cumsum([0] + [len(names) for _, names in FEATURE_GROUPS])
+    if end_group is None:
+        end_group = start_group + 1
+    return slice(int(offsets[start_group]), int(offsets[end_group]))
 
 
 def load_samples(
@@ -275,8 +349,8 @@ def to_matrix(samples: list[Sample]) -> tuple[np.ndarray, np.ndarray]:
 
 
 def object_difference_report(x_train: np.ndarray, y_train: np.ndarray, class_names: list[str]) -> list[dict]:
-    """Per-class deviation from global mean, split into spatial vs frequency commentary (lecture)."""
-    assert x_train.shape[1] == N_SPATIAL + N_FREQ
+    """Per-class deviation from global mean, with named spatial/frequency commentary."""
+    assert x_train.shape[1] == len(ALL_FEATURE_NAMES)
     global_mean = np.mean(x_train, axis=0)
 
     feature_means: dict[int, np.ndarray] = {}
@@ -286,8 +360,8 @@ def object_difference_report(x_train: np.ndarray, y_train: np.ndarray, class_nam
     report: list[dict] = []
     for cid, mu in feature_means.items():
         delta = np.abs(mu - global_mean)
-        d_sp = delta[:N_SPATIAL]
-        d_fq = delta[N_SPATIAL:]
+        d_sp = delta[feature_slice(0)]
+        d_fq = delta[feature_slice(1)]
         top_sp = np.argsort(-d_sp)[:3].tolist()
         top_fq = np.argsort(-d_fq)[:3].tolist()
         spatial_score = float(np.mean(d_sp[top_sp]))
@@ -315,6 +389,7 @@ def object_difference_report(x_train: np.ndarray, y_train: np.ndarray, class_nam
                 "class_id": cid,
                 "class_name": class_names[cid],
                 "most_distinct_feature_indices": top_any,
+                "most_distinct_feature_names": [ALL_FEATURE_NAMES[i] for i in top_any],
                 "distinctiveness_score": overall,
                 "spatial_top_indices": top_sp,
                 "spatial_top_names": [FEATURE_SPATIAL_NAMES[i] for i in top_sp],
@@ -333,12 +408,14 @@ def build_models() -> dict[str, Pipeline | RandomForestClassifier]:
     return {
         # Why: strong linear baseline on scaled feature vectors.
         "logreg": Pipeline(
-            [("scaler", StandardScaler()), ("clf", LogisticRegression(max_iter=1500, n_jobs=None))]
+            [("scaler", StandardScaler()), ("clf", LogisticRegression(max_iter=1000, n_jobs=None))]
         ),
-        # Why: handles non-linear boundaries in handcrafted features.
-        "svm_rbf": Pipeline([("scaler", StandardScaler()), ("clf", SVC(kernel="rbf", probability=False))]),
+        # Why: scalable classical SVM baseline for the larger color+HOG vector.
+        "linear_svm": Pipeline([("scaler", StandardScaler()), ("clf", LinearSVC(C=1.0, max_iter=5000, random_state=42))]),
         # Why: tree baseline, robust to mixed feature scales, gives importance.
-        "rf": RandomForestClassifier(n_estimators=300, random_state=42, n_jobs=-1),
+        "rf": RandomForestClassifier(n_estimators=250, random_state=42, n_jobs=-1),
+        # Why: often stronger than RF on high-dimensional handcrafted descriptors.
+        "extra_trees": ExtraTreesClassifier(n_estimators=350, random_state=42, n_jobs=-1),
     }
 
 
@@ -387,15 +464,19 @@ def save_domain_importance_chart(trained_models: dict[str, object], out_path: Pa
     if importances is None:
         raise ValueError("Cannot build domain-importance chart: no model with feature importance is available.")
 
-    spatial_sum = float(np.sum(importances[:N_SPATIAL]))
-    frequency_sum = float(np.sum(importances[N_SPATIAL:]))
-    denom = spatial_sum + frequency_sum + 1e-12
-    spatial_pct = 100.0 * spatial_sum / denom
-    frequency_pct = 100.0 * frequency_sum / denom
+    group_sums = []
+    offset = 0
+    for group_name, names in FEATURE_GROUPS:
+        next_offset = offset + len(names)
+        group_sums.append((group_name, float(np.sum(importances[offset:next_offset]))))
+        offset = next_offset
+    denom = sum(v for _, v in group_sums) + 1e-12
+    group_pcts = [(name, 100.0 * value / denom) for name, value in group_sums]
 
     fig, ax = plt.subplots(figsize=(6, 4))
-    bars = ax.bar(["Spatial", "Frequency"], [spatial_pct, frequency_pct], color=["#4E79A7", "#F28E2B"])
-    ax.set_title("Domain contribution by feature importance")
+    colors = ["#4E79A7", "#F28E2B", "#59A14F", "#E15759"]
+    bars = ax.bar([name for name, _ in group_pcts], [pct for _, pct in group_pcts], color=colors[: len(group_pcts)])
+    ax.set_title("Feature-group contribution by importance")
     ax.set_ylabel("Contribution (%)")
     ax.set_ylim(0.0, 100.0)
     ax.grid(True, axis="y", alpha=0.3)
@@ -413,7 +494,7 @@ def export_domain_summaries(
     y_train: np.ndarray,
     class_names: list[str],
     out_dir: Path,
-    domain_importance: tuple[float, float] | None,
+    domain_importance: dict[str, float] | None,
 ) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
 
@@ -427,7 +508,7 @@ def export_domain_summaries(
             if n == 0:
                 vals = [0.0] * N_SPATIAL
             else:
-                vals = np.mean(x_train[mask, :N_SPATIAL], axis=0).tolist()
+                vals = np.mean(x_train[mask, feature_slice(0)], axis=0).tolist()
             w.writerow([cid, class_names[cid], n, *[round(float(v), 6) for v in vals]])
 
     frequency_csv = out_dir / "frequency_summary.csv"
@@ -440,14 +521,23 @@ def export_domain_summaries(
             if n == 0:
                 vals = [0.0] * N_FREQ
             else:
-                vals = np.mean(x_train[mask, N_SPATIAL:], axis=0).tolist()
+                vals = np.mean(x_train[mask, feature_slice(1)], axis=0).tolist()
+            w.writerow([cid, class_names[cid], n, *[round(float(v), 6) for v in vals]])
+
+    color_csv = out_dir / "color_summary.csv"
+    with color_csv.open("w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["class_id", "class_name", "n_objects", *FEATURE_COLOR_NAMES])
+        for cid in range(len(class_names)):
+            mask = y_train == cid
+            n = int(np.sum(mask))
+            if n == 0:
+                vals = [0.0] * N_COLOR
+            else:
+                vals = np.mean(x_train[mask, feature_slice(2)], axis=0).tolist()
             w.writerow([cid, class_names[cid], n, *[round(float(v), 6) for v in vals]])
 
     comparison_csv = out_dir / "domain_comparison.csv"
-    spatial_pct = None
-    frequency_pct = None
-    if domain_importance is not None:
-        spatial_pct, frequency_pct = domain_importance
     with comparison_csv.open("w", newline="", encoding="utf-8") as f:
         w = csv.writer(f)
         w.writerow(
@@ -461,19 +551,17 @@ def export_domain_summaries(
         w.writerow(
             [
                 "feature_count",
-                N_SPATIAL,
-                N_FREQ,
-                f"Spatial has {N_SPATIAL} handcrafted features, Frequency has {N_FREQ} FFT-derived features",
+                len(ALL_FEATURE_NAMES),
+                "",
+                (
+                    f"Feature vector has {N_SPATIAL} spatial, {N_FREQ} frequency, "
+                    f"{N_COLOR} color, and {N_HOG} HOG features"
+                ),
             ]
         )
-        w.writerow(
-            [
-                "model_importance_pct",
-                "" if spatial_pct is None else round(spatial_pct, 4),
-                "" if frequency_pct is None else round(frequency_pct, 4),
-                "From RandomForest feature_importances_",
-            ]
-        )
+        if domain_importance:
+            for group_name, pct in domain_importance.items():
+                w.writerow(["model_importance_pct", group_name, round(pct, 4), "From RandomForest feature_importances_"])
 
 
 def write_report(
@@ -515,7 +603,7 @@ def write_report(
 
     lines.append("## Handcrafted features used for ML (not raw pixels)")
     lines.append(
-        f"Each object crop is resized (gray 64×64 internally), then summarized into **{N_SPATIAL + N_FREQ}** floats."
+        f"Each object crop is resized to 64x64 internally, then summarized into **{len(ALL_FEATURE_NAMES)}** floats."
     )
     lines.append("### Spatial domain (8 features)")
     for i, name in enumerate(FEATURE_SPATIAL_NAMES):
@@ -523,21 +611,26 @@ def write_report(
     lines.append("### Frequency domain (9 features; FFT radial bins + `high_freq_energy`)")
     for i, name in enumerate(FEATURE_FREQ_NAMES):
         lines.append(f"{i + 9}. `{name}`")
+    lines.append(f"### Color domain ({N_COLOR} features)")
+    lines.append("- HSV histograms plus BGR/HSV mean and standard deviation.")
+    lines.append(f"### HOG texture/shape domain ({N_HOG} features)")
+    lines.append("- Histogram of Oriented Gradients descriptor from each 64x64 crop.")
     lines.append("")
 
     lines.append("## Models trained on extracted features")
     lines.append("| Model | Role |")
     lines.append("|---|---|")
     lines.append("| `logreg` | Logistic Regression on **StandardScaler**-normalized features (linear baseline). |")
-    lines.append("| `svm_rbf` | **SVM RBF kernel** on scaled features (non-linear boundary baseline). |")
-    lines.append("| `rf` | **RandomForestClassifier** (300 trees) — tree baseline + feature importance for charts. |")
+    lines.append("| `linear_svm` | **Linear SVM** on scaled features, suitable for the larger color+HOG vector. |")
+    lines.append("| `extra_trees` | **ExtraTreesClassifier** (350 trees) - stronger high-dimensional classical baseline. |")
+    lines.append("| `rf` | **RandomForestClassifier** (250 trees) - tree baseline + feature importance for charts. |")
     lines.append("")
 
     lines.append("## Figures to include in the thesis / lecturer report")
     lines.append("**Classical ML (this folder)**")
     lines.append("- `chart_model_comparison.png` — Accuracy & F1-macro across ML models (no epoch-wise loss; ML is not trained by gradient descent here).")
-    lines.append("- `confusion_logreg.png`, `confusion_svm_rbf.png`, `confusion_rf.png` — confusion matrices.")
-    lines.append("- `chart_domain_importance.png` — spatial vs frequency contribution (RF feature importance).")
+    lines.append("- `confusion_logreg.png`, `confusion_linear_svm.png`, `confusion_rf.png`, `confusion_extra_trees.png` - confusion matrices.")
+    lines.append("- `chart_domain_importance.png` — spatial/frequency/color/HOG contribution (RF feature importance).")
     lines.append("- `ml/frequency_analysis/` — spatial/frequency summary CSVs + optional spectrum plots.")
     lines.append("**Deep learning (separate runs; loss / training curves)**")
     lines.append("- `runs/dl/trash_yolov8n_v3/results.png` — Ultralytics training curves (loss, mAP, precision, recall).")
@@ -561,13 +654,13 @@ def write_report(
         "`ml/frequency_analysis/spatial_summary.csv` + `frequency_summary.csv` (class-wise means)."
     )
     lines.append(
-        "3. **Extract features, then ML** — LogReg / SVM / RandomForest are trained **only** on the stacked "
-        "17-D feature vectors from step 1 (not raw pixels inside this script).\n"
+        "3. **Extract features, then ML** — LogReg / Linear SVM / RandomForest / ExtraTrees are trained **only** on the stacked "
+        f"{len(ALL_FEATURE_NAMES)}-D feature vectors from step 1 (not raw pixels inside this script).\n"
     )
 
     lines.append("## Pipeline (implementation order)")
     lines.append("1. Crop objects from YOLO boxes; build the fixed-length feature vector per crop.")
-    lines.append("2. Export domain CSVs + object-difference commentary (spatial vs frequency).")
+    lines.append("2. Export domain CSVs + object-difference commentary (spatial/frequency/color/HOG).")
     lines.append("3. Fit classical ML on `X_train`; evaluate on `X_test`.\n")
 
     lines.append("## Data")
@@ -579,7 +672,7 @@ def write_report(
     )
     lines.append(f"- Classes: {', '.join(class_names)}\n")
 
-    lines.append("## Comments: how object classes differ (spatial vs frequency)")
+    lines.append("## Comments: how object classes differ (feature domains)")
     lines.append(
         "Each bullet compares that class’s **mean feature vector** to the **global mean** over all training crops: "
         "which domain (spatial / frequency / both) shows the largest shift, and which named descriptors move most."
@@ -601,12 +694,13 @@ def write_report(
 
     lines.append("## Model choice rationale")
     lines.append("- **Logistic Regression:** simple linear baseline on standardized feature vectors.")
-    lines.append("- **SVM (RBF):** captures non-linear class boundaries from handcrafted features.")
-    lines.append("- **Random Forest:** robust tree-based baseline and interpretable feature importance.\n")
+    lines.append("- **Linear SVM:** scalable margin-based baseline for high-dimensional handcrafted descriptors.")
+    lines.append("- **Random Forest:** robust tree-based baseline and interpretable feature importance.")
+    lines.append("- **ExtraTrees:** tree ensemble baseline that often improves over RF on noisy, high-dimensional features.\n")
 
     lines.append("## Chart comments")
     lines.append(
-        "- `chart_domain_importance.png`: compares spatial vs frequency contribution based on model feature "
+        "- `chart_domain_importance.png`: compares spatial, frequency, color, and HOG contribution based on model feature "
         "importance (not raw magnitude, so it is scale-safe)."
     )
     lines.append(
@@ -675,7 +769,7 @@ def main() -> None:
     if max_per_test:
         print(f"Test: up to {max_per_test} object crops per class.")
 
-    print("[1/5] Extracting train features (spatial + frequency domains)...")
+    print("[1/5] Extracting train features (spatial + frequency + color + HOG domains)...")
     train_samples = load_samples(
         train_img_dir,
         kept_names,
@@ -745,10 +839,14 @@ def main() -> None:
     save_comparison_chart(results, args.out / "chart_model_comparison.png")
     save_domain_importance_chart(trained_models, args.out / "chart_domain_importance.png")
     rf_importances = np.asarray(trained_models["rf"].feature_importances_, dtype=np.float64)
-    spatial_sum = float(np.sum(rf_importances[:N_SPATIAL]))
-    frequency_sum = float(np.sum(rf_importances[N_SPATIAL:]))
-    denom = spatial_sum + frequency_sum + 1e-12
-    domain_importance = (100.0 * spatial_sum / denom, 100.0 * frequency_sum / denom)
+    group_sums: dict[str, float] = {}
+    offset = 0
+    for group_name, names in FEATURE_GROUPS:
+        next_offset = offset + len(names)
+        group_sums[group_name] = float(np.sum(rf_importances[offset:next_offset]))
+        offset = next_offset
+    denom = sum(group_sums.values()) + 1e-12
+    domain_importance = {group_name: 100.0 * value / denom for group_name, value in group_sums.items()}
     export_domain_summaries(x_train, y_train, kept_names, args.domain_out, domain_importance)
     write_report(
         args.out,
@@ -768,3 +866,4 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+

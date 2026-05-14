@@ -8,7 +8,7 @@ import {
   type Frame,
 } from "react-native-vision-camera";
 import { useResizePlugin } from "vision-camera-resize-plugin";
-import { useSharedValue, runOnJS, Worklets } from "react-native-worklets-core";
+import { useSharedValue, Worklets } from "react-native-worklets-core";
 import { router } from "expo-router";
 import * as Haptics from "expo-haptics";
 

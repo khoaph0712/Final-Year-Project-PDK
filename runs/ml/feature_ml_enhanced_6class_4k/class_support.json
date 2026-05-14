@@ -1,0 +1,18 @@
+{
+  "train": {
+    "plastic": 4000,
+    "glass": 4000,
+    "metal": 4000,
+    "paper": 4000,
+    "cardboard": 4000,
+    "organic": 4000
+  },
+  "test": {
+    "plastic": 800,
+    "glass": 200,
+    "metal": 768,
+    "paper": 800,
+    "cardboard": 800,
+    "organic": 800
+  }
+}

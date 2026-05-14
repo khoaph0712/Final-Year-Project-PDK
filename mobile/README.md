@@ -42,7 +42,7 @@ mobile/
 │   └── theme/               tokens + ThemeProvider (light/dark)
 └── assets/
     ├── images/              icon, splash, adaptive icon (add your own)
-    └── model/               best_int8.tflite, best_float16.tflite
+    └── model/               best_float16.tflite, best_float32.tflite
 ```
 
 ## Setup
@@ -100,8 +100,8 @@ npm run start       # opens Expo dev tools; scan QR in Expo Dev Client
 
 ## Switching model variants
 
-Open **Settings → Detection → Use INT8 quantised model** to toggle between
-`best_int8.tflite` (fast) and `best_float16.tflite` (accurate).
+Open **Settings -> Detection -> Use Float16 model** to toggle between
+`best_float16.tflite` (faster live preview) and `best_float32.tflite` (maximum accuracy).
 
 ## Troubleshooting
 
@@ -112,4 +112,6 @@ Open **Settings → Detection → Use INT8 quantised model** to toggle between
 - **`new-arch` issues** — set `"newArchEnabled": false` in `app.json` if your
   device or dependencies are behind.
 - **Out-of-memory at runtime** — try `--imgsz 320` when exporting, or use the
-  INT8 model.
+  Float16 model.
+
+

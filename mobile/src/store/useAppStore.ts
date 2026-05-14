@@ -23,7 +23,7 @@ export type ScanRecord = {
 };
 
 type Settings = {
-  useInt8: boolean;
+  useFloat16: boolean;
   confThreshold: number;
   iouThreshold: number;
   hapticsEnabled: boolean;
@@ -90,7 +90,7 @@ export const useAppStore = create<AppState>()(
       lastScanDay: null,
 
       settings: {
-        useInt8: true,
+        useFloat16: true,
         confThreshold: 0.35,
         iouThreshold: 0.45,
         hapticsEnabled: true,
