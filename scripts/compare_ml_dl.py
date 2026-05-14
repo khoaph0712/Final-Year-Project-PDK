@@ -69,10 +69,17 @@ def main() -> None:
     lines.append("- A lightweight DL model (tiny CNN) is added as a comparison baseline.\n")
 
     lines.append("## Why these models")
-    lines.append("- **LogReg:** linear baseline on handcrafted features.")
-    lines.append("- **SVM-RBF:** non-linear boundary baseline.")
-    lines.append("- **RandomForest:** tree baseline with feature importance.")
-    lines.append("- **Tiny CNN:** compact end-to-end DL comparator.\n")
+    model_notes = {
+        "logreg": "linear baseline on standardized handcrafted features.",
+        "linear_svm": "margin-based baseline for the larger color+HOG feature vector.",
+        "rf": "tree baseline with feature importance for feature-group analysis.",
+        "extra_trees": "tree ensemble baseline for noisy, high-dimensional handcrafted features.",
+        "tiny_cnn": "compact end-to-end DL comparator on object crops.",
+    }
+    for r in rows:
+        note = model_notes.get(r["model"], "comparison model included in this run.")
+        lines.append(f"- **{r['model']}:** {note}")
+    lines.append("")
 
     lines.append("## Results")
     lines.append("| Model | Family | Accuracy | F1-macro |")
@@ -92,7 +99,7 @@ def main() -> None:
     lines.append("## Artifacts")
     lines.append("- `chart_ml_vs_dl.png`")
     lines.append("- `comparison_metrics.json`")
-    lines.append("- `runs/ml/feature_ml_6class_4k/*` (or your chosen `--ml-metrics` run)")
+    lines.append(f"- `{args.ml_metrics.parent}/*`")
     lines.append("- `runs/dl/dl_baseline/*`")
 
     (args.out / "REPORT.md").write_text("\n".join(lines), encoding="utf-8")

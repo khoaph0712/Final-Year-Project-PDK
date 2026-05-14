@@ -13,19 +13,21 @@ export type DetectorState =
  * Loads the bundled YOLOv8n TFLite model.
  *
  * Drop the exported file into `mobile/assets/model/`:
- *   - best_int8.tflite   (preferred on-device, requires GPU delegate off)
- *   - best_float16.tflite (balanced)
- *   - best_float32.tflite (most accurate)
+ *   - best_float16.tflite (faster live preview)
+ *   - best_float32.tflite (maximum accuracy)
  */
 export function useDetector(): DetectorState {
   const [state, setState] = useState<DetectorState>({ status: "idle" });
+  const useFloat16 = useAppStore((s) => s.settings.useFloat16);
 
   useEffect(() => {
     let cancelled = false;
     async function load() {
       setState({ status: "loading" });
       try {
-        const modelAsset = require("../../assets/model/best_float16.tflite");
+        const modelAsset = useFloat16
+          ? require("../../assets/model/best_float16.tflite")
+          : require("../../assets/model/best_float32.tflite");
 
         const model = await loadTensorflowModel(modelAsset, "default");
 
@@ -42,7 +44,7 @@ export function useDetector(): DetectorState {
             status: "error",
             error:
               err?.message ??
-              "Failed to load TFLite model. Make sure best_int8.tflite / best_float16.tflite " +
+              "Failed to load TFLite model. Make sure best_float16.tflite / best_float32.tflite " +
                 "is placed in mobile/assets/model/.",
           });
       }
@@ -51,7 +53,7 @@ export function useDetector(): DetectorState {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [useFloat16]);
 
   return state;
 }

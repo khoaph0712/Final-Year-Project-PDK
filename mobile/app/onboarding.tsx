@@ -62,7 +62,7 @@ export default function Onboarding() {
         colors={[colors.primary, colors.accent]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={{ position: "absolute", inset: 0 as any, opacity: 0.12 }}
+        style={{ position: "absolute", top: 0, right: 0, bottom: 0, left: 0, opacity: 0.12 }}
       />
       <FlatList
         ref={ref}
