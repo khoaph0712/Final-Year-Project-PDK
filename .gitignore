@@ -13,6 +13,7 @@ runs/*/weights/*_saved_model/
 runs/*/quality_check/
 
 merged_dataset*/
+tuned_dataset*/
 rf_*/
 temp_*/
 

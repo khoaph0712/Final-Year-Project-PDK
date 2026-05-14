@@ -8,6 +8,7 @@ Roboflow dataset, exported to **TFLite / ONNX**, and deployed on a **React Nativ
 
 - Final dataset: `merged_dataset_v3\data.yaml`.
 - Final pipeline/report guide: `docs\FINAL_PROJECT_PIPELINE_REPORT.md`.
+- Dataset EDA/tuning report: `docs\DATASET_EDA_AND_TUNING_REPORT.md`.
 - Classical ML baseline: enhanced 6-class capped run in `runs\ml\feature_ml_enhanced_6class_4k\`.
 - Main deployment model: YOLOv8n run in `runs\dl\trash_yolov8n_v3\`.
 - Mobile app: Expo Dev Client app in `mobile\`, using bundled Float16/Float32 TFLite models.
@@ -196,6 +197,28 @@ To test your own images without a UI:
 
 This writes annotated images and `predictions_summary.json` under `runs\manual_tests\yolo_predictions\`,
 including sorting output such as `recyclable`, `organic`, `general waste`, or `no detection`.
+
+## 5 · Dataset EDA and tuning
+
+Run EDA on the locked baseline dataset:
+
+```powershell
+.\.venv311\Scripts\python.exe scripts\dataset_eda.py --data merged_dataset_v3\data.yaml --out runs\dataset_eda\merged_dataset_v3 --hash-duplicates
+```
+
+Build a non-destructive tuned dataset copy:
+
+```powershell
+.\.venv311\Scripts\python.exe scripts\build_tuned_dataset.py --data merged_dataset_v3\data.yaml --out tuned_dataset_v1 --overwrite
+```
+
+Then run EDA on the tuned copy:
+
+```powershell
+.\.venv311\Scripts\python.exe scripts\dataset_eda.py --data tuned_dataset_v1\data.yaml --out runs\dataset_eda\tuned_dataset_v1
+```
+
+The tuned dataset removes invalid labels, tiny boxes, duplicate images, and rebuilds train/valid/test splits with per-class caps. It is ignored by git because it contains many image hardlinks.
 
 ---
 
