@@ -16,23 +16,17 @@ yolo detect train `
   project=runs\dl name=trash_yolov8n_tuned_v1 exist_ok=True
 ```
 
-The run was interrupted before completing all 50 epochs, but it reached epoch 33 and already passed the target line on validation mAP@0.5.
+The run was resumed and completed all 50 epochs.
 
 Latest recorded row from `runs\dl\trash_yolov8n_tuned_v1\results.csv`:
 
 | Epoch | Precision | Recall | mAP@0.5 | mAP@0.5:0.95 |
 |---:|---:|---:|---:|---:|
-| 33 | 0.84904 | 0.71189 | 0.81111 | 0.60179 |
+| 50 | 0.84819 | 0.72737 | 0.81999 | 0.61276 |
 
-This should be reported as **training progress**, not final test performance. The next step is to let training finish to epoch 50, then run `scripts\evaluate.py` on both validation and test splits.
+Final evaluation was then run on validation and test splits.
 
-Resume command:
-
-```powershell
-yolo detect train resume=True model=runs\dl\trash_yolov8n_tuned_v1\weights\last.pt
-```
-
-Evaluation command after training completes:
+Evaluation command:
 
 ```powershell
 .\.venv311\Scripts\python.exe scripts\evaluate.py `
@@ -41,3 +35,12 @@ Evaluation command after training completes:
   --out runs\dl\trash_yolov8n_tuned_v1\quality_check `
   --split both
 ```
+
+Final evaluation results:
+
+- Validation mAP@0.5: `0.825`
+- Validation mAP@0.5:0.95: `0.624`
+- Test mAP@0.5: `0.810`
+- Test mAP@0.5:0.95: `0.622`
+
+Report the tuned YOLO result as **81.0% mAP@0.5 on the tuned test split**. This is object detection mAP, not the same metric as classical ML accuracy.

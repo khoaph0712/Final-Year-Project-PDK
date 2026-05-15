@@ -7,8 +7,9 @@ Roboflow dataset, exported to **TFLite / ONNX**, and deployed on a **React Nativ
 ## Final project status
 
 - Final dataset: `merged_dataset_v3\data.yaml`.
-- Final pipeline/report guide: `docs\FINAL_PROJECT_PIPELINE_REPORT.md`.
-- Dataset EDA/tuning report: `docs\DATASET_EDA_AND_TUNING_REPORT.md`.
+- Start here: `START_HERE.md`.
+- Final pipeline/report guide: `docs\01_final_report\FINAL_PROJECT_PIPELINE_REPORT.md`.
+- Dataset EDA/tuning report: `docs\02_dataset_training\DATASET_EDA_AND_TUNING_REPORT.md`.
 - Classical ML baseline: enhanced 6-class capped run in `runs\ml\feature_ml_enhanced_6class_4k\`.
 - Main deployment model: YOLOv8n run in `runs\dl\trash_yolov8n_v3\`.
 - Mobile app: Expo Dev Client app in `mobile\`, using bundled Float16/Float32 TFLite models.
@@ -22,6 +23,8 @@ Current headline results:
 | Classical ML best model (`extra_trees`) | F1-macro | 0.6113 |
 | YOLOv8n detector | Test mAP@0.5 | 0.7559 |
 | YOLOv8n detector | Test mAP@0.5:0.95 | 0.5754 |
+| Tuned YOLOv8n detector | Test mAP@0.5 | 0.8100 |
+| Tuned YOLOv8n detector | Test mAP@0.5:0.95 | 0.6220 |
 
 ```
 C:\FYP_v2
