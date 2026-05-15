@@ -1,0 +1,127 @@
+﻿[
+    {
+        "value":  [
+                      {
+                          "file":  "C:\\FYP_v2\\assets\\internet_test_images\\01_organic_food_waste.jpg",
+                          "commons_file":  "Consumer Food Waste.JPG",
+                          "source_url":  "https://commons.wikimedia.org/wiki/File:Consumer_Food_Waste.JPG",
+                          "downloaded_from":  "https://commons.wikimedia.org/wiki/Special:FilePath/Consumer%20Food%20Waste.JPG?width=1200"
+                      },
+                      {
+                          "file":  "C:\\FYP_v2\\assets\\internet_test_images\\02_plastic_metal_bin.jpg",
+                          "commons_file":  "Divided plastic waste container.jpg",
+                          "source_url":  "https://commons.wikimedia.org/wiki/File:Divided_plastic_waste_container.jpg",
+                          "downloaded_from":  "https://commons.wikimedia.org/wiki/Special:FilePath/Divided%20plastic%20waste%20container.jpg?width=1200"
+                      },
+                      {
+                          "file":  "C:\\FYP_v2\\assets\\internet_test_images\\03_mixed_rubbish_bin.jpg",
+                          "commons_file":  "Rubbish bin Shlisselburg.jpg",
+                          "source_url":  "https://commons.wikimedia.org/wiki/File:Rubbish_bin_Shlisselburg.jpg",
+                          "downloaded_from":  "https://commons.wikimedia.org/wiki/Special:FilePath/Rubbish%20bin%20Shlisselburg.jpg?width=1200"
+                      }
+                  ],
+        "Count":  3
+    },
+    {
+        "file":  "C:\\FYP_v2\\assets\\internet_test_images\\04_trash_garbage.jpg",
+        "search_term":  "trash,garbage",
+        "source_url":  "https://loremflickr.com/1200/900/trash,garbage?lock=9100",
+        "provider":  "LoremFlickr keyword image endpoint"
+    },
+    {
+        "file":  "C:\\FYP_v2\\assets\\internet_test_images\\05_plastic_bottle.jpg",
+        "search_term":  "plastic,bottle",
+        "source_url":  "https://loremflickr.com/1200/900/plastic,bottle?lock=9101",
+        "provider":  "LoremFlickr keyword image endpoint"
+    },
+    {
+        "file":  "C:\\FYP_v2\\assets\\internet_test_images\\06_plastic_litter.jpg",
+        "search_term":  "plastic,litter",
+        "source_url":  "https://loremflickr.com/1200/900/plastic,litter?lock=9102",
+        "provider":  "LoremFlickr keyword image endpoint"
+    },
+    {
+        "file":  "C:\\FYP_v2\\assets\\internet_test_images\\07_glass_bottle.jpg",
+        "search_term":  "glass,bottle",
+        "source_url":  "https://loremflickr.com/1200/900/glass,bottle?lock=9103",
+        "provider":  "LoremFlickr keyword image endpoint"
+    },
+    {
+        "file":  "C:\\FYP_v2\\assets\\internet_test_images\\08_recycling_glass.jpg",
+        "search_term":  "recycling,glass",
+        "source_url":  "https://loremflickr.com/1200/900/recycling,glass?lock=9104",
+        "provider":  "LoremFlickr keyword image endpoint"
+    },
+    {
+        "file":  "C:\\FYP_v2\\assets\\internet_test_images\\09_aluminum_can.jpg",
+        "search_term":  "aluminum,can",
+        "source_url":  "https://loremflickr.com/1200/900/aluminum,can?lock=9105",
+        "provider":  "LoremFlickr keyword image endpoint"
+    },
+    {
+        "file":  "C:\\FYP_v2\\assets\\internet_test_images\\10_crushed_can.jpg",
+        "search_term":  "crushed,can",
+        "source_url":  "https://loremflickr.com/1200/900/crushed,can?lock=9106",
+        "provider":  "LoremFlickr keyword image endpoint"
+    },
+    {
+        "file":  "C:\\FYP_v2\\assets\\internet_test_images\\11_paper_waste.jpg",
+        "search_term":  "paper,waste",
+        "source_url":  "https://loremflickr.com/1200/900/paper,waste?lock=9107",
+        "provider":  "LoremFlickr keyword image endpoint"
+    },
+    {
+        "file":  "C:\\FYP_v2\\assets\\internet_test_images\\12_newspaper_recycling.jpg",
+        "search_term":  "newspaper,recycling",
+        "source_url":  "https://loremflickr.com/1200/900/newspaper,recycling?lock=9108",
+        "provider":  "LoremFlickr keyword image endpoint"
+    },
+    {
+        "file":  "C:\\FYP_v2\\assets\\internet_test_images\\13_cardboard_box.jpg",
+        "search_term":  "cardboard,box",
+        "source_url":  "https://loremflickr.com/1200/900/cardboard,box?lock=9109",
+        "provider":  "LoremFlickr keyword image endpoint"
+    },
+    {
+        "file":  "C:\\FYP_v2\\assets\\internet_test_images\\14_cardboard_waste.jpg",
+        "search_term":  "cardboard,waste",
+        "source_url":  "https://loremflickr.com/1200/900/cardboard,waste?lock=9110",
+        "provider":  "LoremFlickr keyword image endpoint"
+    },
+    {
+        "file":  "C:\\FYP_v2\\assets\\internet_test_images\\15_food_waste.jpg",
+        "search_term":  "food,waste",
+        "source_url":  "https://loremflickr.com/1200/900/food,waste?lock=9111",
+        "provider":  "LoremFlickr keyword image endpoint"
+    },
+    {
+        "file":  "C:\\FYP_v2\\assets\\internet_test_images\\16_banana_peel.jpg",
+        "search_term":  "banana,peel",
+        "source_url":  "https://loremflickr.com/1200/900/banana,peel?lock=9112",
+        "provider":  "LoremFlickr keyword image endpoint"
+    },
+    {
+        "file":  "C:\\FYP_v2\\assets\\internet_test_images\\17_organic_waste.jpg",
+        "search_term":  "organic,waste",
+        "source_url":  "https://loremflickr.com/1200/900/organic,waste?lock=9113",
+        "provider":  "LoremFlickr keyword image endpoint"
+    },
+    {
+        "file":  "C:\\FYP_v2\\assets\\internet_test_images\\18_compost_waste.jpg",
+        "search_term":  "compost,waste",
+        "source_url":  "https://loremflickr.com/1200/900/compost,waste?lock=9114",
+        "provider":  "LoremFlickr keyword image endpoint"
+    },
+    {
+        "file":  "C:\\FYP_v2\\assets\\internet_test_images\\19_recycling_waste.jpg",
+        "search_term":  "recycling,waste",
+        "source_url":  "https://loremflickr.com/1200/900/recycling,waste?lock=9115",
+        "provider":  "LoremFlickr keyword image endpoint"
+    },
+    {
+        "file":  "C:\\FYP_v2\\assets\\internet_test_images\\20_street_litter.jpg",
+        "search_term":  "street,litter",
+        "source_url":  "https://loremflickr.com/1200/900/street,litter?lock=9116",
+        "provider":  "LoremFlickr keyword image endpoint"
+    }
+]

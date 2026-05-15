@@ -1,0 +1,795 @@
+[
+  {
+    "image": "assets\\internet_test_images\\01_organic_food_waste.jpg",
+    "sorting_output": "organic",
+    "detections": [
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.8595,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          901.91,
+          488.86,
+          1129.56,
+          716.68
+        ]
+      },
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.8115,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          606.5,
+          403.22,
+          847.25,
+          648.82
+        ]
+      },
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.7731,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          737.31,
+          554.32,
+          902.29,
+          705.43
+        ]
+      },
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.6763,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          517.87,
+          134.63,
+          804.25,
+          369.44
+        ]
+      },
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.6503,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          659.93,
+          195.74,
+          856.63,
+          402.79
+        ]
+      },
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.5513,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          165.66,
+          434.57,
+          423.13,
+          640.15
+        ]
+      },
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.4763,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          500.11,
+          374.37,
+          672.89,
+          602.33
+        ]
+      },
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.4555,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          1040.2,
+          348.87,
+          1220.84,
+          592.79
+        ]
+      },
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.4052,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          416.72,
+          602.44,
+          606.5,
+          788.26
+        ]
+      },
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.3646,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          435.53,
+          617.5,
+          794.42,
+          853.08
+        ]
+      },
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.2305,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          1046.07,
+          683.0,
+          1144.37,
+          837.63
+        ]
+      },
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.2008,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          430.24,
+          486.66,
+          513.58,
+          655.31
+        ]
+      },
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.1496,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          801.73,
+          313.99,
+          928.97,
+          464.58
+        ]
+      },
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.1311,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          637.63,
+          655.71,
+          789.5,
+          789.38
+        ]
+      },
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.126,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          373.33,
+          420.12,
+          491.69,
+          628.53
+        ]
+      },
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.1077,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          1040.09,
+          177.86,
+          1101.58,
+          328.5
+        ]
+      }
+    ]
+  },
+  {
+    "image": "assets\\internet_test_images\\02_plastic_metal_bin.jpg",
+    "sorting_output": "recyclable",
+    "detections": [
+      {
+        "class_id": 4,
+        "class_name": "cardboard",
+        "confidence": 0.1272,
+        "sorting_bin": "recyclable",
+        "sorting_instruction": "Flatten and put in the recyclable bin if dry and clean.",
+        "xyxy": [
+          120.77,
+          353.89,
+          840.38,
+          1351.27
+        ]
+      }
+    ]
+  },
+  {
+    "image": "assets\\internet_test_images\\03_mixed_rubbish_bin.jpg",
+    "sorting_output": "general waste, recyclable",
+    "detections": [
+      {
+        "class_id": 0,
+        "class_name": "plastic",
+        "confidence": 0.6954,
+        "sorting_bin": "recyclable",
+        "sorting_instruction": "Put in the recyclable bin if it is clean; rinse first if contaminated.",
+        "xyxy": [
+          559.4,
+          646.38,
+          633.19,
+          885.69
+        ]
+      },
+      {
+        "class_id": 0,
+        "class_name": "plastic",
+        "confidence": 0.2646,
+        "sorting_bin": "recyclable",
+        "sorting_instruction": "Put in the recyclable bin if it is clean; rinse first if contaminated.",
+        "xyxy": [
+          384.75,
+          402.71,
+          485.63,
+          843.07
+        ]
+      },
+      {
+        "class_id": 2,
+        "class_name": "metal",
+        "confidence": 0.1544,
+        "sorting_bin": "recyclable",
+        "sorting_instruction": "Put in the recyclable bin if it is empty and reasonably clean.",
+        "xyxy": [
+          383.68,
+          150.92,
+          780.22,
+          407.79
+        ]
+      },
+      {
+        "class_id": 6,
+        "class_name": "other",
+        "confidence": 0.1488,
+        "sorting_bin": "general waste",
+        "sorting_instruction": "Put in the general waste bin unless local rules say otherwise.",
+        "xyxy": [
+          960.96,
+          702.52,
+          1041.83,
+          768.4
+        ]
+      },
+      {
+        "class_id": 6,
+        "class_name": "other",
+        "confidence": 0.1211,
+        "sorting_bin": "general waste",
+        "sorting_instruction": "Put in the general waste bin unless local rules say otherwise.",
+        "xyxy": [
+          1143.53,
+          637.14,
+          1224.32,
+          710.15
+        ]
+      },
+      {
+        "class_id": 0,
+        "class_name": "plastic",
+        "confidence": 0.1125,
+        "sorting_bin": "recyclable",
+        "sorting_instruction": "Put in the recyclable bin if it is clean; rinse first if contaminated.",
+        "xyxy": [
+          383.96,
+          151.28,
+          780.83,
+          834.49
+        ]
+      }
+    ]
+  },
+  {
+    "image": "assets\\internet_test_images\\04_trash_garbage.jpg",
+    "sorting_output": "recyclable",
+    "detections": [
+      {
+        "class_id": 4,
+        "class_name": "cardboard",
+        "confidence": 0.1227,
+        "sorting_bin": "recyclable",
+        "sorting_instruction": "Flatten and put in the recyclable bin if dry and clean.",
+        "xyxy": [
+          391.72,
+          26.3,
+          710.48,
+          725.22
+        ]
+      }
+    ]
+  },
+  {
+    "image": "assets\\internet_test_images\\05_plastic_bottle.jpg",
+    "sorting_output": "no detection",
+    "detections": []
+  },
+  {
+    "image": "assets\\internet_test_images\\06_plastic_litter.jpg",
+    "sorting_output": "no detection",
+    "detections": []
+  },
+  {
+    "image": "assets\\internet_test_images\\07_glass_bottle.jpg",
+    "sorting_output": "recyclable",
+    "detections": [
+      {
+        "class_id": 0,
+        "class_name": "plastic",
+        "confidence": 0.3287,
+        "sorting_bin": "recyclable",
+        "sorting_instruction": "Put in the recyclable bin if it is clean; rinse first if contaminated.",
+        "xyxy": [
+          188.13,
+          237.27,
+          1027.41,
+          896.47
+        ]
+      }
+    ]
+  },
+  {
+    "image": "assets\\internet_test_images\\08_recycling_glass.jpg",
+    "sorting_output": "recyclable",
+    "detections": [
+      {
+        "class_id": 4,
+        "class_name": "cardboard",
+        "confidence": 0.4793,
+        "sorting_bin": "recyclable",
+        "sorting_instruction": "Flatten and put in the recyclable bin if dry and clean.",
+        "xyxy": [
+          179.75,
+          6.9,
+          1196.7,
+          900.0
+        ]
+      }
+    ]
+  },
+  {
+    "image": "assets\\internet_test_images\\09_aluminum_can.jpg",
+    "sorting_output": "general waste",
+    "detections": [
+      {
+        "class_id": 6,
+        "class_name": "other",
+        "confidence": 0.2639,
+        "sorting_bin": "general waste",
+        "sorting_instruction": "Put in the general waste bin unless local rules say otherwise.",
+        "xyxy": [
+          684.33,
+          264.22,
+          803.29,
+          500.51
+        ]
+      },
+      {
+        "class_id": 6,
+        "class_name": "other",
+        "confidence": 0.2472,
+        "sorting_bin": "general waste",
+        "sorting_instruction": "Put in the general waste bin unless local rules say otherwise.",
+        "xyxy": [
+          797.61,
+          262.59,
+          850.48,
+          500.48
+        ]
+      },
+      {
+        "class_id": 6,
+        "class_name": "other",
+        "confidence": 0.2258,
+        "sorting_bin": "general waste",
+        "sorting_instruction": "Put in the general waste bin unless local rules say otherwise.",
+        "xyxy": [
+          529.63,
+          264.41,
+          642.68,
+          474.39
+        ]
+      }
+    ]
+  },
+  {
+    "image": "assets\\internet_test_images\\10_crushed_can.jpg",
+    "sorting_output": "general waste, recyclable",
+    "detections": [
+      {
+        "class_id": 6,
+        "class_name": "other",
+        "confidence": 0.5992,
+        "sorting_bin": "general waste",
+        "sorting_instruction": "Put in the general waste bin unless local rules say otherwise.",
+        "xyxy": [
+          468.55,
+          202.67,
+          813.08,
+          634.57
+        ]
+      },
+      {
+        "class_id": 0,
+        "class_name": "plastic",
+        "confidence": 0.2818,
+        "sorting_bin": "recyclable",
+        "sorting_instruction": "Put in the recyclable bin if it is clean; rinse first if contaminated.",
+        "xyxy": [
+          468.22,
+          200.95,
+          811.97,
+          638.2
+        ]
+      }
+    ]
+  },
+  {
+    "image": "assets\\internet_test_images\\11_paper_waste.jpg",
+    "sorting_output": "no detection",
+    "detections": []
+  },
+  {
+    "image": "assets\\internet_test_images\\12_newspaper_recycling.jpg",
+    "sorting_output": "recyclable",
+    "detections": [
+      {
+        "class_id": 4,
+        "class_name": "cardboard",
+        "confidence": 0.3227,
+        "sorting_bin": "recyclable",
+        "sorting_instruction": "Flatten and put in the recyclable bin if dry and clean.",
+        "xyxy": [
+          116.59,
+          19.74,
+          796.12,
+          886.68
+        ]
+      },
+      {
+        "class_id": 4,
+        "class_name": "cardboard",
+        "confidence": 0.1055,
+        "sorting_bin": "recyclable",
+        "sorting_instruction": "Flatten and put in the recyclable bin if dry and clean.",
+        "xyxy": [
+          326.84,
+          497.33,
+          677.69,
+          898.13
+        ]
+      }
+    ]
+  },
+  {
+    "image": "assets\\internet_test_images\\13_cardboard_box.jpg",
+    "sorting_output": "recyclable",
+    "detections": [
+      {
+        "class_id": 3,
+        "class_name": "paper",
+        "confidence": 0.1209,
+        "sorting_bin": "recyclable",
+        "sorting_instruction": "Put in the recyclable bin if dry and clean.",
+        "xyxy": [
+          0.0,
+          25.23,
+          1174.53,
+          854.81
+        ]
+      }
+    ]
+  },
+  {
+    "image": "assets\\internet_test_images\\14_cardboard_waste.jpg",
+    "sorting_output": "recyclable",
+    "detections": [
+      {
+        "class_id": 4,
+        "class_name": "cardboard",
+        "confidence": 0.5264,
+        "sorting_bin": "recyclable",
+        "sorting_instruction": "Flatten and put in the recyclable bin if dry and clean.",
+        "xyxy": [
+          351.68,
+          263.63,
+          852.55,
+          638.6
+        ]
+      }
+    ]
+  },
+  {
+    "image": "assets\\internet_test_images\\15_food_waste.jpg",
+    "sorting_output": "recyclable",
+    "detections": [
+      {
+        "class_id": 3,
+        "class_name": "paper",
+        "confidence": 0.3156,
+        "sorting_bin": "recyclable",
+        "sorting_instruction": "Put in the recyclable bin if dry and clean.",
+        "xyxy": [
+          154.17,
+          1.46,
+          517.64,
+          895.0
+        ]
+      },
+      {
+        "class_id": 4,
+        "class_name": "cardboard",
+        "confidence": 0.2871,
+        "sorting_bin": "recyclable",
+        "sorting_instruction": "Flatten and put in the recyclable bin if dry and clean.",
+        "xyxy": [
+          529.99,
+          37.91,
+          1165.8,
+          900.0
+        ]
+      }
+    ]
+  },
+  {
+    "image": "assets\\internet_test_images\\16_banana_peel.jpg",
+    "sorting_output": "recyclable",
+    "detections": [
+      {
+        "class_id": 0,
+        "class_name": "plastic",
+        "confidence": 0.1009,
+        "sorting_bin": "recyclable",
+        "sorting_instruction": "Put in the recyclable bin if it is clean; rinse first if contaminated.",
+        "xyxy": [
+          0.5,
+          333.2,
+          243.14,
+          896.93
+        ]
+      }
+    ]
+  },
+  {
+    "image": "assets\\internet_test_images\\17_organic_waste.jpg",
+    "sorting_output": "recyclable",
+    "detections": [
+      {
+        "class_id": 4,
+        "class_name": "cardboard",
+        "confidence": 0.8949,
+        "sorting_bin": "recyclable",
+        "sorting_instruction": "Flatten and put in the recyclable bin if dry and clean.",
+        "xyxy": [
+          0.0,
+          3.78,
+          1104.56,
+          854.64
+        ]
+      },
+      {
+        "class_id": 4,
+        "class_name": "cardboard",
+        "confidence": 0.296,
+        "sorting_bin": "recyclable",
+        "sorting_instruction": "Flatten and put in the recyclable bin if dry and clean.",
+        "xyxy": [
+          1034.17,
+          548.54,
+          1199.71,
+          898.86
+        ]
+      }
+    ]
+  },
+  {
+    "image": "assets\\internet_test_images\\18_compost_waste.jpg",
+    "sorting_output": "organic",
+    "detections": [
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.772,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          272.62,
+          225.63,
+          592.68,
+          538.92
+        ]
+      },
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.6876,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          1.91,
+          1.62,
+          349.71,
+          189.86
+        ]
+      },
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.5071,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          0.0,
+          249.24,
+          284.38,
+          569.03
+        ]
+      },
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.5011,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          633.89,
+          763.91,
+          734.17,
+          850.71
+        ]
+      },
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.3564,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          235.93,
+          5.33,
+          484.73,
+          214.07
+        ]
+      },
+      {
+        "class_id": 5,
+        "class_name": "organic",
+        "confidence": 0.1098,
+        "sorting_bin": "organic",
+        "sorting_instruction": "Put in the organic/compost bin.",
+        "xyxy": [
+          0.0,
+          249.09,
+          156.52,
+          338.44
+        ]
+      }
+    ]
+  },
+  {
+    "image": "assets\\internet_test_images\\19_recycling_waste.jpg",
+    "sorting_output": "general waste",
+    "detections": [
+      {
+        "class_id": 6,
+        "class_name": "other",
+        "confidence": 0.4924,
+        "sorting_bin": "general waste",
+        "sorting_instruction": "Put in the general waste bin unless local rules say otherwise.",
+        "xyxy": [
+          101.31,
+          276.74,
+          205.79,
+          320.7
+        ]
+      },
+      {
+        "class_id": 6,
+        "class_name": "other",
+        "confidence": 0.3075,
+        "sorting_bin": "general waste",
+        "sorting_instruction": "Put in the general waste bin unless local rules say otherwise.",
+        "xyxy": [
+          995.02,
+          369.02,
+          1037.19,
+          424.85
+        ]
+      },
+      {
+        "class_id": 6,
+        "class_name": "other",
+        "confidence": 0.1289,
+        "sorting_bin": "general waste",
+        "sorting_instruction": "Put in the general waste bin unless local rules say otherwise.",
+        "xyxy": [
+          502.59,
+          150.97,
+          627.0,
+          227.14
+        ]
+      }
+    ]
+  },
+  {
+    "image": "assets\\internet_test_images\\20_street_litter.jpg",
+    "sorting_output": "general waste",
+    "detections": [
+      {
+        "class_id": 6,
+        "class_name": "other",
+        "confidence": 0.5102,
+        "sorting_bin": "general waste",
+        "sorting_instruction": "Put in the general waste bin unless local rules say otherwise.",
+        "xyxy": [
+          848.44,
+          278.78,
+          968.31,
+          346.4
+        ]
+      },
+      {
+        "class_id": 6,
+        "class_name": "other",
+        "confidence": 0.4488,
+        "sorting_bin": "general waste",
+        "sorting_instruction": "Put in the general waste bin unless local rules say otherwise.",
+        "xyxy": [
+          722.19,
+          565.77,
+          767.42,
+          621.42
+        ]
+      },
+      {
+        "class_id": 6,
+        "class_name": "other",
+        "confidence": 0.1079,
+        "sorting_bin": "general waste",
+        "sorting_instruction": "Put in the general waste bin unless local rules say otherwise.",
+        "xyxy": [
+          818.69,
+          257.98,
+          925.4,
+          324.61
+        ]
+      }
+    ]
+  }
+]
