@@ -1,0 +1,22 @@
+[
+  {
+    "model": "xgboost",
+    "accuracy": 0.5771428571428572,
+    "f1_macro": 0.5707373990694877
+  },
+  {
+    "model": "rf",
+    "accuracy": 0.54,
+    "f1_macro": 0.5326082074000489
+  },
+  {
+    "model": "decision_tree",
+    "accuracy": 0.42428571428571427,
+    "f1_macro": 0.42608863385748313
+  },
+  {
+    "model": "linear_svm",
+    "accuracy": 0.42714285714285716,
+    "f1_macro": 0.42247430852719864
+  }
+]

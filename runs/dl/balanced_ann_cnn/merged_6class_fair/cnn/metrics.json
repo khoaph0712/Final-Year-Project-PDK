@@ -1,0 +1,11 @@
+{
+  "model": "cnn",
+  "accuracy": 0.4613793103448276,
+  "f1_macro": 0.43864332336894724,
+  "best_val_accuracy": 0.44,
+  "epochs": 5,
+  "batch_size": 64,
+  "lr": 0.001,
+  "image_size": 64,
+  "device": "cuda"
+}

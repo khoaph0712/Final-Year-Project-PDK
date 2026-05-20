@@ -11,6 +11,7 @@ Open this file first when you need to find project evidence quickly.
    - `docs\02_dataset_training\SOURCE_LEVEL_DATASET_ANALYSIS.md`
    - `docs\02_dataset_training\BALANCED_ML_ANN_CNN_RESULTS.md`
    - `docs\02_dataset_training\EXTERNAL_ONLY_ML_ANN_CNN_RESULTS.md`
+   - `docs\02_dataset_training\PHASE2_EXPERIMENT_AUDIT.md`
    - `runs\dataset_eda\merged_dataset_v3\EDA_REPORT.md`
    - `runs\dataset_eda\tuned_dataset_v1\EDA_REPORT.md`
    - `runs\source_analysis\merged_dataset_v3\DATASET_SOURCE_COMPARISON.md`
@@ -57,7 +58,8 @@ Open this file first when you need to find project evidence quickly.
 - External TACO-like dataset registry now covers TACO official, MJU-Waste, ZeroWaste, TrashCan, TrashNet, and GINI.
 - External ML now has per-dataset results: TrashNet XGBoost accuracy `0.8103`; official TACO partial XGBoost accuracy `0.1399`, proving TACO-style raw 60-class data is much harder and needs mapping/capping.
 - External-only run: TrashNet ML `0.8103`, GINI binary ML `0.8837`, TACO partial ML `0.0705`; external-only CNN: TrashNet `0.4292`, GINI binary `0.7895`, TACO partial `0.0586`.
-- Balanced runs are now available: merged 6-class ML XGBoost accuracy `0.6497`; merged 6-class CNN accuracy `0.4792`; YOLO was not run.
+- Balanced runs are now available: merged 6-class ML XGBoost accuracy `0.6497`; fair merged 6-class CNN accuracy `0.4614`; YOLO was not run.
+- Phase 2 audit is saved at `docs\02_dataset_training\PHASE2_EXPERIMENT_AUDIT.md`; master comparison CSV is saved at `runs\comparisons\phase2_model_comparison.csv`.
 - Tuned YOLOv8n: test mAP@0.5 `0.810`, test mAP@0.5:0.95 `0.622`.
 - Current lecture focus: explain features + ML, pause YOLO discussion unless asked, then show ANN/CNN baselines and saved logs.
 
@@ -92,6 +94,7 @@ Open this file first when you need to find project evidence quickly.
 .\.venv311\Scripts\python.exe scripts\feature_ml_analysis.py --data merged_dataset_v3\data.yaml --out runs\ml\balanced_by_dataset\merged_6class --exclude-classes other --max-per-class-train 1000 --max-per-class-test 250 --domain-out runs\ml\features_by_dataset\merged_6class
 .\.venv311\Scripts\python.exe scripts\deep_learning_baseline.py --data merged_dataset_v3\data.yaml --out runs\dl\ann_cnn_merged_dataset_v3 --model both --max-train-objects 8000 --max-val-objects 2000 --max-test-objects 3000 --epochs 8
 .\.venv311\Scripts\python.exe scripts\deep_learning_baseline.py --data merged_dataset_v3\data.yaml --out runs\dl\balanced_ann_cnn\merged_6class --model both --source-filter rf_taco_trash,rf_garbage_cls,rf_waste_sorting,rf_uca_recyclable --max-per-class-train 1000 --max-per-class-val 250 --max-per-class-test 250 --epochs 5
+.\.venv311\Scripts\python.exe scripts\deep_learning_baseline.py --data merged_dataset_v3\data.yaml --out runs\dl\balanced_ann_cnn\merged_6class_fair --model both --source-filter rf_taco_trash,rf_garbage_cls,rf_waste_sorting,rf_uca_recyclable,rf_food_waste --max-per-class-train 1000 --max-per-class-val 250 --max-per-class-test 250 --epochs 5 --batch-size 64 --image-size 64
 .\.venv311\Scripts\python.exe scripts\deep_learning_baseline.py --data tuned_dataset_v1\data.yaml --out runs\dl\ann_cnn_tuned_dataset_v1 --model both --max-train-objects 8000 --max-val-objects 2000 --max-test-objects 3000 --epochs 8
 .\.venv311\Scripts\python.exe scripts\deep_learning_baseline.py --data merged_dataset_v3\data.yaml --out runs\dl\source_ann_cnn\rf_taco_trash --model both --source-filter rf_taco_trash --max-train-objects 3000 --max-val-objects 800 --max-test-objects 800 --epochs 5
 .\.venv311\Scripts\python.exe scripts\deep_learning_baseline.py --data rf_taco_trash\data.yaml --out runs\dl\raw_ann_cnn\rf_taco_trash --model both --max-train-objects 3000 --max-val-objects 800 --max-test-objects 800 --epochs 5 --batch-size 64

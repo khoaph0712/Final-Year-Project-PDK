@@ -1,0 +1,33 @@
+dataset,split_setup,class_count,model_family,model,accuracy,macro_f1,evidence_path,notes
+merged_6class,balanced per class,6,ML,xgboost,0.6497,0.6422,runs/ml/balanced_by_dataset/merged_6class,Best main balanced ML result
+merged_6class,balanced per class,6,ML,extra_trees,0.6110,0.6031,runs/ml/balanced_by_dataset/merged_6class,Tree ensemble baseline
+merged_6class,balanced per class,6,ML,rf,0.5917,0.5814,runs/ml/balanced_by_dataset/merged_6class,Interpretable feature importance baseline
+merged_6class,balanced per class,6,ML,linear_svm,0.5352,0.5262,runs/ml/balanced_by_dataset/merged_6class,Linear margin baseline
+merged_6class,balanced per class,6,ML,logreg,0.5234,0.5161,runs/ml/balanced_by_dataset/merged_6class,Linear baseline
+merged_6class,balanced per class,6,ML,decision_tree,0.4303,0.4253,runs/ml/balanced_by_dataset/merged_6class,Simple explainable tree baseline
+merged_6class,balanced per class,6,DL,ann,0.3924,0.3755,runs/dl/balanced_ann_cnn/merged_6class_fair,Fair rerun includes organic and drops unsupported other
+merged_6class,balanced per class,6,DL,cnn,0.4614,0.4386,runs/dl/balanced_ann_cnn/merged_6class_fair,Fair rerun includes organic and drops unsupported other
+trashnet,source dataset split/capped,5,ML,xgboost,0.8103,0.7841,runs/ml/by_dataset/trashnet,Clean-background classification dataset
+trashnet,source dataset split/capped,5,ML,rf,0.7391,0.6688,runs/ml/by_dataset/trashnet,Clean-background classification dataset
+trashnet,source dataset split/capped,5,ML,extra_trees,0.7115,0.6597,runs/ml/by_dataset/trashnet,Clean-background classification dataset
+trashnet,source dataset split/capped,5,ML,logreg,0.6166,0.5622,runs/ml/by_dataset/trashnet,Clean-background classification dataset
+trashnet,source dataset split/capped,5,ML,linear_svm,0.5613,0.5155,runs/ml/by_dataset/trashnet,Clean-background classification dataset
+trashnet,source dataset split/capped,5,ML,decision_tree,0.5296,0.5073,runs/ml/by_dataset/trashnet,Clean-background classification dataset
+trashnet,source dataset split/capped,5,DL,ann,0.3458,0.2792,runs/dl/balanced_ann_cnn/trashnet,Quick 5-epoch ANN baseline
+trashnet,source dataset split/capped,5,DL,cnn,0.4167,0.4048,runs/dl/balanced_ann_cnn/trashnet,Quick 5-epoch CNN baseline
+gini_binary,binary external dataset,2,ML,rf,0.8837,0.8516,runs/ml/external_only/gini_binary,Trash-vs-background style evidence
+gini_binary,binary external dataset,2,ML,xgboost,0.8760,0.8484,runs/ml/external_only/gini_binary,Trash-vs-background style evidence
+gini_binary,binary external dataset,2,ML,extra_trees,0.8682,0.8348,runs/ml/external_only/gini_binary,Trash-vs-background style evidence
+gini_binary,binary external dataset,2,ML,decision_tree,0.8062,0.7719,runs/ml/external_only/gini_binary,Trash-vs-background style evidence
+gini_binary,binary external dataset,2,ML,logreg,0.8140,0.7688,runs/ml/external_only/gini_binary,Trash-vs-background style evidence
+gini_binary,binary external dataset,2,ML,linear_svm,0.7829,0.7427,runs/ml/external_only/gini_binary,Trash-vs-background style evidence
+gini_binary,binary external dataset,2,DL,ann,0.6211,0.3831,runs/dl/external_only_ann_cnn/gini_binary,Class imbalance hurts macro F1
+gini_binary,binary external dataset,2,DL,cnn,0.7895,0.7883,runs/dl/external_only_ann_cnn/gini_binary,Useful binary CNN baseline
+taco_official_partial,partial TACO many-class split,39,ML,xgboost,0.1399,0.0675,runs/ml/by_dataset/taco_official_partial,Real-world hard dataset evidence
+taco_official_partial,partial TACO many-class split,39,ML,logreg,0.1145,0.0479,runs/ml/by_dataset/taco_official_partial,Real-world hard dataset evidence
+taco_official_partial,partial TACO many-class split,39,ML,extra_trees,0.1349,0.0457,runs/ml/by_dataset/taco_official_partial,Real-world hard dataset evidence
+taco_official_partial,partial TACO many-class split,39,ML,rf,0.1552,0.0411,runs/ml/by_dataset/taco_official_partial,Real-world hard dataset evidence
+taco_official_partial,partial TACO many-class split,39,ML,linear_svm,0.0840,0.0368,runs/ml/by_dataset/taco_official_partial,Real-world hard dataset evidence
+taco_official_partial,partial TACO many-class split,39,ML,decision_tree,0.0611,0.0278,runs/ml/by_dataset/taco_official_partial,Real-world hard dataset evidence
+taco_official_partial,partial TACO many-class split,39,DL,ann,0.0573,0.0028,runs/dl/balanced_ann_cnn/taco_official_partial,Very low support per class
+taco_official_partial,partial TACO many-class split,39,DL,cnn,0.0573,0.0028,runs/dl/balanced_ann_cnn/taco_official_partial,Very low support per class
