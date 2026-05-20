@@ -230,13 +230,35 @@ def load_crops_and_balance(
             if not lbl_path.exists():
                 continue
                 
+            # Optimized: Parse label file first to see if we actually need any of the classes inside
+            try:
+                lines = lbl_path.read_text(encoding="utf-8").splitlines()
+            except Exception:
+                continue
+                
+            has_needed_class = False
+            for line in lines:
+                parts = line.strip().split()
+                if len(parts) == 5:
+                    cid = int(float(parts[0]))
+                    if 0 <= cid < len(class_names):
+                        cname = class_names[cid]
+                        # Only keep collecting if we haven't hit a safe buffer of crops
+                        if cname in class_crops and len(class_crops[cname]) < max_per_class * 2:
+                            has_needed_class = True
+                            break
+                            
+            if not has_needed_class:
+                continue
+                
+            # Only read from disk if we actually need crops from this image
             img = cv2.imread(str(img_path))
             if img is None:
                 continue
             h, w = img.shape[:2]
             
             try:
-                for line in lbl_path.read_text(encoding="utf-8").splitlines():
+                for line in lines:
                     parts = line.strip().split()
                     if len(parts) != 5:
                         continue
@@ -245,7 +267,7 @@ def load_crops_and_balance(
                         continue
                     cname = class_names[cid]
                     
-                    if cname in class_crops:
+                    if cname in class_crops and len(class_crops[cname]) < max_per_class * 2:
                         cx, cy, bw, bh = [float(x) for x in parts[1:]]
                         x1 = int((cx - bw / 2.0) * w)
                         y1 = int((cy - bh / 2.0) * h)

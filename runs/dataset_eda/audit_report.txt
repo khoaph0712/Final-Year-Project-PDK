@@ -1,0 +1,15 @@
+FYP WASTE MANAGEMENT - BALANCED DATASET AUDIT REPORT
+===================================================
+
+Verified Splits:
+ - plastic     : Train = 1000, Test =  250
+ - glass       : Train = 1000, Test =  250
+ - metal       : Train = 1000, Test =  250
+ - paper       : Train = 1000, Test =  250
+ - cardboard   : Train = 1000, Test =  250
+ - organic     : Train = 1000, Test =  250
+ - Background  : Train = 1000, Test =  250
+
+--- Validation Results ---
+1. Precision Balancing Check: PASSED. All classes have identical representation to guarantee zero class bias.
+2. Background Class Check: PASSED. 'Background' class has 1000 train and 250 test samples, matching the largest category.
