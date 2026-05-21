@@ -217,28 +217,51 @@ def main():
         cnn_class = CNN_CLASSES[cnn_pred_idx]
         cnn_conf = cnn_probs[cnn_pred_idx]
         
-        yolo_str = f"{yolo_class.upper()} ({yolo_conf*100:.1f}%)"
-        cnn_str = f"{cnn_class.upper()} ({cnn_conf*100:.1f}%)"
+        # --- Stage 2 Dynamic Hierarchical Soft Voting (Prior Enforcer) ---
+        # Map YOLO's 6 classes to the CNN's 7-class indexing (Background has 0 probability from YOLO)
+        yolo_probs = np.zeros(7)
+        if yolo_class in CNN_CLASSES:
+            yidx = CNN_CLASSES.index(yolo_class)
+            yolo_probs[yidx] = yolo_conf
+            # Distribute remainder to other 5 core classes
+            other_indices = [i for i in range(6) if i != yidx]
+            for oi in other_indices:
+                yolo_probs[oi] = (1.0 - yolo_conf) / 5.0
+                
+        # Class-Dependent Voting Weight (Alpha)
+        # Put high weight on YOLO (0.80) when it proposes METAL to override CNN glares and sleeves
+        # For other classes, use low weight (0.20) so the CNN can correct YOLO's proposal errors
+        alpha = 0.80 if yolo_class == "metal" else 0.20
+        combined_probs = alpha * yolo_probs + (1.0 - alpha) * cnn_probs
         
-        # Decision logic:
-        # 1. If CNN predicts Background -> Filter out as false positive (Ghost Waste)
-        # 2. If CNN confidence is below threshold -> Filter out as unreliable detection
-        # 3. Otherwise -> Accept and use the unified decision
-        if cnn_class == "Background":
+        combined_pred_idx = np.argmax(combined_probs)
+        combined_class = CNN_CLASSES[combined_pred_idx]
+        combined_conf = combined_probs[combined_pred_idx]
+        
+        yolo_str = f"{yolo_class.upper()} ({yolo_conf*100:.1f}%)"
+        cnn_str = f"{combined_class.upper()} ({combined_conf*100:.1f}%)"
+        
+        # Multi-stage consensus rule:
+        # If both stages agree (consensus), we trust the combined prediction at a lower threshold (0.25).
+        # If they disagree (correction), we require the standard threshold (args.cnn_conf) for validation.
+        is_consensus = (combined_class == yolo_class)
+        current_threshold = 0.25 if is_consensus else args.cnn_conf
+        
+        if combined_class == "Background":
             decision = "REJECTED (Ghost Waste Background)"
-        elif cnn_conf < args.cnn_conf:
-            decision = f"REJECTED (CNN Conf {cnn_conf*100:.1f}% < {args.cnn_conf*100:.0f}%)"
+        elif combined_conf < current_threshold:
+            decision = f"REJECTED (Conf {combined_conf*100:.1f}% < {current_threshold*100:.0f}%)"
         else:
             decision = "ACCEPTED & VERIFIED ✅"
             valid_detections += 1
             
             # Draw premium bounding box
-            color = CLASS_COLORS.get(cnn_class, (0, 255, 0))
+            color = CLASS_COLORS.get(combined_class, (0, 255, 0))
             cv2.rectangle(annotated_frame, (x1, y1), (x2, y2), color, 3)
             cv2.circle(annotated_frame, (x1, y1), 5, color, cv2.FILLED)
             
             # Draw text label card
-            label_text = f"{cnn_class.upper()} (Verified: {cnn_conf*100:.1f}%)"
+            label_text = f"{combined_class.upper()} (Verified: {combined_conf*100:.1f}%)"
             (text_w, text_h), baseline = cv2.getTextSize(label_text, cv2.FONT_HERSHEY_SIMPLEX, 0.45, 1)
             cv2.rectangle(
                 annotated_frame, 
