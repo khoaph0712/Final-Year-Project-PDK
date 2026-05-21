@@ -11,15 +11,16 @@ except ImportError:
 
 import tensorflow as tf
 
-# Add scripts directory to path if needed
+# Add scripts and archive directory to path if needed
 sys.path.append(str(Path(__file__).resolve().parent))
+sys.path.append(str(Path(__file__).resolve().parent / "archive"))
 
 from ml_balanced_training import load_crops_and_balance
 from train_cnn import preprocess_crops
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA_YAML = ROOT / "merged_dataset_v5" / "data.yaml"
-CNN_DIR = ROOT / "runs" / "dl" / "cnn_mobilenet"
+DATA_YAML = ROOT / "data" / "merged_dataset_v5" / "data.yaml"
+CNN_DIR = ROOT / "runs" / "dl" / "cnn_efficientnet"
 
 def main():
     print("====================================================")
@@ -27,7 +28,7 @@ def main():
     print("====================================================")
     
     # 1. Load Keras model
-    model_path = CNN_DIR / "best_mobilenet.h5"
+    model_path = CNN_DIR / "best_efficientnet.h5"
     if not model_path.exists():
         raise FileNotFoundError("CNN model weights not found! Run train_cnn.py first.")
         
@@ -72,7 +73,7 @@ def main():
     tflite_model_quant = converter.convert()
     
     # 4. Save model
-    out_path = CNN_DIR / "best_mobilenet_quant.tflite"
+    out_path = CNN_DIR / "best_efficientnet_quant.tflite"
     out_path.write_bytes(tflite_model_quant)
     
     # 5. Verify file size

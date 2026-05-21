@@ -14,8 +14,8 @@ except ImportError:
     from tensorflow import keras
 
 import tensorflow as tf
-MobileNetV2 = keras.applications.MobileNetV2
-preprocess_input = keras.applications.mobilenet_v2.preprocess_input
+EfficientNetB0 = keras.applications.EfficientNetB0
+preprocess_input = keras.applications.efficientnet.preprocess_input
 Model = keras.models.Model
 Dense = keras.layers.Dense
 GlobalAveragePooling2D = keras.layers.GlobalAveragePooling2D
@@ -25,37 +25,66 @@ Adam = keras.optimizers.Adam
 ModelCheckpoint = keras.callbacks.ModelCheckpoint
 CSVLogger = keras.callbacks.CSVLogger
 EarlyStopping = keras.callbacks.EarlyStopping
+Sequence = keras.utils.Sequence
 
 import cv2
 
-# Add scripts directory to path if needed
+# Add scripts and archive directory to path if needed
 sys.path.append(str(Path(__file__).resolve().parent))
+sys.path.append(str(Path(__file__).resolve().parent / "archive"))
 
 from ml_balanced_training import load_crops_and_balance
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA_YAML = ROOT / "merged_dataset_v5" / "data.yaml"
-OUT_DIR = ROOT / "runs" / "dl" / "cnn_mobilenet"
+DATA_YAML = ROOT / "data" / "merged_dataset_v5" / "data.yaml"
+OUT_DIR = ROOT / "runs" / "dl" / "cnn_efficientnet"
 
-def preprocess_crops(crops, target_size=(128, 128)):
-    """Resize crops and convert to float numpy array preprocessed for MobileNetV2."""
+def preprocess_crops(crops, target_size=(224, 224)):
+    """Resize crops and convert to float numpy array preprocessed for EfficientNetB0 (used for validation/test evaluation if small)."""
     processed = []
     for crop in crops:
-        # Resize using bilinear interpolation
         resized = cv2.resize(crop, target_size, interpolation=cv2.INTER_LINEAR)
-        # Convert BGR to RGB
         resized_rgb = cv2.cvtColor(resized, cv2.COLOR_BGR2RGB)
         processed.append(resized_rgb)
-    
-    # Convert to array and scale to [-1, 1] using MobileNetV2 preprocess
     processed_arr = np.array(processed, dtype=np.float32)
     return preprocess_input(processed_arr)
+
+class CropSequence(Sequence):
+    def __init__(self, crops, labels, batch_size=64, target_size=(224, 224)):
+        self.crops = crops
+        self.labels = labels
+        self.batch_size = batch_size
+        self.target_size = target_size
+        self.indices = np.arange(len(self.crops))
+        
+    def __len__(self):
+        return int(np.ceil(len(self.crops) / self.batch_size))
+        
+    def __getitem__(self, idx):
+        batch_indices = self.indices[idx * self.batch_size : (idx + 1) * self.batch_size]
+        batch_x = []
+        batch_y = []
+        for i in batch_indices:
+            crop = self.crops[i]
+            # Resize
+            resized = cv2.resize(crop, self.target_size, interpolation=cv2.INTER_LINEAR)
+            # BGR to RGB
+            resized_rgb = cv2.cvtColor(resized, cv2.COLOR_BGR2RGB)
+            batch_x.append(resized_rgb)
+            batch_y.append(self.labels[i])
+            
+        batch_x_arr = np.array(batch_x, dtype=np.float32)
+        batch_x_preprocessed = preprocess_input(batch_x_arr)
+        return batch_x_preprocessed, np.array(batch_y, dtype=np.int32)
+        
+    def on_epoch_end(self):
+        np.random.shuffle(self.indices)
 
 def main():
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     
     print("====================================================")
-    print("FYP Waste Management: Training Keras MobileNetV2 CNN")
+    print("FYP Waste Management: Training Keras EfficientNetB0 CNN")
     print("====================================================")
     
     target_classes = ["plastic", "glass", "metal", "paper", "cardboard", "organic", "Background"]
@@ -63,29 +92,29 @@ def main():
     # 1. Load balanced crop splits
     print("[INFO] Loading balanced crops from dataset splits...")
     train_crops, y_train_list = load_crops_and_balance(
-        DATA_YAML, target_classes, max_per_class=3500, is_train=True, seed=42
+        DATA_YAML, target_classes, max_per_class=2000, is_train=True, seed=42
     )
     test_crops, y_test_list = load_crops_and_balance(
-        DATA_YAML, target_classes, max_per_class=800, is_train=False, seed=42
+        DATA_YAML, target_classes, max_per_class=500, is_train=False, seed=42
     )
     
     # Convert labels to numpy arrays
     y_train = np.array(y_train_list, dtype=np.int32)
     y_test = np.array(y_test_list, dtype=np.int32)
     
-    # 2. Preprocess images
-    print("\n[INFO] Resizing and preprocessing image crops to 128x128...")
-    x_train = preprocess_crops(train_crops)
-    x_test = preprocess_crops(test_crops)
+    # 2. Setup memory-safe crop sequences
+    print("\n[INFO] Initializing memory-safe CropSequence generators...")
+    train_gen = CropSequence(train_crops, y_train, batch_size=64, target_size=(224, 224))
+    test_gen = CropSequence(test_crops, y_test, batch_size=64, target_size=(224, 224))
     
     print(f"Dataset shapes:")
-    print(f"  - X_train: {x_train.shape}, y_train: {y_train.shape}")
-    print(f"  - X_test: {x_test.shape}, y_test: {y_test.shape}")
+    print(f"  - Train crops count: {len(train_crops)}, Labels count: {len(y_train)}")
+    print(f"  - Test crops count: {len(test_crops)}, Labels count: {len(y_test)}")
     
-    # 3. Build MobileNetV2 Model
-    print("\n[INFO] Loading pre-trained MobileNetV2 base...")
-    base_model = MobileNetV2(
-        input_shape=(128, 128, 3),
+    # 3. Build EfficientNetB0 Model
+    print("\n[INFO] Loading pre-trained EfficientNetB0 base...")
+    base_model = EfficientNetB0(
+        input_shape=(224, 224, 3),
         include_top=False,
         weights="imagenet"
     )
@@ -94,7 +123,7 @@ def main():
     base_model.trainable = False
     
     # Add custom classification head
-    inputs = Input(shape=(128, 128, 3))
+    inputs = Input(shape=(224, 224, 3))
     x = base_model(inputs, training=False)
     x = GlobalAveragePooling2D()(x)
     x = Dropout(0.35)(x)
@@ -105,7 +134,7 @@ def main():
     model = Model(inputs, outputs)
     
     # Phase 1: Warmup custom classification head
-    print("\n--- Phase 1: Training Custom Classification Head (3 Epochs) ---")
+    print("\n--- Phase 1: Training Custom Classification Head (1 Epochs) ---")
     model.compile(
         optimizer=Adam(learning_rate=1e-3),
         loss="sparse_categorical_crossentropy",
@@ -113,14 +142,13 @@ def main():
     )
     
     model.fit(
-        x_train, y_train,
-        validation_data=(x_test, y_test),
-        epochs=3,
-        batch_size=64
+        train_gen,
+        validation_data=test_gen,
+        epochs=1
     )
     
-    # Phase 2: Fine-tune Upper MobileNetV2 Layers
-    print("\n--- Phase 2: Fine-Tuning Top MobileNetV2 Layers (9 Epochs) ---")
+    # Phase 2: Fine-tune Upper EfficientNetB0 Layers
+    print("\n--- Phase 2: Fine-Tuning Top EfficientNetB0 Layers (2 Epochs) ---")
     # Unfreeze the base model
     base_model.trainable = True
     # Freeze all layers except the last 30 layers
@@ -135,7 +163,7 @@ def main():
     )
     
     # Set up callbacks
-    best_weights_path = OUT_DIR / "best_mobilenet.h5"
+    best_weights_path = OUT_DIR / "best_efficientnet.h5"
     history_csv_path = OUT_DIR / "training_history.csv"
     
     callbacks = [
@@ -154,10 +182,9 @@ def main():
     
     # Train model
     history = model.fit(
-        x_train, y_train,
-        validation_data=(x_test, y_test),
-        epochs=9,
-        batch_size=64,
+        train_gen,
+        validation_data=test_gen,
+        epochs=2,
         callbacks=callbacks
     )
     
@@ -193,7 +220,7 @@ def main():
     
     # 5. Final Evaluation on Test Set
     best_model = keras.models.load_model(str(best_weights_path))
-    test_loss, test_acc = best_model.evaluate(x_test, y_test, verbose=0)
+    test_loss, test_acc = best_model.evaluate(test_gen, verbose=0)
     print(f"\nCNN Fine-Tuned Model Performance on Test Crops:")
     print(f"  - Test Loss: {test_loss:.4f}")
     print(f"  - Test Accuracy: {test_acc:.4f}")

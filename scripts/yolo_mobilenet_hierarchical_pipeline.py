@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 """
 Final Year Project (FYP) - Waste Sorting & Classification System
-2-Stage Real-World Hierarchical Pipeline (YOLOv11 Detector + MobileNetV2 CNN Classifier)
+2-Stage Real-World Hierarchical Pipeline (YOLOv11 Detector + EfficientNetB0 CNN Classifier)
 
 This script implements the ultimate 2-stage hierarchical waste-sorting pipeline:
 - Stage 1 (YOLOv11): Performs fast, state-of-the-art waste object detection and localization (bounding box extraction).
-- Stage 2 (MobileNetV2 CNN): Validates each object crop using a highly-trained, balanced deep classifier to reduce false alarms and increase classification precision.
+- Stage 2 (EfficientNetB0 CNN): Validates each object crop using a highly-trained, balanced deep classifier to reduce false alarms and increase classification precision.
 """
 
 import sys
@@ -33,12 +33,12 @@ ROOT_DIR = SCRIPTS_DIR.parent
 sys.path.append(str(SCRIPTS_DIR))
 
 # Configuration Paths
-DEFAULT_YOLO_WEIGHTS = ROOT_DIR / "runs" / "detect" / "yolov11_taco" / "weights" / "best.pt"
-DEFAULT_CNN_WEIGHTS = ROOT_DIR / "runs" / "dl" / "cnn_mobilenet" / "best_mobilenet.h5"
+DEFAULT_YOLO_WEIGHTS = ROOT_DIR / "runs" / "detect" / "yolov11_super_dataset" / "weights" / "best.pt"
+DEFAULT_CNN_WEIGHTS = ROOT_DIR / "runs" / "dl" / "cnn_efficientnet" / "best_efficientnet_quant.tflite"
 TACO_DIR = ROOT_DIR / "external_datasets" / "super_yolo_dataset" / "test" / "images"
-DEFAULT_OUT_DIR = ROOT_DIR / "runs" / "detect" / "yolo_mobilenet_pipeline"
+DEFAULT_OUT_DIR = ROOT_DIR / "runs" / "detect" / "yolo_efficientnet_pipeline"
 
-# 6 Core classes for YOLOv11 detector, and 7 classes for MobileNetV2 CNN (includes Background)
+# 6 Core classes for YOLOv11 detector, and 7 classes for EfficientNetB0 CNN (includes Background)
 YOLO_CLASSES = ["plastic", "glass", "metal", "paper", "cardboard", "organic"]
 CNN_CLASSES = ["plastic", "glass", "metal", "paper", "cardboard", "organic", "Background"]
 
@@ -53,21 +53,22 @@ CLASS_COLORS = {
     "Background": (149, 165, 166)  # Gray
 }
 
-def preprocess_crop(crop, target_size=(128, 128)):
-    """Resize crop and preprocess for MobileNetV2."""
+def preprocess_crop(crop, target_size=(224, 224)):
+    """Resize crop and preprocess for EfficientNetB0."""
     resized = cv2.resize(crop, target_size, interpolation=cv2.INTER_LINEAR)
     resized_rgb = cv2.cvtColor(resized, cv2.COLOR_BGR2RGB)
-    crop_norm = (resized_rgb.astype(np.float32) / 127.5) - 1.0
-    return np.expand_dims(crop_norm, axis=0)
+    crop_float = resized_rgb.astype(np.float32)
+    crop_preprocessed = keras.applications.efficientnet.preprocess_input(crop_float)
+    return np.expand_dims(crop_preprocessed, axis=0)
 
 def main():
-    parser = argparse.ArgumentParser(description="FYP Waste Management: 2-Stage YOLOv11 + MobileNetV2 Hierarchical Pipeline")
+    parser = argparse.ArgumentParser(description="FYP Waste Management: 2-Stage YOLOv11 + EfficientNetB0 Hierarchical Pipeline")
     parser.add_argument("--image", type=str, help="Path to a complex test image.")
     parser.add_argument("--random", action="store_true", help="Auto-pick a random complex image from the official TACO dataset.")
     parser.add_argument("--yolo-weights", type=str, default=str(DEFAULT_YOLO_WEIGHTS), help="YOLOv11 weights path.")
-    parser.add_argument("--cnn-weights", type=str, default=str(DEFAULT_CNN_WEIGHTS), help="MobileNetV2 Keras model weights path.")
+    parser.add_argument("--cnn-weights", type=str, default=str(DEFAULT_CNN_WEIGHTS), help="EfficientNetB0 CNN model weights path (.tflite or .h5).")
     parser.add_argument("--yolo-conf", type=float, default=0.25, help="YOLOv11 detection confidence threshold.")
-    parser.add_argument("--cnn-conf", type=float, default=0.40, help="MobileNetV2 verification confidence threshold.")
+    parser.add_argument("--cnn-conf", type=float, default=0.40, help="CNN verification confidence threshold.")
     parser.add_argument("--out-dir", type=str, default=str(DEFAULT_OUT_DIR), help="Output folder to write visual detection sheets.")
     parser.add_argument("--padding", type=int, default=8, help="Bounding box crop padding to preserve complete geometry details.")
     
@@ -77,7 +78,7 @@ def main():
     out_dir.mkdir(parents=True, exist_ok=True)
     
     print("=====================================================================")
-    print("      FYP 2-Stage YOLOv11 + MobileNetV2 Hierarchical Pipeline       ")
+    print("      FYP 2-Stage YOLOv11 + EfficientNetB0 Hierarchical Pipeline       ")
     print("=====================================================================")
     
     # 1. Resolve and validate model weights
@@ -90,8 +91,14 @@ def main():
         yolo_weights_path = Path("yolo11n.pt")
         
     if not cnn_weights_path.exists():
-        print(f"[ERROR] MobileNetV2 CNN weights not found at: {cnn_weights_path}")
-        sys.exit(1)
+        # Fallback to .h5 if .tflite is not found
+        fallback_h5 = cnn_weights_path.with_suffix(".h5")
+        if fallback_h5.exists():
+            print(f"[INFO] TFLite model not found at {cnn_weights_path}. Falling back to H5 model at {fallback_h5}...")
+            cnn_weights_path = fallback_h5
+        else:
+            print(f"[ERROR] CNN weights not found at: {cnn_weights_path}")
+            sys.exit(1)
         
     # 2. Select Image Input
     selected_image_path = None
@@ -144,9 +151,17 @@ def main():
     yolo_model = YOLO(str(yolo_weights_path))
     print(f"  - Stage 1: YOLOv11 model loaded from {yolo_weights_path}")
     
-    # Stage 2: MobileNetV2 CNN
-    cnn_model = keras.models.load_model(str(cnn_weights_path))
-    print(f"  - Stage 2: MobileNetV2 CNN model loaded from {cnn_weights_path}")
+    # Stage 2: EfficientNetB0 CNN (Supports H5 and TFLite)
+    is_tflite = cnn_weights_path.suffix == ".tflite"
+    if is_tflite:
+        interpreter = tf.lite.Interpreter(model_path=str(cnn_weights_path))
+        interpreter.allocate_tensors()
+        input_details = interpreter.get_input_details()
+        output_details = interpreter.get_output_details()
+        print(f"  - Stage 2: Quantized TFLite model loaded from {cnn_weights_path}")
+    else:
+        cnn_model = keras.models.load_model(str(cnn_weights_path))
+        print(f"  - Stage 2: EfficientNetB0 CNN model loaded from {cnn_weights_path}")
     
     print(f"[OK] Models loaded successfully in {time.time() - t_start_load:.2f} seconds.")
     
@@ -159,7 +174,7 @@ def main():
     boxes = yolo_results[0].boxes
     print(f"[OK] YOLOv11 proposed {len(boxes)} candidate boxes in {t_yolo_elapsed*1000:.1f}ms.")
     
-    # 6. Stage 2: Verification using Keras MobileNetV2
+    # Stage 2: Verification using Keras EfficientNetB0
     print("\n" + "="*85)
     print(f"{'Box ID':<8} | {'YOLO Class (Conf)':<22} | {'CNN Verified Class (Conf)':<28} | {'Decision'}")
     print("="*85)
@@ -190,9 +205,14 @@ def main():
         yolo_class = yolo_model.names[yolo_cls_id] if hasattr(yolo_model, 'names') else YOLO_CLASSES[yolo_cls_id]
         yolo_conf = float(box.conf[0])
         
-        # Preprocess and feed crop to MobileNetV2
+        # Preprocess and feed crop to EfficientNetB0
         crop_input = preprocess_crop(crop)
-        cnn_probs = cnn_model.predict(crop_input, verbose=0)[0]
+        if is_tflite:
+            interpreter.set_tensor(input_details[0]['index'], crop_input)
+            interpreter.invoke()
+            cnn_probs = interpreter.get_tensor(output_details[0]['index'])[0]
+        else:
+            cnn_probs = cnn_model.predict(crop_input, verbose=0)[0]
         cnn_pred_idx = np.argmax(cnn_probs)
         cnn_class = CNN_CLASSES[cnn_pred_idx]
         cnn_conf = cnn_probs[cnn_pred_idx]
