@@ -19,13 +19,14 @@ import { Card } from "@/components/Card";
 import { useTheme } from "@/theme";
 import { useDetector } from "@/lib/useDetector";
 import { decodeYoloOutput, nms, summariseDetections, type RawBox } from "@/lib/yolo";
-import { BIN_FOR, EMOJI, type WasteClass } from "@/lib/classes";
+import { BIN_FOR, EMOJI, DISPOSAL_INSTRUCTIONS, type WasteClass } from "@/lib/classes";
 import { useAppStore } from "@/store/useAppStore";
 
 type LiveResult = { topClass: WasteClass; topScore: number; count: number } | null;
 
 export default function Scan() {
-  const { colors, spacing, radius } = useTheme();
+  const { colors, spacing, radius, mode } = useTheme();
+  const isDark = mode === "dark";
   const { hasPermission, requestPermission } = useCameraPermission();
   const device = useCameraDevice("back");
   const detector = useDetector();
@@ -163,26 +164,52 @@ export default function Scan() {
         <View style={[styles.bottomPanel, { padding: spacing.lg }]}>
           <View
             style={{
-              backgroundColor: "rgba(15,23,42,0.78)",
+              backgroundColor: isDark ? "rgba(15,23,42,0.65)" : "rgba(255,255,255,0.75)",
               padding: spacing.lg,
               borderRadius: radius.xl,
               marginBottom: spacing.md,
+              borderWidth: 1.5,
+              borderColor: isDark ? "rgba(255,255,255,0.12)" : "rgba(255,255,255,0.45)",
+              shadowColor: isDark ? "#000" : "#64748b",
+              shadowOffset: { width: 0, height: 10 },
+              shadowOpacity: isDark ? 0.35 : 0.08,
+              shadowRadius: 20,
+              elevation: 5,
             }}
           >
             {live ? (
-              <View style={{ flexDirection: "row", alignItems: "center", gap: spacing.md }}>
-                <Text style={{ fontSize: 36 }}>{EMOJI[live.topClass]}</Text>
-                <View style={{ flex: 1 }}>
-                  <Text variant="h2" color="#fff" style={{ textTransform: "capitalize" }}>
-                    {live.topClass}
+              <View style={{ gap: spacing.sm }}>
+                <View style={{ flexDirection: "row", alignItems: "center", gap: spacing.md }}>
+                  <Text style={{ fontSize: 36 }}>{EMOJI[live.topClass]}</Text>
+                  <View style={{ flex: 1 }}>
+                    <Text variant="h2" color={isDark ? "#fff" : colors.text} style={{ textTransform: "capitalize" }}>
+                      {live.topClass}
+                    </Text>
+                    <Text variant="bodySm" color={isDark ? "rgba(255,255,255,0.65)" : colors.textMuted}>
+                      Confidence: {(live.topScore * 100).toFixed(0)}%
+                    </Text>
+                  </View>
+                </View>
+                
+                {/* Custom AI Disposal Guidance Message */}
+                <View style={{
+                  marginTop: spacing.xs,
+                  padding: spacing.sm,
+                  backgroundColor: isDark ? "rgba(255,255,255,0.06)" : "rgba(0,0,0,0.03)",
+                  borderRadius: radius.md,
+                  borderLeftWidth: 3,
+                  borderLeftColor: colors.bin[BIN_FOR[live.topClass]],
+                }}>
+                  <Text variant="bodySm" color={isDark ? "#fff" : colors.text} style={{ fontWeight: "600" }}>
+                    {DISPOSAL_INSTRUCTIONS[live.topClass].split("\n")[0]}
                   </Text>
-                  <Text variant="bodySm" color="rgba(255,255,255,0.75)">
-                    Goes in <Text color={colors.bin[BIN_FOR[live.topClass]]} weight="700">{BIN_FOR[live.topClass]}</Text> · {(live.topScore * 100).toFixed(0)}%
+                  <Text variant="caption" color={isDark ? "rgba(255,255,255,0.75)" : colors.textMuted} style={{ marginTop: 2 }}>
+                    {DISPOSAL_INSTRUCTIONS[live.topClass].split("\n")[1]}
                   </Text>
                 </View>
               </View>
             ) : (
-              <Text color="rgba(255,255,255,0.8)" align="center">
+              <Text color={isDark ? "rgba(255,255,255,0.8)" : colors.textMuted} align="center">
                 Point the camera at an item…
               </Text>
             )}

@@ -39,6 +39,16 @@ export const TIPS: Record<WasteClass, string> = {
   other: "Unclear category — check your local council guidelines before disposing.",
 };
 
+export const DISPOSAL_INSTRUCTIONS: Record<WasteClass, string> = {
+  plastic: "🟢 Place in the GREEN Recycling Bin\nMake sure to empty, rinse, and squeeze the plastic bottle to conserve space.",
+  glass: "🔵 Place in the BLUE Glass Bin\nRemove metal caps, rinse thoroughly, and place carefully to prevent shattering.",
+  metal: "🔴 Place in the RED Metal Bin\nRinse out residues from aluminum/tin cans and flatten them completely.",
+  paper: "🟡 Place in the YELLOW Paper Bin\nEnsure the paper is clean and dry. Avoid greasy boxes or shredded fragments.",
+  cardboard: "📦 Place in the CARDBOARD Bin\nBreak down and flatten the cardboard shipping boxes before sliding them in.",
+  organic: "🟤 Place in the BROWN Compost Bin\nDispose of fruit/vegetable scraps and organic waste here. No plastic wrappers!",
+  other: "🗑️ Place in the BLACK General Waste Bin\nPlace miscellaneous items and non-recyclable composite materials here.",
+};
+
 export const POINTS: Record<WasteClass, number> = {
   plastic: 10,
   glass: 10,
