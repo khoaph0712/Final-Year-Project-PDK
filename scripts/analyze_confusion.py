@@ -30,14 +30,14 @@ from train_ann import WasteMLP
 from train_cnn import preprocess_crops
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA_YAML = ROOT / "merged_dataset_v3" / "data.yaml"
+DATA_YAML = ROOT / "merged_dataset_v5" / "data.yaml"
 ANN_DIR = ROOT / "runs" / "dl" / "ann_637"
 CNN_DIR = ROOT / "runs" / "dl" / "cnn_mobilenet"
 
 def evaluate_ann(test_crops, y_test, target_classes):
     print("\n--- Evaluating ANN (MLP)... ---")
     # Check if features are cached
-    cache_x_test = ANN_DIR / "x_test_637.npy"
+    cache_x_test = ANN_DIR / "x_test_637_v5.npy"
     if cache_x_test.exists():
         print("[INFO] Loading cached 637-feature vectors for test split...")
         x_test = np.load(cache_x_test)
@@ -124,7 +124,7 @@ def write_confusion_report(ann_cm, cnn_cm, target_classes):
     print("\n[INFO] Analyzing Background rows and columns...")
     # Background class is the last class
     bg_idx = target_classes.index("Background")
-    num_samples_per_class = 250 # test split max_per_class
+    num_samples_per_class = 800 # test split max_per_class
     
     report_lines = [
         "# Deep Learning Confusion Matrix & Background Error Analysis\n",
@@ -226,7 +226,7 @@ def main():
     
     print("[INFO] Loading balanced test crops for evaluation...")
     test_crops, y_test_list = load_crops_and_balance(
-        DATA_YAML, target_classes, max_per_class=250, is_train=False, seed=42
+        DATA_YAML, target_classes, max_per_class=800, is_train=False, seed=42
     )
     y_test = np.array(y_test_list, dtype=np.int32)
     

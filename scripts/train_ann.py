@@ -21,7 +21,7 @@ from ml_balanced_training import load_crops_and_balance
 from custom_feature_extractor import extract_637_features
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA_YAML = ROOT / "merged_dataset_v3" / "data.yaml"
+DATA_YAML = ROOT / "merged_dataset_v5" / "data.yaml"
 OUT_DIR = ROOT / "runs" / "dl" / "ann_637"
 
 class WasteMLP(nn.Module):
@@ -58,10 +58,10 @@ def main():
     
     target_classes = ["plastic", "glass", "metal", "paper", "cardboard", "organic", "Background"]
     
-    cache_x_train = OUT_DIR / "x_train_637.npy"
-    cache_y_train = OUT_DIR / "y_train_637.npy"
-    cache_x_test = OUT_DIR / "x_test_637.npy"
-    cache_y_test = OUT_DIR / "y_test_637.npy"
+    cache_x_train = OUT_DIR / "x_train_637_v5.npy"
+    cache_y_train = OUT_DIR / "y_train_637_v5.npy"
+    cache_x_test = OUT_DIR / "x_test_637_v5.npy"
+    cache_y_test = OUT_DIR / "y_test_637_v5.npy"
     
     if cache_x_train.exists() and cache_y_train.exists() and cache_x_test.exists() and cache_y_test.exists():
         print("[INFO] Loading cached 637-feature vectors from disk...")
@@ -72,10 +72,10 @@ def main():
     else:
         print("[INFO] Extracting balanced crop splits...")
         train_crops, y_train_list = load_crops_and_balance(
-            DATA_YAML, target_classes, max_per_class=1000, is_train=True, seed=42
+            DATA_YAML, target_classes, max_per_class=3500, is_train=True, seed=42
         )
         test_crops, y_test_list = load_crops_and_balance(
-            DATA_YAML, target_classes, max_per_class=250, is_train=False, seed=42
+            DATA_YAML, target_classes, max_per_class=800, is_train=False, seed=42
         )
         
         print("\nExtracting custom 637 features for training split...")

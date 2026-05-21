@@ -21,6 +21,9 @@ merged_dataset*/
 tuned_dataset*/
 rf_*/
 temp_*/
+data/
+ml/
+
 
 # OS / editor
 .DS_Store

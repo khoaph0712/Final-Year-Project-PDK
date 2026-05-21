@@ -20,30 +20,30 @@ The background class represents floor textures, carpets, grass, and table surfac
 
 ### PyTorch ANN (MLP) Error Profile
 
-- **False Positive Rate (Ghost Waste)**: **33.60%** (84 / 250 background samples misclassified as waste items).
+- **False Positive Rate (Ghost Waste)**: **14.40%** (72 / 500 background samples misclassified as waste items).
   - *Impact*: In a robotic or mobile trash bin setting, this means the AI sees 'Ghost waste' on clear surfaces and triggers sorting mechanisms unnecessarily.
-  - *Top False Positive Leakage*: Background textures are most frequently mistaken for **plastic** (25 instances).
-- **False Negative Rate (Waste Blindness)**: **3.60%** (54 / 1500 actual waste items misclassified as background).
+  - *Top False Positive Leakage*: Background textures are most frequently mistaken for **cardboard** (22 instances).
+- **False Negative Rate (Waste Blindness)**: **2.77%** (83 / 3000 actual waste items misclassified as background).
   - *Impact*: This represents blind spots where the AI completely ignores waste items, assuming they are simply floor textures.
-  - *Top False Negative Leakage*: Waste item **cardboard** is most frequently ignored as background (22 instances).
+  - *Top False Negative Leakage*: Waste item **paper** is most frequently ignored as background (20 instances).
 
 
 ### MobileNetV2 CNN Error Profile
 
-- **False Positive Rate (Ghost Waste)**: **17.60%** (44 / 250 background samples misclassified as waste items).
+- **False Positive Rate (Ghost Waste)**: **6.80%** (34 / 500 background samples misclassified as waste items).
   - *Impact*: In a robotic or mobile trash bin setting, this means the AI sees 'Ghost waste' on clear surfaces and triggers sorting mechanisms unnecessarily.
-  - *Top False Positive Leakage*: Background textures are most frequently mistaken for **cardboard** (20 instances).
-- **False Negative Rate (Waste Blindness)**: **1.13%** (17 / 1500 actual waste items misclassified as background).
+  - *Top False Positive Leakage*: Background textures are most frequently mistaken for **cardboard** (13 instances).
+- **False Negative Rate (Waste Blindness)**: **0.57%** (17 / 3000 actual waste items misclassified as background).
   - *Impact*: This represents blind spots where the AI completely ignores waste items, assuming they are simply floor textures.
-  - *Top False Negative Leakage*: Waste item **cardboard** is most frequently ignored as background (6 instances).
+  - *Top False Negative Leakage*: Waste item **plastic** is most frequently ignored as background (7 instances).
 
 
 ## 3. Background Leakage Comparison Table
 
 | Model | Ghost Waste FP Rate (%) | Waste Blindness FN Rate (%) | Primary FP Leakage Class | Primary FN Leakage Class |
 |---|---:|---:|---|---|
-| PyTorch ANN | 33.60% | 3.60% | plastic | cardboard |
-| MobileNetV2 CNN | 17.60% | 1.13% | cardboard | cardboard |
+| PyTorch ANN | 14.40% | 2.77% | cardboard | paper |
+| MobileNetV2 CNN | 6.80% | 0.57% | cardboard | plastic |
 
 ## 4. Engineering Recommendations
 

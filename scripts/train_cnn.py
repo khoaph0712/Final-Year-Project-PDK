@@ -34,7 +34,7 @@ sys.path.append(str(Path(__file__).resolve().parent))
 from ml_balanced_training import load_crops_and_balance
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA_YAML = ROOT / "merged_dataset_v3" / "data.yaml"
+DATA_YAML = ROOT / "merged_dataset_v5" / "data.yaml"
 OUT_DIR = ROOT / "runs" / "dl" / "cnn_mobilenet"
 
 def preprocess_crops(crops, target_size=(128, 128)):
@@ -63,10 +63,10 @@ def main():
     # 1. Load balanced crop splits
     print("[INFO] Loading balanced crops from dataset splits...")
     train_crops, y_train_list = load_crops_and_balance(
-        DATA_YAML, target_classes, max_per_class=1000, is_train=True, seed=42
+        DATA_YAML, target_classes, max_per_class=3500, is_train=True, seed=42
     )
     test_crops, y_test_list = load_crops_and_balance(
-        DATA_YAML, target_classes, max_per_class=250, is_train=False, seed=42
+        DATA_YAML, target_classes, max_per_class=800, is_train=False, seed=42
     )
     
     # Convert labels to numpy arrays

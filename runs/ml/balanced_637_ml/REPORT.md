@@ -24,33 +24,33 @@
 
 ## 3. Handcrafted Feature Extractor Layout (Exactly 637 Features)
 
-- **Color (30 Features)**: 15-bin RGB Histograms + 15-bin HSV Histograms.
+- **Color (256 Features)**: 144-bin RGB Histograms (3 channels * 48 bins) + 112-bin HSV Histograms (H:48, S:32, V:32).
 
-- **Texture (21 Features)**: 10-bin LBP Histogram + 11 statistical Haralick GLCM Descriptors.
+- **Texture (47 Features)**: 10-bin Uniform LBP Histogram + 37-bin Gray-Level Co-occurrence Matrix (GLCM/Haralick) Descriptors.
 
-- **Shape/Geometric (10 Features)**: 7 Hu Moments + 1 Area + 1 Perimeter + 1 Circularity.
+- **Shape/Geometric (10 Features)**: 7 log-transformed scale/rotation-invariant Hu Moments + Area, Perimeter, and Circularity.
 
-- **Edge/HOG (576 Features)**: Shape orientation orientation histogram.
+- **Edge/HOG (324 Features)**: Gradient orientation histogram (64x64 window, 32x32 block, 16x16 cell/stride, 9 bins).
 
 
 ### Feature Group Importance Contributions
 
 | Feature Group | Random Forest Contribution (%) |
 |---|---:|
-| Color Features (30) | 14.36% |
-| Texture Features (21) | 9.05% |
-| Shape/Geometric (10) | 2.43% |
-| Edge/HOG Features (576) | 74.15% |
+| Color Features (256) | 49.14% |
+| Texture Features (47) | 12.92% |
+| Shape/Geometric (10) | 1.42% |
+| Edge/HOG Features (324) | 36.52% |
 
 
 ## 4. Machine Learning Baseline Comparison
 
 | Model | Accuracy | Macro F1-score |
 |---|---:|---:|
-| xgboost | 0.5771 | 0.5707 |
-| rf | 0.5400 | 0.5326 |
-| decision_tree | 0.4243 | 0.4261 |
-| linear_svm | 0.4271 | 0.4225 |
+| xgboost | 0.6526 | 0.6441 |
+| rf | 0.5880 | 0.5799 |
+| linear_svm | 0.5520 | 0.5420 |
+| decision_tree | 0.3937 | 0.3907 |
 
 
 ## 5. Noise and Background Performance Assessment

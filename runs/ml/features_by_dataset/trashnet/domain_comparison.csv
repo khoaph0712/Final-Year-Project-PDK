@@ -1,6 +1,6 @@
 metric,spatial_value,frequency_value,note
 feature_count,637,,"Feature vector has 8 spatial, 9 frequency, 44 color, and 576 HOG features"
-model_importance_pct,Spatial,5.1198,From RandomForest feature_importances_
-model_importance_pct,Frequency,3.1726,From RandomForest feature_importances_
-model_importance_pct,Color,23.9832,From RandomForest feature_importances_
-model_importance_pct,HOG,67.7244,From RandomForest feature_importances_
+model_importance_pct,Spatial,4.7536,From RandomForest feature_importances_
+model_importance_pct,Frequency,3.4189,From RandomForest feature_importances_
+model_importance_pct,Color,24.7994,From RandomForest feature_importances_
+model_importance_pct,HOG,67.0281,From RandomForest feature_importances_

@@ -18,7 +18,7 @@ from ml_balanced_training import load_crops_and_balance
 from train_cnn import preprocess_crops
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA_YAML = ROOT / "merged_dataset_v3" / "data.yaml"
+DATA_YAML = ROOT / "merged_dataset_v5" / "data.yaml"
 CNN_DIR = ROOT / "runs" / "dl" / "cnn_mobilenet"
 
 def main():

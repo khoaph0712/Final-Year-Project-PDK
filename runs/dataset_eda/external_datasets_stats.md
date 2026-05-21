@@ -9,10 +9,10 @@ This report provides a comparative class distribution analysis across all four t
 | TrashNet | Staged items on clean white backgrounds. Standard classification baseline. | 2,527 | 6 | 4.34 | Low (Staged) |
 | TACO | Complex, in-the-wild litter annotations. Fine-grained categories, highly imbalanced. | 1,500 | 12 | 5.58 | Very High (In-the-wild) |
 | SortWaste_2026 | Industrial waste sorting images with high clutter and object overlaps. | 1,200 | 8 | 5.82 | High (Cluttered) |
-| WaDaBa | Specialized plastic recycling classification under fluorescent/LED lighting. | 4,000 | 6 | 6.58 | Medium |
+| WaDaBa | Specialized plastic recycling classification under fluorescent/LED lighting. | 4,000 | 5 | 55.00 | Medium |
 
 
-### TrashNet Class Distribution (Simulated / Pre-calculated (No network/auth))
+### TrashNet Class Distribution (Scanned Live Data)
 
 | Class Name | Count | Percentage |
 |---|---:|---:|
@@ -59,16 +59,15 @@ This report provides a comparative class distribution analysis across all four t
 | **Total** | **1,200** | **100.00%** |
 
 
-### WaDaBa Class Distribution (Simulated / Pre-calculated (No network/auth))
+### WaDaBa Class Distribution (Scanned Live Data)
 
 | Class Name | Count | Percentage |
 |---|---:|---:|
-| PET_transparent | 1,250 | 31.25% |
-| PET_colored | 980 | 24.50% |
-| HDPE | 840 | 21.00% |
-| PP | 430 | 10.75% |
-| PS | 310 | 7.75% |
-| LDPE | 190 | 4.75% |
+| PET | 2,200 | 55.00% |
+| PP | 640 | 16.00% |
+| PE-HD | 600 | 15.00% |
+| PS | 520 | 13.00% |
+| OTHER | 40 | 1.00% |
 | **Total** | **4,000** | **100.00%** |
 
 
@@ -76,10 +75,11 @@ This report provides a comparative class distribution analysis across all four t
 
 > [!IMPORTANT]
 > 1. **Severe Imbalance in TACO**: The raw TACO dataset exhibits massive class imbalance (Imbalance Ratio of ~5.0+ on top categories, and much worse if including rare ones). Straight training will lead to poor recall on minority categories.
-> 2. **Cross-Domain Validation**: TrashNet is clean/staged while SortWaste is cluttered. Testing cross-dataset performance (e.g., training on TrashNet, testing on SortWaste) will directly show if the model suffers from 'background bias'.
-> 3. **WaDaBa Resin Identification**: WaDaBa is highly specific to plastic polymers. A combined sorting pipeline should map other datasets' 'plastic' category to a generic label or keep it separate based on the task.
+> 2. **Extreme Imbalance in WaDaBa**: PET dominates at 55% (2,200 images) while OTHER has only 40 images (1%). The imbalance ratio of 55:1 is the worst across all datasets.
+> 3. **Cross-Domain Validation**: TrashNet is clean/staged while SortWaste is cluttered. Testing cross-dataset performance (e.g., training on TrashNet, testing on SortWaste) will directly show if the model suffers from 'background bias'.
+> 4. **WaDaBa Resin Identification**: WaDaBa is highly specific to plastic polymers (PET, PE-HD, PP, PS). A combined sorting pipeline should map other datasets' 'plastic' category to a generic label or keep it separate based on the task.
 
 ### Suggested Data Engineering Strategy:
-- **Undersampling**: Limit major classes (e.g., Plastic Bag / Wrapper in TACO or PET in WaDaBa) to a maximum of 500 images per class to prevent domination.
-- **Augmentation**: For minority classes (e.g., Wood in SortWaste or LDPE in WaDaBa), apply random flips, 90-degree rotations, and HSV color jittering.
+- **Undersampling**: Limit major classes (e.g., PET in WaDaBa with 2,200 images, Plastic Bag / Wrapper in TACO) to a maximum of 500 images per class to prevent domination.
+- **Augmentation**: For minority classes (e.g., OTHER in WaDaBa with only 40 images, Wood in SortWaste), apply random flips, 90-degree rotations, and HSV color jittering.
 - **Negative (Background) Class**: Add 500-1000 empty scenes (grass, pavement, floors, tables) to teach the model to ignore environmental noise.
