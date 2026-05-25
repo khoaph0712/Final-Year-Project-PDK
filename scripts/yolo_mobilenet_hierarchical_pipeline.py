@@ -34,7 +34,7 @@ sys.path.append(str(SCRIPTS_DIR))
 
 # Configuration Paths
 DEFAULT_YOLO_WEIGHTS = ROOT_DIR / "runs" / "detect" / "yolov11_super_dataset" / "weights" / "best.pt"
-DEFAULT_CNN_WEIGHTS = ROOT_DIR / "runs" / "dl" / "cnn_efficientnet" / "best_efficientnet_quant.tflite"
+DEFAULT_CNN_WEIGHTS = ROOT_DIR / "runs" / "dl" / "cnn_efficientnet_tuned" / "best_efficientnet_tuned.h5"
 TACO_DIR = ROOT_DIR / "external_datasets" / "super_yolo_dataset" / "test" / "images"
 DEFAULT_OUT_DIR = ROOT_DIR / "runs" / "detect" / "yolo_efficientnet_pipeline"
 
@@ -61,16 +61,91 @@ def preprocess_crop(crop, target_size=(224, 224)):
     crop_preprocessed = keras.applications.efficientnet.preprocess_input(crop_float)
     return np.expand_dims(crop_preprocessed, axis=0)
 
+def apply_bayesian_fusion(model_probs, context="default"):
+    """
+    Applies Multi-Modal Bayesian Fusion between CV model probabilities and Context Prior Metadata.
+    model_probs: numpy array of shape (7,) representing [plastic, glass, metal, paper, cardboard, organic, Background]
+    context: string representing the environmental context
+    """
+    CONTEXT_PRIORS = {
+        "beach":    [0.35, 0.25, 0.20, 0.05, 0.05, 0.10],
+        "grass":    [0.30, 0.15, 0.15, 0.20, 0.05, 0.15],
+        "indoor":   [0.20, 0.10, 0.15, 0.30, 0.20, 0.05],
+        "street":   [0.30, 0.15, 0.15, 0.20, 0.10, 0.10],
+        "default":  [1/6,  1/6,  1/6,  1/6,  1/6,  1/6]
+    }
+    
+    prior = CONTEXT_PRIORS.get(context, CONTEXT_PRIORS["default"])
+    
+    # Extract non-background probabilities (first 6 classes)
+    cv_probs = model_probs[:6]
+    bg_prob = model_probs[6]
+    
+    # Bayesian multiplication: P(Class | Image, Context) ~ P(Image | Class) * P(Class | Context)
+    fused_unnormalized = cv_probs * np.array(prior)
+    sum_fused = np.sum(fused_unnormalized)
+    
+    if sum_fused > 0:
+        fused_probs = fused_unnormalized / sum_fused
+    else:
+        fused_probs = cv_probs
+        
+    # Scale fused probabilities to sum to (1.0 - bg_prob) to maintain overall confidence balance
+    fused_probs_scaled = fused_probs * (1.0 - bg_prob)
+    
+    # Return 7-class vector
+    return np.append(fused_probs_scaled, bg_prob)
+
+def auto_detect_context(img):
+    """
+    Automatically estimates the environmental context of the image using HSV color heuristics.
+    Returns: 'beach', 'grass', or 'default'
+    """
+    hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    total_pixels = img.shape[0] * img.shape[1]
+    
+    # Grass detection: Hue in 35-85 (Greenish), Saturation > 40, Value > 40
+    lower_green = np.array([35, 40, 40])
+    upper_green = np.array([85, 255, 255])
+    green_mask = cv2.inRange(hsv, lower_green, upper_green)
+    green_pct = np.sum(green_mask > 0) / total_pixels
+    
+    # Beach Sand detection: Hue in 10-28 (Yellowish/Brownish Sand), Saturation in 20-150, Value > 80
+    lower_sand = np.array([10, 20, 80])
+    upper_sand = np.array([28, 150, 255])
+    sand_mask = cv2.inRange(hsv, lower_sand, upper_sand)
+    sand_pct = np.sum(sand_mask > 0) / total_pixels
+    
+    # Beach Water/Ocean detection: Hue in 90-130 (Blueish water), Saturation > 30, Value > 50
+    lower_water = np.array([90, 30, 50])
+    upper_water = np.array([130, 255, 255])
+    water_mask = cv2.inRange(hsv, lower_water, upper_water)
+    water_pct = np.sum(water_mask > 0) / total_pixels
+    
+    beach_pct = sand_pct + water_pct
+    
+    print(f"[CONTEXT DETECTOR] Color Analysis: Green={green_pct*100:.1f}%, Sand/Water={beach_pct*100:.1f}%")
+    
+    if green_pct >= 0.25:
+        return "grass"
+    elif beach_pct >= 0.20:
+        return "beach"
+    else:
+        return "default"
+
 def main():
     parser = argparse.ArgumentParser(description="FYP Waste Management: 2-Stage YOLOv11 + EfficientNetB0 Hierarchical Pipeline")
     parser.add_argument("--image", type=str, help="Path to a complex test image.")
     parser.add_argument("--random", action="store_true", help="Auto-pick a random complex image from the official TACO dataset.")
     parser.add_argument("--yolo-weights", type=str, default=str(DEFAULT_YOLO_WEIGHTS), help="YOLOv11 weights path.")
     parser.add_argument("--cnn-weights", type=str, default=str(DEFAULT_CNN_WEIGHTS), help="EfficientNetB0 CNN model weights path (.tflite or .h5).")
-    parser.add_argument("--yolo-conf", type=float, default=0.25, help="YOLOv11 detection confidence threshold.")
+    parser.add_argument("--yolo-conf", type=float, default=0.20, help="YOLOv11 detection confidence threshold (Stage 2 will verify and filter out background).")
     parser.add_argument("--cnn-conf", type=float, default=0.40, help="CNN verification confidence threshold.")
     parser.add_argument("--out-dir", type=str, default=str(DEFAULT_OUT_DIR), help="Output folder to write visual detection sheets.")
     parser.add_argument("--padding", type=int, default=8, help="Bounding box crop padding to preserve complete geometry details.")
+    parser.add_argument("--clahe", action="store_true", help="Apply Contrast-Limited Adaptive Histogram Equalization to handle harsh shadows/glare.")
+    parser.add_argument("--class-specific", action="store_true", help="Enable class-specific confidence thresholds to suppress reflective false positives.")
+    parser.add_argument("--context", type=str, default="auto", choices=["auto", "default", "beach", "grass", "indoor", "street"], help="Multi-modal context metadata to apply Bayesian fusion. 'auto' automatically estimates context.")
     
     args = parser.parse_args()
     
@@ -138,6 +213,25 @@ def main():
         print(f"[ERROR] Failed to decode image file: {selected_image_path}")
         sys.exit(1)
         
+    # Auto-detect context modality
+    detected_context = args.context
+    if args.context == "auto":
+        print("[INFO] Automatically detecting environmental context modality...")
+        detected_context = auto_detect_context(frame)
+        print(f"[OK] Automatically matched context modality: {detected_context.upper()}")
+        
+    if args.clahe:
+        print("[INFO] Applying CLAHE (Contrast-Limited Adaptive Histogram Equalization) enhancement...")
+        lab = cv2.cvtColor(frame, cv2.COLOR_BGR2LAB)
+        l, a, b = cv2.split(lab)
+        clahe = cv2.createCLAHE(clipLimit=3.0, tileGridSize=(8, 8))
+        cl = clahe.apply(l)
+        limg = cv2.merge((cl, a, b))
+        frame_enhanced = cv2.cvtColor(limg, cv2.COLOR_LAB2BGR)
+        yolo_input_img = frame_enhanced
+    else:
+        yolo_input_img = frame
+        
     annotated_frame = frame.copy()
     h_img, w_img = frame.shape[:2]
     print(f"[INFO] Image Dimension: {w_img}x{h_img} pixels.")
@@ -168,11 +262,39 @@ def main():
     # 5. Stage 1: Run YOLOv11 Object Detection
     print("\n[INFO] Running Stage 1: YOLOv11 object proposal & rough classification...")
     t_start_yolo = time.time()
-    yolo_results = yolo_model.predict(str(selected_image_path), conf=args.yolo_conf, verbose=False)
+    yolo_results = yolo_model.predict(yolo_input_img, conf=args.yolo_conf, verbose=False)
     t_yolo_elapsed = time.time() - t_start_yolo
     
     boxes = yolo_results[0].boxes
     print(f"[OK] YOLOv11 proposed {len(boxes)} candidate boxes in {t_yolo_elapsed*1000:.1f}ms.")
+    
+    # --- 🧠 ADAPTIVE SCENE ENGINE (Plug & Play Optimization) ---
+    adaptive_cnn_conf = args.cnn_conf
+    is_adaptive_triggered = False
+    adaptive_mode = "STANDARD"
+    
+    # Scenario 1: Extreme Small Object / Low Recall recovery
+    if len(boxes) == 0 and args.yolo_conf > 0.05:
+        print(f"[ADAPTIVE ENGINE] No waste objects detected at threshold {args.yolo_conf:.2f}.")
+        print("[ADAPTIVE ENGINE] Retrying with High-Sensitivity Small Object Sweep (yolo_conf=0.05)...")
+        yolo_results = yolo_model.predict(yolo_input_img, conf=0.05, verbose=False)
+        boxes = yolo_results[0].boxes
+        if len(boxes) > 0:
+            print(f"[ADAPTIVE ENGINE] Successfully recovered {len(boxes)} candidates with sensitivity sweep!")
+            adaptive_cnn_conf = 0.15  # Lower threshold for low-clarity small objects
+            adaptive_mode = "SMALL_OBJECT_RECOVERY"
+            is_adaptive_triggered = True
+            
+    # Scenario 2: Dense Clutter & Overlap Mitigation
+    elif len(boxes) >= 8:
+        print(f"[ADAPTIVE ENGINE] Dense waste pile detected ({len(boxes)} proposed objects).")
+        print("[ADAPTIVE ENGINE] Automatically lowering CNN verification threshold to prevent occlusion/overlap rejection...")
+        adaptive_cnn_conf = max(0.18, args.cnn_conf * 0.5)  # E.g. 0.40 -> 0.20
+        adaptive_mode = "DENSE_CLUTTER_MITIGATION"
+        is_adaptive_triggered = True
+        
+    if is_adaptive_triggered:
+        print(f"[ADAPTIVE ENGINE] Mode: {adaptive_mode} | Dynamic Verification Threshold: {adaptive_cnn_conf:.2f}")
     
     # Stage 2: Verification using Keras EfficientNetB0
     print("\n" + "="*85)
@@ -188,6 +310,17 @@ def main():
         # Get coordinates
         xyxy = box.xyxy[0].tolist()
         x1, y1, x2, y2 = [int(v) for v in xyxy]
+        w_box = x2 - x1
+        h_box = y2 - y1
+        
+        # Physical size filter: reject tiny blurry crops (width or height < 24 px)
+        if w_box < 24 or h_box < 24:
+            yolo_cls_id = int(box.cls[0])
+            yolo_class = yolo_model.names[yolo_cls_id] if hasattr(yolo_model, 'names') else YOLO_CLASSES[yolo_cls_id]
+            yolo_conf = float(box.conf[0])
+            yolo_str = f"{yolo_class.upper()} ({yolo_conf*100:.1f}%)"
+            print(f"Box #{box_id:<5} | {yolo_str:<22} | {'TINY CROP':<28} | REJECTED (Tiny Texture Noise)")
+            continue
         
         # Add safe padding
         x1_pad = max(0, x1 - args.padding)
@@ -215,37 +348,63 @@ def main():
             cnn_probs = cnn_model.predict(crop_input, verbose=0)[0]
         cnn_pred_idx = np.argmax(cnn_probs)
         cnn_class = CNN_CLASSES[cnn_pred_idx]
-        cnn_conf = cnn_probs[cnn_pred_idx]
-        
-        # --- Stage 2 Dynamic Hierarchical Soft Voting (Prior Enforcer) ---
-        # Map YOLO's 6 classes to the CNN's 7-class indexing (Background has 0 probability from YOLO)
-        yolo_probs = np.zeros(7)
-        if yolo_class in CNN_CLASSES:
-            yidx = CNN_CLASSES.index(yolo_class)
-            yolo_probs[yidx] = yolo_conf
-            # Distribute remainder to other 5 core classes
-            other_indices = [i for i in range(6) if i != yidx]
-            for oi in other_indices:
-                yolo_probs[oi] = (1.0 - yolo_conf) / 5.0
+        cnn_conf = float(cnn_probs[cnn_pred_idx])
+        # --- Stage 2 Dynamic Alpha Ensemble Fusion & Background Gatekeeper ---
+        # 1. First check if the CNN strongly predicts Background
+        if cnn_class == "Background" and cnn_probs[6] >= 0.65:
+            combined_class = "Background"
+            combined_conf = float(cnn_probs[6])
+        else:
+            # 2. Blend YOLO and CNN probabilities dynamically based on YOLO's confidence
+            yolo_probs = np.zeros(7)
+            if yolo_class in CNN_CLASSES:
+                yidx = CNN_CLASSES.index(yolo_class)
+                yolo_probs[yidx] = yolo_conf
+            
+            # Dynamic Alpha:
+            # - If YOLO is highly confident, we trust YOLO's global context (alpha = 0.70)
+            # - If YOLO is moderately confident, we blend both equally (alpha = 0.40)
+            # - If YOLO is uncertain, we let CNN's high-resolution texture classification lead (alpha = 0.15)
+            if yolo_conf >= 0.65:
+                alpha = 0.70
+            elif yolo_conf >= 0.30:
+                alpha = 0.40
+            else:
+                alpha = 0.15
                 
-        # Class-Dependent Voting Weight (Alpha)
-        # Put high weight on YOLO (0.80) when it proposes METAL to override CNN glares and sleeves
-        # For other classes, use low weight (0.20) so the CNN can correct YOLO's proposal errors
-        alpha = 0.80 if yolo_class == "metal" else 0.20
-        combined_probs = alpha * yolo_probs + (1.0 - alpha) * cnn_probs
-        
-        combined_pred_idx = np.argmax(combined_probs)
-        combined_class = CNN_CLASSES[combined_pred_idx]
-        combined_conf = combined_probs[combined_pred_idx]
-        
+            combined_probs = alpha * yolo_probs + (1.0 - alpha) * cnn_probs
+            
+            # Apply Multi-Modal Bayesian Context Fusion
+            if detected_context != "default":
+                combined_probs = apply_bayesian_fusion(combined_probs, detected_context)
+                
+            combined_pred_idx = np.argmax(combined_probs)
+            
+            if combined_pred_idx == 6:
+                combined_class = "Background"
+                combined_conf = float(combined_probs[6])
+            else:
+                combined_class = CNN_CLASSES[combined_pred_idx]
+                combined_conf = float(combined_probs[combined_pred_idx])
+            
         yolo_str = f"{yolo_class.upper()} ({yolo_conf*100:.1f}%)"
-        cnn_str = f"{combined_class.upper()} ({combined_conf*100:.1f}%)"
+        cnn_str = f"{cnn_class.upper()} ({cnn_conf*100:.1f}%)"
         
-        # Multi-stage consensus rule:
-        # If both stages agree (consensus), we trust the combined prediction at a lower threshold (0.25).
-        # If they disagree (correction), we require the standard threshold (args.cnn_conf) for validation.
-        is_consensus = (combined_class == yolo_class)
-        current_threshold = 0.25 if is_consensus else args.cnn_conf
+        # Class-specific thresholds dictionary
+        CLASS_THRESHOLDS = {
+            "plastic": 0.25,     # reflective
+            "glass": 0.30,       # highly reflective
+            "metal": 0.18,       # distinct
+            "paper": 0.20,
+            "cardboard": 0.18,
+            "organic": 0.22
+        }
+
+        # Dynamic verification threshold
+        if args.class_specific and combined_class in CLASS_THRESHOLDS:
+            current_threshold = CLASS_THRESHOLDS[combined_class]
+        else:
+            current_threshold = 0.20 if combined_class != "Background" else adaptive_cnn_conf
         
         if combined_class == "Background":
             decision = "REJECTED (Ghost Waste Background)"
