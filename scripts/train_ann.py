@@ -21,7 +21,7 @@ from ml_balanced_training import load_crops_and_balance
 from custom_feature_extractor import extract_637_features
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA_YAML = ROOT / "merged_dataset_v5" / "data.yaml"
+DATA_YAML = ROOT / "data" / "merged_dataset_v5" / "data.yaml"
 OUT_DIR = ROOT / "runs" / "dl" / "ann_637"
 
 class WasteMLP(nn.Module):

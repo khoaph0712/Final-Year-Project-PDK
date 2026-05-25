@@ -242,7 +242,7 @@ def main():
         print(f"[OK] Randomly selected complex scene: {selected_image_path.name}")
     else:
         # Fallback to check default paths
-        fallback_dir = ROOT_DIR / "merged_dataset_v5" / "test" / "images"
+        fallback_dir = ROOT_DIR / "data" / "merged_dataset_v5" / "test" / "images"
         if fallback_dir.exists():
             test_images = list(fallback_dir.glob("*.jpg")) + list(fallback_dir.glob("*.png"))
             if test_images:

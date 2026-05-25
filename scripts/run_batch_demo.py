@@ -30,8 +30,8 @@ ROOT_DIR = SCRIPTS_DIR.parent
 sys.path.append(str(SCRIPTS_DIR))
 
 # Weights & Paths
-YOLO_WEIGHTS = ROOT_DIR / "runs" / "detect" / "yolov11_super_dataset" / "weights" / "best.pt"
-CNN_WEIGHTS = ROOT_DIR / "runs" / "dl" / "cnn_efficientnet_tuned" / "best_efficientnet_tuned.h5"
+YOLO_WEIGHTS = ROOT_DIR / "models" / "trained" / "yolov11_detector" / "best.pt"
+CNN_WEIGHTS = ROOT_DIR / "models" / "trained" / "efficientnet_classifier" / "best_efficientnet_tuned.h5"
 DEMO_IMAGES_DIR = ROOT_DIR / "data" / "demo_images" / "beach_and_grass"
 OUT_DIR = ROOT_DIR / "runs" / "detect" / "demo_beach_and_grass"
 REPORT_PATH = OUT_DIR / "demo_report.md"

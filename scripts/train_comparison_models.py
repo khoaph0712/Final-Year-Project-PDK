@@ -255,7 +255,7 @@ def main():
     )
     
     # Let's see if we can read Tuned EfficientNetB0 metrics to compile a comparative report
-    effnet_path = ROOT / "runs" / "dl" / "cnn_efficientnet_tuned" / "best_efficientnet_tuned.h5"
+    effnet_path = ROOT / "models" / "trained" / "efficientnet_classifier" / "best_efficientnet_tuned.h5"
     if effnet_path.exists():
         model_size_mb = effnet_path.stat().st_size / (1024 * 1024)
         

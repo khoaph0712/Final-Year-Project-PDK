@@ -30,7 +30,7 @@ from train_ann import WasteMLP
 from train_cnn import preprocess_crops
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA_YAML = ROOT / "merged_dataset_v5" / "data.yaml"
+DATA_YAML = ROOT / "data" / "merged_dataset_v5" / "data.yaml"
 ANN_DIR = ROOT / "runs" / "dl" / "ann_637"
 CNN_DIR = ROOT / "runs" / "dl" / "cnn_mobilenet"
 
