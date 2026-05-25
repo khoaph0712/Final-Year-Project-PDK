@@ -1,0 +1,29 @@
+{
+    "MobileNetV2": {
+        "model_name": "MobileNetV2",
+        "parameters": 2422855,
+        "size_mb": 20.06793212890625,
+        "accuracy": 0.854285717010498,
+        "loss": 0.42241376638412476,
+        "avg_latency_ms": 253.45453262329104,
+        "training_time_sec": 136.32073426246643
+    },
+    "ResNet50": {
+        "model_name": "ResNet50",
+        "parameters": 23850887,
+        "size_mb": 161.51749420166016,
+        "accuracy": 0.8976190686225891,
+        "loss": 0.3310937285423279,
+        "avg_latency_ms": 163.09589385986328,
+        "training_time_sec": 596.2348103523254
+    },
+    "EfficientNetB0 (Ours)": {
+        "model_name": "EfficientNetB0 (Ours)",
+        "parameters": 4214442,
+        "size_mb": 29.20500946044922,
+        "accuracy": 0.9428571462631226,
+        "loss": 0.2144136279821396,
+        "avg_latency_ms": 288.6217498779297,
+        "training_time_sec": 0.0
+    }
+}
