@@ -26,6 +26,7 @@ from custom_feature_extractor import extract_637_features
 # Configuration Paths
 # =====================================================================
 ENSEMBLE_DIR = ROOT_DIR / "runs" / "dl" / "convnext_ensemble"
+ENSEMBLE_TUNED_DIR = ROOT_DIR / "runs" / "dl" / "convnext_ensemble_tuned"
 TACO_TEST_DIR = ROOT_DIR / "data" / "demo_images" / "beach" # Or demo images
 DEFAULT_OUT_DIR = ROOT_DIR / "runs" / "dl" / "convnext_pipeline_results"
 
@@ -166,12 +167,15 @@ def main():
     print("Executing 4-Stage ConvNeXt-ANN Waste sorting Pipeline")
     print("====================================================")
     
-    model_path = ENSEMBLE_DIR / "best_convnext_ensemble.pth"
+    tuned_model_path = ENSEMBLE_TUNED_DIR / "best_convnext_ensemble_tuned.pth"
+    model_path = tuned_model_path if tuned_model_path.exists() else (ENSEMBLE_DIR / "best_convnext_ensemble.pth")
     scaler_path = ENSEMBLE_DIR / "handcrafted_scaler.pkl"
     
     if not model_path.exists() or not scaler_path.exists():
-        print(f"[ERROR] Model weights or scaler not found at: {ENSEMBLE_DIR}. Please run training first.")
+        print(f"[ERROR] Model weights or scaler not found at: {model_path} or {scaler_path}. Please run training first.")
         return
+        
+    print(f"[INFO] Using weights file: {model_path}")
 
     # Load scaler
     with open(scaler_path, "rb") as f:

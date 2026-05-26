@@ -31,6 +31,7 @@ from custom_feature_extractor import extract_637_features
 YOLO_WEIGHTS = ROOT_DIR / "runs" / "detect" / "yolov11_super_dataset" / "weights" / "best.pt"
 CNN_EFFICIENTNET_WEIGHTS = ROOT_DIR / "runs" / "dl" / "cnn_efficientnet_tuned" / "best_efficientnet_tuned.h5"
 CONVNEXT_ENSEMBLE_WEIGHTS = ROOT_DIR / "runs" / "dl" / "convnext_ensemble" / "best_convnext_ensemble.pth"
+CONVNEXT_ENSEMBLE_TUNED_WEIGHTS = ROOT_DIR / "runs" / "dl" / "convnext_ensemble_tuned" / "best_convnext_ensemble_tuned.pth"
 HANDCRAFTED_SCALER = ROOT_DIR / "runs" / "dl" / "convnext_ensemble" / "handcrafted_scaler.pkl"
 OUT_DIR = ROOT_DIR / "runs" / "dl" / "adaptive_switcher_results"
 
@@ -305,10 +306,13 @@ def main():
     
     # 3. Route to optimal pipeline
     if route == "4-STAGE":
-        # Load Stage 3 PyTorch ConvNeXt Ensemble
+        # Load Stage 3 PyTorch ConvNeXt Ensemble (prefer progressive-tuned weights)
         device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         model = Stage3EnsembleClassifier(num_classes=7)
-        model.load_state_dict(torch.load(CONVNEXT_ENSEMBLE_WEIGHTS, map_location=device))
+        
+        weights_to_load = CONVNEXT_ENSEMBLE_TUNED_WEIGHTS if CONVNEXT_ENSEMBLE_TUNED_WEIGHTS.exists() else CONVNEXT_ENSEMBLE_WEIGHTS
+        print(f"[INFO] Loading Stage 3 Ensemble weights from: {weights_to_load}")
+        model.load_state_dict(torch.load(weights_to_load, map_location=device))
         model.to(device)
         model.eval()
         

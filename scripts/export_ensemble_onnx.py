@@ -61,51 +61,69 @@ class UnifiedMultimodalWastePipeline(nn.Module):
         return logits
 
 def main():
-    ENSEMBLE_DIR.mkdir(parents=True, exist_ok=True)
-    
     print("====================================================")
     print("Unified Multi-Modal Pipeline: ONNX Graph Exporter")
     print("====================================================")
     
-    # 1. Initialize and load trained state weights
-    print("[INFO] Constructing PyTorch Multi-Modal Model...")
-    model = UnifiedMultimodalWastePipeline(num_classes=7)
+    models_to_export = [
+        {
+            "name": "Base ConvNeXt Ensemble",
+            "weights": ROOT_DIR / "runs" / "dl" / "convnext_ensemble" / "best_convnext_ensemble.pth",
+            "onnx": ROOT_DIR / "runs" / "dl" / "convnext_ensemble" / "unified_multimodal_waste_pipeline.onnx"
+        },
+        {
+            "name": "Tuned ConvNeXt Ensemble (Progressive Stage 3)",
+            "weights": ROOT_DIR / "runs" / "dl" / "convnext_ensemble_tuned" / "best_convnext_ensemble_tuned.pth",
+            "onnx": ROOT_DIR / "runs" / "dl" / "convnext_ensemble_tuned" / "unified_multimodal_waste_pipeline_tuned.onnx"
+        }
+    ]
     
-    pytorch_weights = ENSEMBLE_DIR / "best_convnext_ensemble.pth"
-    if pytorch_weights.exists():
-        print(f"[INFO] Loading trained weights from: {pytorch_weights}")
-        model.load_state_dict(torch.load(pytorch_weights, map_location="cpu"))
-    else:
-        print("[WARNING] Trained weights not found. Exporting base graph with random initialization.")
-        
-    model.eval()
-
-    # 2. Define dummy parallel inputs matching edge inputs
+    # Define dummy parallel inputs matching edge inputs
     print("[INFO] Defining parallel dummy inputs...")
     dummy_image = torch.randn(1, 3, 224, 224)              # Mode 1: Spatial crop
     dummy_handcrafted = torch.randn(1, 637)               # Mode 2: Material texture vectors
     
-    # 3. Export to a single ONNX file
-    print(f"[INFO] Compiling computational graph to ONNX at: {OUTPUT_ONNX_PATH}...")
-    torch.onnx.export(
-        model,
-        (dummy_image, dummy_handcrafted),
-        str(OUTPUT_ONNX_PATH),
-        export_params=True,
-        opset_version=16,
-        do_constant_folding=True,
-        input_names=['spatial_image_input', 'material_texture_input'],
-        output_names=['class_logits_output'],
-        dynamic_axes={
-            'spatial_image_input': {0: 'batch_size'},
-            'material_texture_input': {0: 'batch_size'},
-            'class_logits_output': {0: 'batch_size'}
-        }
-    )
-    
-    print(f"\n[SUCCESS] Unified Fused Multi-Modal ONNX Model successfully saved!")
-    print(f"  --> File Path: {OUTPUT_ONNX_PATH}")
-    print("  --> Ready for Flutter / ONNX Runtime edge deployment (No switching lag)!")
+    for cfg in models_to_export:
+        print(f"\n--- Exporting: {cfg['name']} ---")
+        weights_path = cfg["weights"]
+        onnx_path = cfg["onnx"]
+        
+        if not weights_path.exists():
+            print(f"[WARNING] Weights not found at {weights_path}. Skipping.")
+            continue
+            
+        print(f"[INFO] Constructing PyTorch Multi-Modal Model...")
+        model = UnifiedMultimodalWastePipeline(num_classes=7)
+        print(f"[INFO] Loading trained weights from: {weights_path}")
+        model.load_state_dict(torch.load(weights_path, map_location="cpu"))
+        model.eval()
+        
+        # Ensure parent dir exists
+        onnx_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        # Export to ONNX file
+        print(f"[INFO] Compiling computational graph to ONNX at: {onnx_path}...")
+        torch.onnx.export(
+            model,
+            (dummy_image, dummy_handcrafted),
+            str(onnx_path),
+            export_params=True,
+            opset_version=16,
+            do_constant_folding=True,
+            input_names=['spatial_image_input', 'material_texture_input'],
+            output_names=['class_logits_output'],
+            dynamic_axes={
+                'spatial_image_input': {0: 'batch_size'},
+                'material_texture_input': {0: 'batch_size'},
+                'class_logits_output': {0: 'batch_size'}
+            }
+        )
+        print(f"[SUCCESS] {cfg['name']} successfully saved to ONNX!")
+        print(f"  --> File Path: {onnx_path}")
+        
+    print("\n====================================================")
+    print("[SUCCESS] Multi-Modal ONNX compilation workflow finished!")
+    print("  --> Models ready for Flutter / ONNX Runtime edge deployment!")
     print("====================================================")
 
 if __name__ == "__main__":
