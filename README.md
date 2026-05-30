@@ -15,19 +15,33 @@ The current repository is organized around two active tracks:
 
 Earlier experiments used a YOLO-first two-stage pipeline:
 
-```text
-image -> YOLO localization -> crop -> EfficientNet classification
+```mermaid
+flowchart LR
+    A["Input image"] --> B["YOLOv11 localization"]
+    B --> C["Detected object crops"]
+    C --> D["EfficientNetB0 crop classifier"]
+    D --> E["Fused class decision"]
+    E --> F["Experiment evidence only"]
 ```
 
 That pipeline is kept as experiment evidence, but it is no longer the main final
 workflow. The current DL direction is:
 
-```text
-image -> classification/gate -> localization evidence -> boxes/heatmaps
+```mermaid
+flowchart LR
+    A["Input image"] --> B["Stage 1: classification gate"]
+    B --> C["Class evidence"]
+    C --> D["Stage 2: localization module"]
+    D --> E["Boxes / heatmaps"]
+    E --> F["Localization metrics"]
 ```
 
 This lets the DL branch report localization metrics directly: precision, recall,
 IoU, and detection evidence quality.
+
+Full project pipeline diagrams:
+
+- `docs/PIPELINE_DIAGRAMS.md`
 
 ## Active Datasets
 
