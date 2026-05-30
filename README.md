@@ -118,6 +118,7 @@ More structure details:
 
 - `docs/PROJECT_STRUCTURE_AND_CLEANUP.md`
 - `docs/01_final_report/WORKFLOW_APPROACHES_AND_DL_REWORK.md`
+- `docs/diagrams/wastewise_professional_pipelines.svg`
 
 ## Setup
 

@@ -1,0 +1,170 @@
+<svg width="1800" height="1320" viewBox="0 0 1800 1320" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .bg { fill: #f6f8fb; }
+      .title { font: 700 44px Arial, sans-serif; fill: #102033; }
+      .subtitle { font: 400 21px Arial, sans-serif; fill: #526174; }
+      .section { font: 700 28px Arial, sans-serif; fill: #102033; }
+      .label { font: 700 19px Arial, sans-serif; fill: #102033; }
+      .body { font: 400 16px Arial, sans-serif; fill: #526174; }
+      .small { font: 400 14px Arial, sans-serif; fill: #526174; }
+      .tiny { font: 400 12px Arial, sans-serif; fill: #526174; }
+      .pill { font: 700 13px Arial, sans-serif; fill: #ffffff; }
+      .card { fill: #ffffff; stroke: #d8e0ea; stroke-width: 2; rx: 18; }
+      .cardBlue { fill: #eef6ff; stroke: #8fc4ff; stroke-width: 2; rx: 18; }
+      .cardGreen { fill: #ecf8f1; stroke: #84cfa0; stroke-width: 2; rx: 18; }
+      .cardAmber { fill: #fff7e8; stroke: #f0bf63; stroke-width: 2; rx: 18; }
+      .cardRed { fill: #fff0f0; stroke: #e7a1a1; stroke-width: 2; rx: 18; }
+      .muted { fill: #eef1f5; stroke: #cbd5e1; stroke-width: 2; rx: 18; }
+      .line { stroke: #526174; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .lineBlue { stroke: #2775ca; stroke-width: 3; fill: none; marker-end: url(#arrowBlue); }
+      .lineGreen { stroke: #238455; stroke-width: 3; fill: none; marker-end: url(#arrowGreen); }
+      .lineAmber { stroke: #bd7a12; stroke-width: 3; fill: none; marker-end: url(#arrowAmber); }
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#526174"/>
+    </marker>
+    <marker id="arrowBlue" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#2775ca"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#238455"/>
+    </marker>
+    <marker id="arrowAmber" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M2,2 L10,6 L2,10 Z" fill="#bd7a12"/>
+    </marker>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="10" stdDeviation="10" flood-color="#1f2937" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1800" height="1320"/>
+
+  <text class="title" x="90" y="90">WasteWise Professional Project Pipelines</text>
+  <text class="subtitle" x="90" y="126">Final project framing: explainable ML pipeline plus classification-first DL localization rework</text>
+
+  <rect x="90" y="160" width="1620" height="114" rx="24" fill="#102033" filter="url(#shadow)"/>
+  <text x="125" y="207" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#ffffff">Current Thesis Position</text>
+  <text x="125" y="244" font-family="Arial, sans-serif" font-size="18" fill="#d8e0ea">ML branch is kept as the finalized explainable classifier. DL branch is redesigned from YOLO-first classification into classifier-first localization.</text>
+  <rect x="1235" y="190" width="420" height="52" rx="26" fill="#2a9d69"/>
+  <text class="pill" x="1276" y="222">Recommended DL: classifier gate -> YOLO localization-only</text>
+
+  <text class="section" x="90" y="340">1. Shared Data Foundation</text>
+
+  <rect class="card" x="90" y="370" width="320" height="120" filter="url(#shadow)"/>
+  <text class="label" x="120" y="410">Raw Waste Images</text>
+  <text class="body" x="120" y="438">Multiple sources and formats</text>
+  <text class="small" x="120" y="466">cleaning, split, validation</text>
+
+  <path class="line" d="M410 430 C455 430 455 430 500 430"/>
+
+  <rect class="cardBlue" x="500" y="370" width="330" height="120" filter="url(#shadow)"/>
+  <text class="label" x="530" y="410">Classification Dataset</text>
+  <text class="body" x="530" y="438">data/merged_dataset_v5</text>
+  <text class="small" x="530" y="466">7 classes including Background</text>
+
+  <path class="line" d="M410 430 C455 535 455 640 500 640"/>
+
+  <rect class="cardGreen" x="500" y="580" width="330" height="120" filter="url(#shadow)"/>
+  <text class="label" x="530" y="620">Localization Dataset</text>
+  <text class="body" x="530" y="648">external_datasets/super_yolo_dataset</text>
+  <text class="small" x="530" y="676">6 classes, YOLO box labels</text>
+
+  <rect x="960" y="375" width="690" height="310" rx="24" fill="#ffffff" stroke="#d8e0ea" stroke-width="2" filter="url(#shadow)"/>
+  <text class="section" x="1000" y="425">Final Branch Split</text>
+  <rect x="1000" y="458" width="280" height="64" rx="14" fill="#2775ca"/>
+  <text class="pill" x="1034" y="496">ML: explainable classification</text>
+  <rect x="1000" y="545" width="280" height="64" rx="14" fill="#2a9d69"/>
+  <text class="pill" x="1026" y="583">DL: classification to localization</text>
+  <text class="body" x="1320" y="482">Keep ML as main explainable evidence.</text>
+  <text class="body" x="1320" y="510">Use feature importance, PCA, model sweep.</text>
+  <text class="body" x="1320" y="570">Use classifier first, then localize.</text>
+  <text class="body" x="1320" y="598">Report precision, recall, IoU, boxes.</text>
+
+  <text class="section" x="90" y="770">2. Classical ML Pipeline - Finalized Explainable Branch</text>
+
+  <rect class="cardBlue" x="90" y="810" width="245" height="112" filter="url(#shadow)"/>
+  <text class="label" x="118" y="850">Object Crops</text>
+  <text class="body" x="118" y="878">YOLO labels / crop sets</text>
+
+  <path class="lineBlue" d="M335 866 C370 866 370 866 405 866"/>
+
+  <rect class="cardBlue" x="405" y="810" width="270" height="112" filter="url(#shadow)"/>
+  <text class="label" x="433" y="850">637 Features</text>
+  <text class="body" x="433" y="878">spatial + FFT + color + HOG</text>
+
+  <path class="lineBlue" d="M675 866 C710 866 710 866 745 866"/>
+
+  <rect class="cardBlue" x="745" y="810" width="275" height="112" filter="url(#shadow)"/>
+  <text class="label" x="773" y="850">Model Sweep</text>
+  <text class="body" x="773" y="878">DT, SVM, RF, ExtraTrees</text>
+  <text class="small" x="773" y="902">XGBoost, Logistic Regression</text>
+
+  <path class="lineBlue" d="M1020 866 C1055 866 1055 866 1090 866"/>
+
+  <rect class="cardBlue" x="1090" y="810" width="260" height="112" filter="url(#shadow)"/>
+  <text class="label" x="1118" y="850">Best Saved ML</text>
+  <text class="body" x="1118" y="878">XGBoost accuracy 0.6742</text>
+  <text class="small" x="1118" y="902">F1-macro 0.6506</text>
+
+  <path class="lineBlue" d="M675 866 C720 1010 790 1010 840 1010"/>
+
+  <rect class="cardAmber" x="840" y="955" width="260" height="112" filter="url(#shadow)"/>
+  <text class="label" x="868" y="995">PCA Sweep</text>
+  <text class="body" x="868" y="1023">637 to 128 components</text>
+  <text class="small" x="868" y="1047">99.90% explained variance</text>
+
+  <path class="lineAmber" d="M1100 1010 C1140 1010 1140 1010 1180 1010"/>
+
+  <rect class="cardAmber" x="1180" y="955" width="300" height="112" filter="url(#shadow)"/>
+  <text class="label" x="1208" y="995">Compact Evidence</text>
+  <text class="body" x="1208" y="1023">Latency 0.0533 ms to 0.0314 ms</text>
+  <text class="small" x="1208" y="1047">Report measured trade-off honestly</text>
+
+  <text class="section" x="90" y="1118">3. DL Pipeline - Current Classification-First Localization Branch</text>
+
+  <rect class="cardGreen" x="90" y="1150" width="245" height="112" filter="url(#shadow)"/>
+  <text class="label" x="118" y="1190">Input Image</text>
+  <text class="body" x="118" y="1218">Scene or crop evidence</text>
+
+  <path class="lineGreen" d="M335 1196 C370 1196 370 1196 405 1196"/>
+
+  <rect class="cardGreen" x="405" y="1150" width="270" height="112" filter="url(#shadow)"/>
+  <text class="label" x="433" y="1190">Stage 1 Classifier</text>
+  <text class="body" x="433" y="1218">image-level gate</text>
+  <text class="small" x="433" y="1242">class evidence, not final box</text>
+
+  <path class="lineGreen" d="M675 1196 C710 1196 710 1196 745 1196"/>
+
+  <rect class="cardGreen" x="745" y="1150" width="275" height="112" filter="url(#shadow)"/>
+  <text class="label" x="773" y="1190">Stage 2 Localizer</text>
+  <text class="body" x="773" y="1218">YOLO localization-only</text>
+  <text class="small" x="773" y="1242">recommended conf = 0.35</text>
+
+  <path class="lineGreen" d="M1020 1196 C1055 1196 1055 1196 1090 1196"/>
+
+  <rect class="cardGreen" x="1090" y="1150" width="260" height="112" filter="url(#shadow)"/>
+  <text class="label" x="1118" y="1190">Localization Output</text>
+  <text class="body" x="1118" y="1218">boxes / heatmaps / visuals</text>
+  <text class="small" x="1118" y="1242">no YOLO class as final claim</text>
+
+  <path class="lineGreen" d="M1350 1196 C1385 1196 1385 1196 1420 1196"/>
+
+  <rect class="cardGreen" x="1420" y="1150" width="290" height="112" filter="url(#shadow)"/>
+  <text class="label" x="1448" y="1190">Evaluation Metrics</text>
+  <text class="body" x="1448" y="1218">precision 0.7614, recall 0.5134</text>
+  <text class="small" x="1448" y="1242">mean matched IoU 0.9004</text>
+
+  <rect class="muted" x="90" y="535" width="740" height="120" filter="url(#shadow)"/>
+  <text class="label" x="120" y="575">Legacy DL Pipeline - Experiment Evidence Only</text>
+  <text class="body" x="120" y="605">image -> YOLO localization -> crop -> EfficientNet classification -> fused class decision</text>
+  <text class="small" x="120" y="633">Useful for background and comparison, but not the final DL workflow after the rework.</text>
+
+  <rect class="cardRed" x="1340" y="715" width="370" height="150" filter="url(#shadow)"/>
+  <text class="label" x="1370" y="755">GitHub / Figma Export Note</text>
+  <text class="body" x="1370" y="785">This SVG is Figma-importable.</text>
+  <text class="body" x="1370" y="813">Open Figma, drag this file into canvas,</text>
+  <text class="body" x="1370" y="841">then edit cards, colors, and spacing.</text>
+
+  <text class="tiny" x="90" y="1302">Source summary: README.md, docs/PROJECT_STRUCTURE_AND_CLEANUP.md, docs/01_final_report/WORKFLOW_APPROACHES_AND_DL_REWORK.md</text>
+</svg>
