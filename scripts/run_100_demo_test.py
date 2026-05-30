@@ -172,11 +172,17 @@ def main():
             if yolo_class in CNN_CLASSES:
                 yidx = CNN_CLASSES.index(yolo_class)
                 yolo_probs[yidx] = yolo_conf
-                other_indices = [i for i in range(6) if i != yidx]
-                for oi in other_indices:
-                    yolo_probs[oi] = (1.0 - yolo_conf) / 5.0
+                # Note: We do NOT distribute the remainder to other classes, as that mathematically 
+                # penalized low-confidence detections and boosted wrong classes.
                     
-            alpha = 0.80 if yolo_class == "metal" else 0.20
+            # Intelligent Adaptive Soft Voting Weight (Ensemble Balance)
+            if yolo_class == "metal":
+                alpha = 0.80  # Keep high YOLO prior for metal to override glare
+            elif yolo_conf >= 0.65:
+                alpha = 0.70  # Strong YOLO confidence -> YOLO leads, CNN refines/verifies
+            else:
+                alpha = 0.45  # Weak YOLO confidence -> CNN leads classification and verification
+                
             combined_probs = alpha * yolo_probs + (1.0 - alpha) * cnn_probs
             
             combined_pred_idx = np.argmax(combined_probs)

@@ -1,0 +1,16 @@
+=== HYPERPARAMETER TUNING & DEEP TRAINING SUMMARY ===
+Search Space:
+  - Learning Rates evaluated: [0.001, 0.0001, 5e-05]
+  - Batch Sizes evaluated: [32, 64]
+
+Best Configuration Found:
+  - Learning Rate: 0.0001
+  - Batch Size: 32
+  - Val Accuracy during sweep: 0.9397
+
+Final Convergence Details:
+  - Total epochs trained: 7
+  - Final Train Accuracy: 0.9914
+  - Final Val Accuracy: 0.9440
+  - Final Train Loss: 0.0293
+  - Final Val Loss: 0.2056

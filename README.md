@@ -1,5 +1,7 @@
 # WasteWise: Edge-Optimized 2-Stage Hierarchical Waste Detection & Classification Pipeline
 
+Current workspace map and cleanup notes: [`docs/PROJECT_STRUCTURE_AND_CLEANUP.md`](docs/PROJECT_STRUCTURE_AND_CLEANUP.md).
+
 WasteWise is a real-time, green artificial intelligence Final Year Project (FYP) focused on automated waste sorting and classification. Designed to operate under strict edge computing constraints (under **10MB memory footprint** and over **30 FPS throughput**), the system implements a premium **2-Stage Hierarchical waste Detection and Classification Pipeline** that leverages the synergistic strengths of state-of-the-art deep learning models: **YOLOv11** for macro-spatial bounding box localization, and an edge-optimized **8-bit quantized EfficientNetB0** for micro-texture crop validation.
 
 ---
