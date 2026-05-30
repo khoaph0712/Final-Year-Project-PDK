@@ -1,154 +1,206 @@
-# WasteWise: Edge-Optimized 2-Stage Hierarchical Waste Detection & Classification Pipeline
+# WasteWise: Waste Classification and Localization
 
-Current workspace map and cleanup notes: [`docs/PROJECT_STRUCTURE_AND_CLEANUP.md`](docs/PROJECT_STRUCTURE_AND_CLEANUP.md).
+WasteWise is a Final Year Project for automated waste understanding. The project
+combines a classical machine-learning branch with a redesigned deep-learning
+branch for classification-first localization.
 
-WasteWise is a real-time, green artificial intelligence Final Year Project (FYP) focused on automated waste sorting and classification. Designed to operate under strict edge computing constraints (under **10MB memory footprint** and over **30 FPS throughput**), the system implements a premium **2-Stage Hierarchical waste Detection and Classification Pipeline** that leverages the synergistic strengths of state-of-the-art deep learning models: **YOLOv11** for macro-spatial bounding box localization, and an edge-optimized **8-bit quantized EfficientNetB0** for micro-texture crop validation.
+The current repository is organized around two active tracks:
 
----
+- **ML track:** explainable handcrafted features, model comparison, and PCA
+  compression experiments.
+- **DL track:** image/classification gate first, localization second. YOLO is used
+  as a localization module, not as the final class decision.
 
-## 🚀 Final Project Status & Architecture
+## Current Project Position
 
-Instead of relying on a standard "black-box" YOLO detector which is prone to classification errors under harsh lighting, glare, or print labels, WasteWise utilizes a robust **Hierarchical Double-Check Pipeline**. 
+Earlier experiments used a YOLO-first two-stage pipeline:
 
-Stage 1 (YOLOv11) rapidly localizes object boundaries. Stage 2 (Quantized EfficientNetB0) extracts high-resolution crops, adds padding, and performs a micro-feature classification double-check. The two models' predictions are fused via a **Dynamic Class-Dependent Soft Voting** formula and validated through **Consensus-Adaptive Thresholding**.
-
-```mermaid
-graph TD
-    A["Raw Scene (Test Image)"] --> B["Stage 1: YOLOv11 Detector"]
-    B -->|Bounding Box Proposals| C["Crop & Padding Extractor"]
-    C -->|224x224 Crop| D["Stage 2: Quantized EfficientNetB0 TFLite"]
-    D -->|Softmax Probability| E{"Dynamic Decision Logic"}
-    E -->|Class-Dependent Soft Voting| F{"Consensus-Adaptive Thresholding"}
-    F -->|Background Class OR Conf < Adaptive Threshold| G["REJECTED (Ghost Waste / Noise)"]
-    F -->|Verified Class & Conf >= Adaptive Threshold| H["ACCEPTED & ANNOTATED ✅"]
-    H --> I["Premium Visual Output Saved"]
+```text
+image -> YOLO localization -> crop -> EfficientNet classification
 ```
 
-### Key Architectural Pillars
+That pipeline is kept as experiment evidence, but it is no longer the main final
+workflow. The current DL direction is:
 
-1. **YOLOv11 Bounding Box Proposals**: Trained for **30 epochs** on a unified high-density Super YOLO Dataset (24,500+ images), extracting fast, precise spatial coordinates of waste items.
-2. **Upgraded EfficientNetB0 Backbone**: Compound-scaled network operating at a high-resolution $224 \times 224$ crop size to capture intricate fiber textures, paper lines, and reflection patterns.
-3. **Class-Dependent Dynamic Soft Voting**: Combines YOLO's macro-geometric shape scores with CNN's micro-texture features using a dynamic voting weight ($\alpha = 0.80$ on metal proposals to resolve specular glare misclassifications, and $\alpha = 0.20$ default).
-4. **Consensus-Adaptive Thresholds**: Implements dual safety nets. When models agree (Consensus), a lower threshold of **$0.25$** is applied to preserve recall. If the models disagree and Stage 2 initiates a correction, a higher threshold of **$0.40$** is enforced to suppress background noise.
-5. **8-Bit Post-Training Quantization (PTQ)**: Compresses the heavy $29.2$ MB EfficientNetB0 model down to just **4.83 MB** (a **6.0x size reduction**), safely fitting within the strict 10MB edge budget while delivering rapid inference.
+```text
+image -> classification/gate -> localization evidence -> boxes/heatmaps
+```
 
----
+This lets the DL branch report localization metrics directly: precision, recall,
+IoU, and detection evidence quality.
 
-## 📊 Summary of System Accomplishments
+## Active Datasets
 
-The integrated hierarchical system has been validated in a large-scale, automated **100-Image Validation Sweep** across random, highly representative scenes from the Super-Dataset:
+| Dataset | Path | Role |
+|---|---|---|
+| Classification dataset | `data/merged_dataset_v5` | 7-class image/crop classification, including Background |
+| YOLO localization dataset | `external_datasets/super_yolo_dataset` | 6-class localization evidence and box labels |
 
-| Metric / Parameter | YOLOv11 Detector (Stage 1) | Upgraded EfficientNetB0 CNN | 2-Stage Hierarchical Pipeline | Quantized 8-Bit TFLite Model |
-| :--- | :---: | :---: | :---: | :---: |
-| **Model Size** | 16.05 MB (`best.pt`) | 29.2 MB (`best_efficientnet.h5`) | Combined Multi-Stage | **4.83 MB** (`best_efficientnet_quant.tflite`) |
-| **Input Format** | Raw $416 \times 416$ scene | Raw $224 \times 224$ crops | Raw Scene $\rightarrow$ Auto Crops | $224 \times 224$ normalized crops |
-| **Crop Latency (CPU)** | 46.69 ms / image | 135.7 ms / crop | **238.08 ms** total e2e latency | **135.7 ms** / crop |
-| **System Throughput** | 21.4 FPS | 7.37 FPS (crops) | **4.20 FPS** (full e2e pipeline) | **362.43 FPS** (synthetic benchmark) |
-| **CNN Self-Corrections** | N/A | N/A | **121 Corrections ($41\%$ of objects)** | N/A |
-| **Consensus Matches** | N/A | N/A | **174 Matches ($59\%$ of objects)** | N/A |
-| **Edge Target Meets** | Server-only | Desktop CPU | **Yes (Robust Edge Safety)** | **Mobile Edge (<10MB, >30 FPS)** |
+Large datasets are not expected to be fully tracked by Git. Keep local dataset
+copies in the paths above.
 
-> [!IMPORTANT]
-> The evaluation sweep demonstrates outstanding robustness: of the **348 YOLO proposed boundaries**, Stage 2 verified and accepted **295 foreground waste objects** (174 Consensus, 121 CNN Corrections) and successfully filtered out **53 false alarms** (3 Ghost waste background detections and 50 low-confidence crops). By integrating class-dependent soft voting, the system achieved **zero misclassifications on metal street cans**, correcting YOLO's spatial confusion.
+## Main Results
 
----
+### Classical ML Branch
 
-## 📂 Repository Directory Structure
+The ML branch uses 637 handcrafted features per crop:
+
+| Feature group | Count |
+|---|---:|
+| Spatial / edge features | 8 |
+| FFT / frequency features | 9 |
+| Color statistics and histograms | 44 |
+| HOG descriptors | 576 |
+| **Total** | **637** |
+
+Saved lecturer-facing ML results:
+
+| Model | Accuracy | F1-macro |
+|---|---:|---:|
+| XGBoost | 0.6742 | 0.6506 |
+| ExtraTrees | 0.6312 | 0.6113 |
+| Random Forest | 0.6317 | 0.6111 |
+| Linear SVM | 0.5960 | 0.5642 |
+| Logistic Regression | 0.5864 | 0.5558 |
+| Decision Tree | 0.5115 | 0.4883 |
+
+PCA evidence shows the handcrafted feature space can be compressed while keeping
+most variance:
+
+| Components | Explained variance | Accuracy | Weighted F1 | Latency |
+|---:|---:|---:|---:|---:|
+| 637 | 100.00% | 73.24% | 0.7319 | 0.0533 ms |
+| 128 | 99.90% | 68.71% | 0.6863 | 0.0314 ms |
+| 64 | 99.78% | 67.48% | 0.6736 | 0.0284 ms |
+
+### Deep Learning Localization Branch
+
+The current DL branch evaluates localization after a classifier/gate stage.
+Quick-check localization results:
+
+| Stage 2 localizer | Precision | Recall | Mean matched IoU | TP | FP | FN |
+|---|---:|---:|---:|---:|---:|---:|
+| Grad-CAM baseline | 0.2568 | 0.0728 | 0.7127 | 19 | 55 | 242 |
+| YOLO localization-only, conf=0.25 | 0.6352 | 0.5670 | 0.9012 | 148 | 85 | 113 |
+| YOLO localization-only, conf=0.35 | 0.7614 | 0.5134 | 0.9004 | 134 | 42 | 127 |
+
+Recommended current setting:
+
+```powershell
+.\.venv311\Scripts\python.exe scripts\classification_to_localization_pipeline.py `
+  --max-images 60 `
+  --max-visuals 18 `
+  --sample-mode stratified `
+  --seed 42 `
+  --localizer yolo `
+  --yolo-conf 0.35 `
+  --out-dir runs\dl\localization_rework\yolo_conf035_stratified60_final
+```
+
+## Repository Layout
 
 ```text
 C:\FYP
-├── data/                          # Unified datasets folder
-│   └── super_yolo_dataset/        # Unified training & test splits (24,500+ images)
-├── ml/
-│   └── frequency_analysis/        # Spatial frequency analytics & plots
-├── mobile/                        # React Native (Expo) mobile frontend
-├── models/                        # Pre-trained base models and backups
-├── runs/
-│   ├── detect/
-│   │   ├── yolov11_super_dataset/ # Stage 1 YOLOv11 weights (best.pt), log files, and curves
-│   │   └── yolo_efficientnet_pipeline/
-│   │       ├── demo_100_results/  # Visual results from the 100-image sweep (resized to 640px)
-│   │       └── demo_100_report.md # Academic Markdown report detailing validation sweep metrics
-│   └── dl/
-│       └── cnn_efficientnet/      # Stage 2 EfficientNetB0 training files, H5 weights, and quantized TFLite
-├── scripts/                       # High-quality orchestration and validation scripts
-│   ├── run_100_demo_test.py       # [NEW] Performs the 100-image automated validation sweep
-│   ├── yolo_mobilenet_hierarchical_pipeline.py # Orchestrates the 2-Stage pipeline inference
-│   ├── train_cnn.py               # Fine-tunes EfficientNetB0 Backbone on the Super Dataset
-│   ├── export_tflite.py           # Exports TFLite models with 8-bit calibration
-│   └── tflite_fps_test.py         # Benchmarks synthetic TFLite edge throughput speed
-├── requirements.txt               # Project dependency sheet
-└── README.md                      # Active developer handbook
+|-- assets/                  Curated images for demos and evidence
+|-- data/                    Classification datasets
+|-- docs/                    Reports, workflow notes, and project tracking
+|-- external_datasets/       YOLO-format localization datasets
+|-- mobile/                  React Native / Expo mobile app
+|-- models/                  Stable model artifacts for app/report use
+|-- runs/                    Experiment outputs and evidence artifacts
+|-- scripts/                 Training, evaluation, reporting, and cleanup scripts
+|-- _archive/                Local legacy quarantine, ignored by Git
+|-- requirements.txt         Python dependencies
+`-- README.md                Project overview
 ```
 
----
+More structure details:
 
-## 🛠️ Step-by-Step Execution Guide
+- `docs/PROJECT_STRUCTURE_AND_CLEANUP.md`
+- `docs/01_final_report/WORKFLOW_APPROACHES_AND_DL_REWORK.md`
 
-### 0. Virtual Environment Setup
-Ensure you are using Python 3.11. Activate the environment and install dependencies:
+## Setup
+
+Use Python 3.11.
+
 ```powershell
 python -m venv .venv311
 .\.venv311\Scripts\Activate.ps1
 pip install -r requirements.txt
 ```
 
-### 1. Run Automated 100-Image Validation Sweep
-Execute our large-scale validation sweep over 100 random, unseen test images to generate visual outputs and the official performance report:
-```powershell
-python scripts\run_100_demo_test.py
-```
-*   **Visual Output Images Saved to**: `runs/detect/yolo_efficientnet_pipeline/demo_100_results/` (Space-optimized max-width 640px, JPEG quality 75)
-*   **Performance Report Saved to**: `runs/detect/yolo_efficientnet_pipeline/demo_100_report.md`
+## Common Commands
 
-### 2. Run Single-Scene Hierarchical Pipeline Inference
-Run the upgraded YOLOv11 + EfficientNetB0 double-check logic on any specific custom scene:
+Train YOLO localization model:
+
 ```powershell
-python scripts\yolo_mobilenet_hierarchical_pipeline.py
+python scripts\train_super_yolo.py
 ```
 
-### 3. Fine-Tune Stage 2 EfficientNetB0 Backbone
-Fine-tune the compound-scaled classifier on high-resolution ($224 \times 224$) crops:
+Run current classification-to-localization evaluation:
+
 ```powershell
+python scripts\classification_to_localization_pipeline.py --localizer yolo --yolo-conf 0.35
+```
+
+Train classical ML / ANN / CNN baselines:
+
+```powershell
+python scripts\train_ann.py
 python scripts\train_cnn.py
+python scripts\train_comparison_models.py
 ```
-*   **Weights Saved to**: `runs/dl/cnn_efficientnet/best_efficientnet.h5`
 
-### 4. Export Quantized Edge TFLite Model
-Convert the fine-tuned CNN into a space-optimized 8-bit quantized edge binary:
+Export edge/mobile model formats:
+
 ```powershell
 python scripts\export_tflite.py
-```
-*   **Quantized Binary Saved to**: `runs/dl/cnn_efficientnet/best_efficientnet_quant.tflite`
-
-### 5. Benchmark Synthetic Edge Throughput
-Verify edge runtime latency and frame processing speed on your device:
-```powershell
-python scripts\tflite_fps_test.py
+python scripts\export_ensemble_onnx.py
 ```
 
----
+Regenerate the project tracking document:
 
-## 📲 Deploying to the Mobile Application
-
-Copy the optimized, lightweight 8-bit quantized TFLite weights directly into the React Native (Expo) bundle asset directory and run the application:
 ```powershell
-# Copy the 4.83MB quantized model to mobile assets
-Copy-Item runs\dl\cnn_efficientnet\best_efficientnet_quant.tflite mobile\assets\model\
+python scripts\build_project_tracking_docx.py
+```
 
-# Navigate and spin up the mobile developer app
+Clean or reorganize workspace outputs:
+
+```powershell
+.\scripts\organize_project_workspace.ps1 -WhatIfOnly
+.\scripts\organize_project_workspace.ps1
+```
+
+## Mobile App
+
+The mobile app lives in `mobile/` and uses React Native / Expo.
+
+```powershell
 cd mobile
 npm install
-npx expo prebuild --clean
 npm run android
 ```
 
----
+Model files should be copied into the mobile asset location only when needed for
+local testing or packaging.
 
-## 🌟 Talking Points for Academic Presentation
+## Large Artifacts
 
-When presenting WasteWise to your instructors, emphasize these core engineering and design breakthroughs:
+GitHub rejects files over 100 MB. Large model binaries such as `*.pth`, `*.pt`,
+`*.onnx`, `*.h5`, `*.tflite`, datasets, and generated caches should stay local or
+be handled through a release artifact / external storage workflow.
 
-*   **Mitigation of Deep "Black-Box" Vulnerabilities**: Rather than accepting raw YOLO bounding box categories blindly, our hierarchical layout establishes a reliable, double-check verification stage. The system self-corrects classification decisions **121 times (41% of all items)** on unseen data.
-*   **Specular Glare Resolution via Class-Dependent Soft Voting**: Specular glares on metal cans are misclassified by CNN texture filters. Applying a robust **$\alpha = 0.80$ dynamic weight** to YOLO metal shapes successfully resolves this issue, achieving zero misclassifications of metal items in the sweep.
-*   **Green AI & Edge Performance Engineering**: Quantization compresses the model **6.0x (down to 4.83 MB)**, allowing fast CPU inference. Edge latency benchmarks confirm a throughput of **362.43 FPS**, demonstrating its battery-safe, lightweight, and real-time processing capabilities on edge devices.
+The repository intentionally ignores large model binaries and dataset folders to
+keep Git history usable.
+
+## Final Report Guidance
+
+Use the ML branch as the explainable finalized pipeline. Use the DL branch as the
+classification-to-localization rework, evaluated with localization metrics rather
+than classification accuracy.
+
+Current final tracking document:
+
+```text
+docs/01_final_report/WasteWise_Project_Tracking_Report.docx
+```
