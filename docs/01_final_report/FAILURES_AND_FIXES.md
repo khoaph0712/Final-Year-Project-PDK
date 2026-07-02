@@ -28,7 +28,12 @@ wrong, how it was detected, and what fixed it. Each entry is thesis-usable evide
   **91.77% on the clean test** (macro-F1 0.9431 -> 0.9114); leakage inflated accuracy
   by ~2.5pp. Largest per-class drops: paper F1 0.93->0.86, cardboard 0.94->0.89,
   metal 0.92->0.88. Evidence: `runs/audits/CLASSIFIER_CLEAN_TEST_EVAL.md`.
-  Detector re-validation on the clean eval set pending training completion.
+- **Measured correction (detector):** clean-split validation of the retrained
+  YOLO26n gives mAP50 0.721 / P 0.777 / R 0.650 on clean val, slightly ABOVE the
+  original val (0.707) - the quarantined images were hard TACO scenes, so the
+  detector eval was not inflated. The source-aware test split (unseen TACO
+  capture batches) is much harder: mAP50 0.474 - honest out-of-sample evidence
+  of batch-level domain shift. Evidence: `runs/audits/DETECTOR_CLEAN_VAL.md`.
 - **Lesson:** content-level (perceptual) deduplication is mandatory when merging
   overlapping community datasets; filename- and byte-level checks are insufficient.
 
