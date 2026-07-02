@@ -1,0 +1,26 @@
+[
+  {
+    "train_domain": "studio",
+    "test_domain": "field",
+    "in_domain_accuracy": 0.8,
+    "cross_domain_accuracy": 0.39809926082365366,
+    "generalization_gap_pp": 40.19007391763464,
+    "in_domain_macro_f1": 0.7993829923675236,
+    "cross_domain_macro_f1": 0.4022574463087527,
+    "n_train": 3920,
+    "n_in_domain_test": 980,
+    "n_cross_domain_test": 4735
+  },
+  {
+    "train_domain": "field",
+    "test_domain": "studio",
+    "in_domain_accuracy": 0.7275607180570222,
+    "cross_domain_accuracy": 0.4448979591836735,
+    "generalization_gap_pp": 28.266275887334867,
+    "in_domain_macro_f1": 0.7295688880469565,
+    "cross_domain_macro_f1": 0.40742782497047536,
+    "n_train": 3788,
+    "n_in_domain_test": 947,
+    "n_cross_domain_test": 4900
+  }
+]
