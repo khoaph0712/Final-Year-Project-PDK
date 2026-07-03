@@ -84,6 +84,14 @@ wrong, how it was detected, and what fixed it. Each entry is thesis-usable evide
   resolution helps small objects on unseen batches but is NOT the binding
   constraint; training-data diversity is. 640 model kept deployed. Evidence:
   `runs/audits/DETECTOR_CLEAN_VAL_v3_960.md`.
+- **Also tested: sliced (SAHI-style) inference** (`scripts/benchmark_sliced_inference.py`,
+  800 clean-val images). Raw 2x2 slicing lifts tiny-object recall 0.266 -> 0.360
+  but drops precision 0.801 -> 0.473; strict tile confidence and IoS fragment
+  merging each recover some precision only by giving back the recall (best
+  compromise: tiny 0.300 / precision 0.662 / other-recall -7.5pp). Not deployed.
+  With both higher resolution AND sliced inference ruled out by experiment, the
+  tiny-object limit is attributable to training data, not inference strategy.
+  Evidence: `runs/audits/SLICED_INFERENCE_BENCHMARK.md`.
 
 ## F4b. Stage-2 train/serve skew (found and fixed 2026-07-03)
 
