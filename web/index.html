@@ -282,26 +282,29 @@
         <div class="limit-stack">
           <article>
             <span>Domain shift</span>
-            <strong>40-point accuracy gap</strong>
+            <strong>Partly fixed, partly open</strong>
             <p>
-              Handcrafted features trained on studio images drop from 80.0% to 39.8% on real-world
-              photos. This motivates the deep pipeline and field-domain training data.
+              Fixed: the classifier was fine-tuned on the detector's own crops, lifting
+              production-distribution accuracy from 76.9% to 88.9%. Open: on fully unseen
+              capture sessions the detector drops to 0.474 mAP50; closing that needs new
+              training data sources, not more training.
             </p>
           </article>
           <article>
             <span>Tiny objects</span>
-            <strong>53% of organic litter missed</strong>
+            <strong>Resolution tested and ruled out</strong>
             <p>
-              The detector's misses concentrate on small objects, not class confusion. A
-              higher-resolution training run is the planned fix.
+              A 960px training run was evaluated: validation unchanged, unseen-batch recall
+              up 3.9 points. Small objects remain the main source of misses, but the binding
+              constraint is training-data diversity, not input resolution.
             </p>
           </article>
           <article>
             <span>Waste-state decision</span>
             <strong>Rule logic, not a trained head</strong>
             <p>
-              The waste / not-waste / review decision is conservative rule logic until a dedicated
-              state model is trained.
+              The waste / not-waste / review decision is conservative rule logic until a
+              dedicated state model is trained on labeled state data.
             </p>
           </article>
         </div>
