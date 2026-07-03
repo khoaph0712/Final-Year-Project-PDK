@@ -1,142 +1,92 @@
-# WasteWise: Waste Classification and Localization
+# WasteWise: Waste Detection and Classification
 
-WasteWise is a Final Year Project for automated waste understanding. The project
-combines a classical machine-learning branch with a redesigned deep-learning
-branch for classification-first localization.
+Final Year Project for automated waste understanding. A two-stage deep-learning
+pipeline detects and classifies waste in real photos, backed by a classical
+machine-learning branch for explainable evidence. Every headline metric in this
+README survives a leakage-audited evaluation set.
 
-The current repository is organized around two active tracks:
+**Live demo:** https://khoaphung-wastewise-ai.hf.space
 
-- **ML track:** explainable handcrafted features, model comparison, and PCA
-  compression experiments.
-- **DL track:** image/classification gate first, localization second. YOLO is used
-  as a localization module, not as the final class decision.
-
-## Current Project Position
-
-Earlier experiments used a YOLO-first two-stage pipeline:
+## Pipeline
 
 ```mermaid
 flowchart LR
-    A["Input image"] --> B["YOLOv11 localization"]
+    A["Input image"] --> B["Stage 1: YOLO26n localization"]
     B --> C["Detected object crops"]
-    C --> D["EfficientNetB0 crop classifier"]
-    D --> E["Fused class decision"]
-    E --> F["Experiment evidence only"]
+    C --> D["Stage 2: ConvNeXt + 637-feature crop classifier"]
+    D --> E["Verified material class, waste state, bin route"]
 ```
 
-That pipeline is kept as experiment evidence, but it is no longer the main final
-workflow. The current DL direction is:
+Stage 1 finds objects (what YOLO is good at); Stage 2 verifies the material of
+each crop (what a dedicated classifier is good at) and filters false alarms.
+The Stage 2 classifier is fine-tuned on the detector's own crops so training
+matches what it sees in production.
 
-```mermaid
-flowchart LR
-    A["Input image"] --> B["Stage 1: classification gate"]
-    B --> C["Class evidence"]
-    C --> D["Stage 2: localization module"]
-    D --> E["Boxes / heatmaps"]
-    E --> F["Localization metrics"]
-```
+## Results (leakage-audited)
 
-This lets the DL branch report localization metrics directly: precision, recall,
-IoU, and detection evidence quality.
+The original evaluation sets contained cross-split duplicates (same photos
+entering train and test through different community-dataset sources). We found
+this with perceptual-hash auditing, quarantined the leaked eval images, and
+report only the corrected numbers. Audit trail: `runs/audits/`, failure log:
+`docs/01_final_report/FAILURES_AND_FIXES.md`.
 
-Full project pipeline diagrams:
+### Stage 1 - Detector (YOLO26n, 6 classes, 100-epoch retrain)
 
-- `docs/PIPELINE_DIAGRAMS.md`
+| Eval | Precision | Recall | mAP50 | mAP50-95 |
+|---|---:|---:|---:|---:|
+| Clean validation (quarantined) | 0.777 | 0.650 | 0.721 | 0.542 |
+| Clean test (unseen TACO capture batches) | 0.590 | 0.456 | 0.474 | 0.348 |
 
-## Active Datasets
+The val-to-test gap is honest domain-shift evidence on unseen capture sessions.
+A 960px fine-tune was evaluated and ruled out (val a wash, +3.9pp test recall):
+resolution is not the binding constraint; training-data diversity is.
 
-| Dataset | Path | Role |
-|---|---|---|
-| Classification dataset | `data/merged_dataset_v5` | 7-class image/crop classification, including Background |
-| YOLO localization dataset | `external_datasets/super_yolo_dataset` | 6-class localization evidence and box labels |
+### Stage 2 - Crop classifier (ConvNeXt-Tiny + 637 handcrafted features)
 
-Large datasets are not expected to be fully tracked by Git. Keep local dataset
-copies in the paths above.
-
-## Main Results
-
-### Classical ML Branch
-
-The ML branch uses 637 handcrafted features per crop:
-
-| Feature group | Count |
+| Eval | Accuracy |
 |---|---:|
-| Spatial / edge features | 8 |
-| FFT / frequency features | 9 |
-| Color statistics and histograms | 44 |
-| HOG descriptors | 576 |
-| **Total** | **637** |
+| Clean GT-crop test (quarantined) | 93.77% |
+| Detector's own crops (production distribution) | 88.88% |
 
-Saved lecturer-facing ML results:
+The deployed classifier is fine-tuned on a mixture of detector crops and GT
+crops: this lifted production-distribution accuracy from 76.91% to 88.88%
+while clean-crop accuracy also improved (92.93% -> 93.77%).
 
-| Model | Accuracy | F1-macro |
-|---|---:|---:|
-| XGBoost | 0.6742 | 0.6506 |
-| ExtraTrees | 0.6312 | 0.6113 |
-| Random Forest | 0.6317 | 0.6111 |
-| Linear SVM | 0.5960 | 0.5642 |
-| Logistic Regression | 0.5864 | 0.5558 |
-| Decision Tree | 0.5115 | 0.4883 |
+### Classical ML branch (explainable evidence)
 
-PCA evidence shows the handcrafted feature space can be compressed while keeping
-most variance:
+637 handcrafted features per crop (8 spatial, 9 FFT, 44 color, 576 HOG),
+classical model sweep and PCA compression study:
 
-| Components | Explained variance | Accuracy | Weighted F1 | Latency |
-|---:|---:|---:|---:|---:|
-| 637 | 100.00% | 73.24% | 0.7319 | 0.0533 ms |
-| 128 | 99.90% | 68.71% | 0.6863 | 0.0314 ms |
-| 64 | 99.78% | 67.48% | 0.6736 | 0.0284 ms |
-
-### Deep Learning Localization Branch
-
-The current DL branch evaluates localization after a classifier/gate stage.
-Quick-check localization results:
-
-| Stage 2 localizer | Precision | Recall | Mean matched IoU | TP | FP | FN |
-|---|---:|---:|---:|---:|---:|---:|
-| Grad-CAM baseline | 0.2568 | 0.0728 | 0.7127 | 19 | 55 | 242 |
-| YOLO localization-only, conf=0.25 | 0.6352 | 0.5670 | 0.9012 | 148 | 85 | 113 |
-| YOLO localization-only, conf=0.35 | 0.7614 | 0.5134 | 0.9004 | 134 | 42 | 127 |
-
-Recommended current setting:
-
-```powershell
-.\.venv311\Scripts\python.exe scripts\classification_to_localization_pipeline.py `
-  --max-images 60 `
-  --max-visuals 18 `
-  --sample-mode stratified `
-  --seed 42 `
-  --localizer yolo `
-  --yolo-conf 0.35 `
-  --out-dir runs\dl\localization_rework\yolo_conf035_stratified60_final
-```
+- Best full-feature model: ExtraTrees 73.8% accuracy (7-class crops).
+- PCA study (`runs/ml/pca_feature_model_sweep/`): best-model-per-dimension and
+  the honest accuracy cost of compressing 637 -> 128/64 dimensions.
+- Cross-domain study (`runs/dl/cross_dataset_validation/`): studio-trained
+  features drop ~40pp on real-world images - the measured motivation for the
+  deep pipeline.
 
 ## Repository Layout
 
 ```text
 C:\FYP
-|-- assets/                  Curated images for demos and evidence
-|-- data/                    Classification datasets
-|-- docs/                    Reports, workflow notes, and project tracking
-|-- external_datasets/       YOLO-format localization datasets
-|-- mobile/                  React Native / Expo mobile app
-|-- models/                  Stable model artifacts for app/report use
-|-- runs/                    Experiment outputs and evidence artifacts
-|-- scripts/                 Training, evaluation, reporting, and cleanup scripts
-|-- _archive/                Local legacy quarantine, ignored by Git
-|-- requirements.txt         Python dependencies
-`-- README.md                Project overview
+|-- assets/              Curated images for demos and evidence
+|-- data/                Classification datasets (local only, gitignored)
+|-- docs/                Reports, failure log, demo prep, project tracking
+|-- external_datasets/   YOLO-format detection datasets (local only, gitignored)
+|-- models/              Stable model artifacts for app/report use
+|-- runs/                Experiment outputs, audits, evidence artifacts
+|-- scripts/             Training, evaluation, audit, and deploy scripts
+|-- web/                 Static frontend + Python model API (Hugging Face Space)
+|-- requirements.txt     Python dependencies
+`-- README.md            This file
 ```
 
-More structure details:
-
-- `docs/PROJECT_STRUCTURE_AND_CLEANUP.md`
-- `docs/01_final_report/WORKFLOW_APPROACHES_AND_DL_REWORK.md`
-- `docs/diagrams/wastewise_professional_pipelines.svg`
+Datasets and large binaries (`*.pt`, `*.pth`, `*.h5`, `*.npy`, dataset folders)
+are intentionally gitignored; results and reports in `runs/` are tracked.
 
 ## Setup
 
-Use Python 3.11.
+Python 3.11 with a local venv (`.venv311`) is the project environment. All GPU
+work must use it:
 
 ```powershell
 python -m venv .venv311
@@ -144,78 +94,30 @@ python -m venv .venv311
 pip install -r requirements.txt
 ```
 
-## Common Commands
+## Key Scripts
 
-Train YOLO localization model:
+| Purpose | Script |
+|---|---|
+| Detector training (100-epoch, 640px) | `scripts/train_hardcase_long.py` |
+| Detector 960px fine-tune experiment | `scripts/train_hardcase_960.py` |
+| Leakage / bias / label-noise audit | `scripts/audit_model_risks.py` |
+| Build quarantined clean eval splits | `scripts/build_clean_eval_splits.py` |
+| Clean-split detector validation | `scripts/validate_detector_clean.py` |
+| Detector-crop dataset for Stage 2 | `scripts/build_detector_crop_dataset.py` |
+| Stage 2 fine-tune (with promote gate) | `scripts/finetune_stage2_on_detector_crops.py` |
+| Confidence threshold sweep (precision) | `scripts/yolo_precision_threshold_sweep.py` |
+| Cross-domain generalization study | `scripts/cross_dataset_validation.py` |
+| PCA feature-compression sweep | `scripts/pca_feature_model_sweep.py` |
+| Deploy web app + models to HF Space | `scripts/deploy_hf_space.py` (needs `HF_TOKEN`) |
 
-```powershell
-python scripts\train_super_yolo.py
-```
+## Web App
 
-Run current classification-to-localization evaluation:
-
-```powershell
-python scripts\classification_to_localization_pipeline.py --localizer yolo --yolo-conf 0.35
-```
-
-Train classical ML / ANN / CNN baselines:
-
-```powershell
-python scripts\train_ann.py
-python scripts\train_cnn.py
-python scripts\train_comparison_models.py
-```
-
-Export edge/mobile model formats:
+`web/` contains a responsive (mobile + desktop, auto dark mode) frontend and a
+Python API serving the real models. Run locally:
 
 ```powershell
-python scripts\export_tflite.py
-python scripts\export_ensemble_onnx.py
+.\.venv311\Scripts\python.exe web\server.py --port 4178
 ```
 
-Regenerate the project tracking document:
-
-```powershell
-python scripts\build_project_tracking_docx.py
-```
-
-Clean or reorganize workspace outputs:
-
-```powershell
-.\scripts\organize_project_workspace.ps1 -WhatIfOnly
-.\scripts\organize_project_workspace.ps1
-```
-
-## Mobile App
-
-The mobile app lives in `mobile/` and uses React Native / Expo.
-
-```powershell
-cd mobile
-npm install
-npm run android
-```
-
-Model files should be copied into the mobile asset location only when needed for
-local testing or packaging.
-
-## Large Artifacts
-
-GitHub rejects files over 100 MB. Large model binaries such as `*.pth`, `*.pt`,
-`*.onnx`, `*.h5`, `*.tflite`, datasets, and generated caches should stay local or
-be handled through a release artifact / external storage workflow.
-
-The repository intentionally ignores large model binaries and dataset folders to
-keep Git history usable.
-
-## Final Report Guidance
-
-Use the ML branch as the explainable finalized pipeline. Use the DL branch as the
-classification-to-localization rework, evaluated with localization metrics rather
-than classification accuracy.
-
-Current final tracking document:
-
-```text
-docs/01_final_report/WasteWise_Project_Tracking_Report.docx
-```
+Deployment to Hugging Face Spaces bundles the frontend, API, detector weights,
+and the fine-tuned classifier (`scripts/deploy_hf_space.py`).
