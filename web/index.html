@@ -53,11 +53,11 @@
         <aside class="hero-panel" aria-label="Latest verified result">
           <div class="panel-heading">
             <span>Latest verified run</span>
-            <strong id="overviewPulse">2026-07-02</strong>
+            <strong id="overviewPulse">2026-07-03</strong>
           </div>
           <div class="hero-score">
-            <strong>91.77%</strong>
-            <span>Classifier accuracy on the leakage-quarantined test set</span>
+            <strong>93.77%</strong>
+            <span>Deployed classifier accuracy on the leakage-quarantined test set</span>
           </div>
           <div class="hero-metrics">
             <article><span>Clean test images</span><strong>3,194</strong></article>
@@ -214,8 +214,9 @@
             </div>
             <h3>The API serves the real classifier and YOLO26n localizer.</h3>
             <p>
-              /api/predict runs the shipped classifier, feature scaler, YOLO26n boxes, and crop
-              verification. When the API is offline the page says so instead of pretending.
+              The classifier is fine-tuned on the detector's own crops: accuracy on real
+              detector output rose from 76.9% to 88.9% without losing clean-crop accuracy.
+              When the API is offline the page says so instead of pretending.
             </p>
           </article>
 

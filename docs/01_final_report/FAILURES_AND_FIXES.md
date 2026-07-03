@@ -34,6 +34,13 @@ wrong, how it was detected, and what fixed it. Each entry is thesis-usable evide
   detector eval was not inflated. The source-aware test split (unseen TACO
   capture batches) is much harder: mAP50 0.474 - honest out-of-sample evidence
   of batch-level domain shift. Evidence: `runs/audits/DETECTOR_CLEAN_VAL.md`.
+- **Measured correction (deployed ConvNeXt, hard_case_classifier_v1):** this
+  dataset was audited last (2026-07-03): 545/2,696 test (20.2%) and 513/2,680 val
+  (16.0%) images duplicate other splits. Re-evaluating the deployed ConvNeXt:
+  original test 93.88% -> **92.93% on the clean test** (macro-F1 0.9398 -> 0.9290);
+  clean val 92.02%. Inflation here was small (~1pp) - the deployed classifier is
+  genuinely strong. Quote 92.93%. Evidence: `runs/audits/convnext_clean_eval.json`,
+  clean split at `data/hard_case_classifier_v1_clean`.
 - **Lesson:** content-level (perceptual) deduplication is mandatory when merging
   overlapping community datasets; filename- and byte-level checks are insufficient.
 
@@ -71,8 +78,28 @@ wrong, how it was detected, and what fixed it. Each entry is thesis-usable evide
   learned "small blob = organic").
 - **Fixes:** (a) longer training - the 30-epoch run had decayed LR to 4.3e-5 while
   metrics were still climbing each epoch; retrained 100 epochs with cosine LR
-  (`scripts/train_hardcase_long.py`); (b) planned: higher-resolution run
-  (imgsz 960, batch 8 - VRAM verified to fit) as the primary tiny-object lever.
+  (`scripts/train_hardcase_long.py`); (b) tested: 960px fine-tune
+  (`scripts/train_hardcase_960.py`, 40 epochs from the 640 best). Outcome: clean
+  val a wash (mAP50 0.718 vs 0.721), clean TEST recall +3.9pp (0.456 -> 0.495) -
+  resolution helps small objects on unseen batches but is NOT the binding
+  constraint; training-data diversity is. 640 model kept deployed. Evidence:
+  `runs/audits/DETECTOR_CLEAN_VAL_v3_960.md`.
+
+## F4b. Stage-2 train/serve skew (found and fixed 2026-07-03)
+
+- **Symptom:** none visible in reports - the deployed classifier scored 92.93% on
+  clean GT crops but only **76.91%** on the detector's own crops (what it actually
+  receives in production): a 16pp train/serve skew.
+- **Root cause:** the classifier trains on ground-truth crops; YOLO's crops have
+  looser framing and detector-selected content (including false positives).
+- **Fix:** built `data/detector_crops_v1` (detector predictions IoU-matched to GT
+  labels, unmatched high-conf predictions kept as Background) and fine-tuned the
+  deployed ConvNeXt on a detector-crop + GT-crop mixture. Detector-crop accuracy
+  76.91% -> **88.88%** while clean GT test *improved* 92.93% -> **93.77%**. A
+  detector-crops-only fine-tune was rejected by the no-forgetting gate (GT fell
+  to 83%) - evidence that mixed-domain training is required.
+- Scripts: `build_detector_crop_dataset.py`, `finetune_stage2_on_detector_crops.py`;
+  results: `runs/dl/convnext_detector_crops_ft/finetune_result.json`.
 
 ## F5. Detector precision/recall operating point was never tuned
 

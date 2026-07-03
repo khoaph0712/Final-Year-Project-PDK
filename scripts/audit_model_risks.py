@@ -44,6 +44,11 @@ DATASETS = {
         "layout": "classification",
         "classes": ["plastic", "glass", "metal", "paper", "cardboard", "organic", "Background"],
     },
+    "hardcase_classifier": {
+        "path": ROOT / "data" / "hard_case_classifier_v1",
+        "layout": "classification",
+        "classes": ["plastic", "glass", "metal", "paper", "cardboard", "organic", "Background"],
+    },
 }
 RESULTS_CSV = ROOT / "runs" / "detect" / "yolo26n_hardcase_v2_long" / "results.csv"
 FIELD_MARKERS = ("_train_", "_test_", "_val_", "_valid_", "rf_")
@@ -422,7 +427,7 @@ def write_report(out_dir: Path, results: dict) -> None:
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--dataset", choices=["hardcase", "super", "merged", "all"], default="all")
+    ap.add_argument("--dataset", choices=["hardcase", "super", "merged", "hardcase_classifier", "all"], default="all")
     ap.add_argument("--out", type=Path, default=ROOT / "runs" / "audits")
     ap.add_argument("--self-test", action="store_true")
     args = ap.parse_args()
