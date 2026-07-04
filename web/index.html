@@ -12,9 +12,9 @@
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <main class="page-shell" id="overview">
+    <div class="page-shell">
       <header class="topbar">
-        <a class="brand" href="#overview" aria-label="WasteWise home">
+        <a class="brand" href="#scan" data-page-link>
           <span class="brand-mark" aria-hidden="true">W</span>
           <span class="brand-text">
             <strong>WasteWise</strong>
@@ -23,11 +23,12 @@
         </a>
 
         <nav class="nav" aria-label="Primary navigation">
-          <a class="active" href="#scan">Scan</a>
-          <a href="#history">History</a>
-          <a href="#evidence">Evidence</a>
-          <a href="#validation">Scores</a>
-          <a href="#limits">Limits</a>
+          <a href="#scan" data-page-link>Scan</a>
+          <a href="#pipeline" data-page-link>How it works</a>
+          <a href="#evidence" data-page-link>Evidence</a>
+          <a href="#history" data-page-link>History</a>
+          <a href="#limits" data-page-link>Limits</a>
+          <a href="#about" data-page-link>About</a>
         </nav>
 
         <span class="run-state" id="modelStatus" data-state="pending">
@@ -36,141 +37,236 @@
         </span>
       </header>
 
-      <section class="hero" aria-labelledby="hero-title">
-        <div class="hero-copy">
-          <p class="kicker">Two-stage detection pipeline</p>
-          <h1 id="hero-title">Scan waste. See the boxes, the classes, and the honest numbers.</h1>
-          <p>
-            YOLO26n finds each object, a ConvNeXt classifier verifies the material, and every
-            metric survives a leakage-audited test set.
-          </p>
-          <div class="actions">
-            <a class="btn primary" href="#scan">Run an image</a>
-            <a class="btn secondary" href="#evidence">See evidence</a>
-          </div>
-        </div>
-
-        <aside class="hero-panel" aria-label="Latest verified result">
-          <div class="panel-heading">
-            <span>Latest verified run</span>
-            <strong id="overviewPulse">2026-07-03</strong>
-          </div>
-          <div class="hero-score">
-            <strong>93.77%</strong>
-            <span>Deployed classifier accuracy on the leakage-quarantined test set</span>
-          </div>
-          <div class="hero-metrics">
-            <article><span>Clean test images</span><strong>3,194</strong></article>
-            <article><span>Leaked images removed</span><strong>2,406</strong></article>
-            <article><span>Material classes</span><strong>7</strong></article>
-            <article><span>Detector boxes trained on</span><strong>80,993</strong></article>
-          </div>
-        </aside>
-      </section>
-
-      <section class="scan-section" id="scan" aria-labelledby="scan-title">
-        <div class="section-heading">
-          <h2 id="scan-title">Live scanner</h2>
-          <p>
-            Uploads run through the real model API when the Python server is up. Without it, the
-            page switches to the browser fallback and says so.
-          </p>
-        </div>
-
-        <section class="workspace-panel" aria-label="Waste scanner workspace">
-          <div class="uploader-column">
-            <div class="panel-heading">
-              <span>Image intake</span>
-              <strong id="activeSourceLabel">Waiting</strong>
+      <!-- ============================================================ PAGE: SCAN -->
+      <main class="page" data-page="scan" id="page-scan">
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <p class="kicker">Two-stage detection pipeline</p>
+            <h1 id="hero-title">
+              Scan waste.<br />
+              <span class="accent" id="typedWord"></span><span class="type-caret" aria-hidden="true"></span>
+            </h1>
+            <p>
+              YOLO26n finds every object, a ConvNeXt classifier verifies the material, and every
+              number on this site survives a leakage-audited test set.
+            </p>
+            <div class="actions">
+              <a class="btn primary" href="#scan-live">Run a scan</a>
+              <a class="btn secondary" href="#pipeline" data-page-link>How it works</a>
             </div>
+            <div class="hero-counters">
+              <div><strong id="heroAcc">93.77%</strong><span>clean-test accuracy</span></div>
+              <div><strong id="heroClasses">7</strong><span>material classes</span></div>
+              <div><strong id="heroBoxes">81k</strong><span>boxes trained on</span></div>
+            </div>
+          </div>
 
-            <label class="drop-zone" id="dropZone">
-              <input id="fileInput" type="file" accept="image/*" />
-              <span class="drop-title">Choose image</span>
-              <span class="drop-meta">JPG, PNG, or WEBP</span>
-            </label>
+          <div class="hero-demo" aria-label="Simulated live demo">
+            <div class="hero-demo-head">
+              <span>Live demo &middot; simulated</span>
+              <strong id="heroDemoStatus">STANDBY</strong>
+            </div>
+            <div class="hero-demo-frame">
+              <img src="assets/sample-plastic.jpg" alt="Demo: floating plastic bottles" />
+              <div class="sweep" id="heroDemoSweep" hidden></div>
+              <div class="box-layer" id="heroDemoBoxes" aria-hidden="true"></div>
+            </div>
+            <div class="hero-demo-result" id="heroDemoResult">
+              <span>Decision</span>
+              <strong>Analyzing&hellip;</strong>
+            </div>
+          </div>
+        </section>
 
-            <p class="upload-note">
-              Saved scans stay in browser history for review and hard-case collection.
+        <div class="marquee" aria-hidden="true">
+          <div class="marquee-track">
+            <span>&#9679; Plastic</span><span>&#9679; Glass</span><span>&#9679; Metal</span><span>&#9679; Paper</span><span>&#9679; Cardboard</span><span>&#9679; Organic</span><span>&#9679; Background veto</span><span>&#9679; YOLO26n localizer</span><span>&#9679; ConvNeXt verifier</span><span>&#9679; 637 handcrafted features</span>
+            <span>&#9679; Plastic</span><span>&#9679; Glass</span><span>&#9679; Metal</span><span>&#9679; Paper</span><span>&#9679; Cardboard</span><span>&#9679; Organic</span><span>&#9679; Background veto</span><span>&#9679; YOLO26n localizer</span><span>&#9679; ConvNeXt verifier</span><span>&#9679; 637 handcrafted features</span>
+          </div>
+        </div>
+
+        <section class="scan-section" id="scan-live" aria-labelledby="scan-title">
+          <div class="section-heading">
+            <h2 id="scan-title">Live scanner</h2>
+            <p>
+              Upload a photo or pick a sample. The scan follows the exact pipeline order &mdash;
+              localize, crop, verify, fuse, decide.
             </p>
           </div>
 
-          <div class="vision-column">
-            <div class="image-stage reveal-on-scroll" id="imageStage">
-              <img id="previewImage" alt="Selected waste analysis" hidden />
-              <div class="empty-stage" id="emptyStage">
-                <strong>No image selected</strong>
-                <span>Upload a waste photo to start inference.</span>
+          <ol class="stage-pills" id="stagePills" aria-label="Detection workflow, steps S1 to S6">
+            <li data-stage="0"><span class="pill-id">S1</span>Upload</li>
+            <li data-stage="1"><span class="pill-id">S2</span>Localize</li>
+            <li data-stage="2"><span class="pill-id">S3</span>Crop</li>
+            <li data-stage="3"><span class="pill-id">S4</span>Verify</li>
+            <li data-stage="4"><span class="pill-id">S5</span>Fuse</li>
+            <li data-stage="5"><span class="pill-id">S6</span>Decide</li>
+          </ol>
+
+          <div class="scanner-grid">
+            <div class="scanner-left">
+              <div class="image-stage" id="imageStage">
+                <img id="previewImage" alt="Selected waste analysis" hidden />
+                <div class="empty-stage" id="emptyStage">
+                  <strong>No image selected</strong>
+                  <span>Choose a sample below or upload your own photo.</span>
+                </div>
+                <div class="box-layer" id="boxLayer" aria-hidden="true"></div>
+                <div class="loading-mask" id="loadingMask">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </div>
               </div>
-              <div class="box-layer" id="boxLayer" aria-hidden="true"></div>
-              <div class="loading-mask" id="loadingMask">
-                <span></span>
-                <span></span>
-                <span></span>
+
+              <label class="drop-zone" id="dropZone">
+                <input id="fileInput" type="file" accept="image/*" />
+                <span class="drop-title">Upload an image</span>
+                <span class="drop-meta">JPG, PNG or WEBP</span>
+              </label>
+
+              <div class="sample-picker" id="samplePicker">
+                <button type="button" data-sample="plastic">
+                  <img src="assets/sample-plastic.jpg" alt="" />Floating bottles
+                </button>
+                <button type="button" data-sample="can">
+                  <img src="assets/sample-can.jpg" alt="" />Crushed can
+                </button>
+                <button type="button" data-sample="mixed">
+                  <img src="assets/sample-mixed.jpg" alt="" />Mixed litter
+                </button>
+                <button type="button" data-sample="grass">
+                  <img src="assets/outdoor_grass_bottle.jpg" alt="" />Bottle in grass
+                </button>
+                <button type="button" data-sample="street">
+                  <img src="assets/outdoor_street_cans.jpg" alt="" />Street cans
+                </button>
+                <button type="button" data-sample="bins">
+                  <img src="assets/indoor_recycling_bins.jpg" alt="" />Recycling bins
+                </button>
+              </div>
+            </div>
+
+            <div class="scanner-right">
+              <div class="result-column" aria-label="Classification result">
+                <div class="result-topline">
+                  <span id="resultTopLabel">Decision</span>
+                  <strong id="resultClass">No scan yet</strong>
+                </div>
+                <div class="confidence-block">
+                  <div>
+                    <span id="confidenceLabel">Confidence</span>
+                    <strong id="resultConfidence">--</strong>
+                  </div>
+                  <div class="meter" aria-hidden="true"><span id="confidenceMeter"></span></div>
+                </div>
+                <div class="bin-route is-idle" id="binRoute">
+                  <span>Bin route</span>
+                  <strong>Waiting</strong>
+                </div>
+                <dl class="result-facts">
+                  <div><dt>Possible material</dt><dd id="possibleMaterialValue">--</dd></div>
+                  <div><dt>Waste state</dt><dd id="wasteStateValue">Not scanned</dd></div>
+                  <div><dt>Context</dt><dd id="contextValue">--</dd></div>
+                  <div><dt>Latency</dt><dd id="latencyValue">--</dd></div>
+                </dl>
+              </div>
+
+              <div class="score-panel" aria-label="Material confidence scores">
+                <div class="panel-heading">
+                  <span>Class scores</span>
+                  <strong id="scoreSummary">7 classes</strong>
+                </div>
+                <div class="top-prediction-list" id="topPredictionList"></div>
+                <div class="score-list" id="scoreList"></div>
               </div>
             </div>
           </div>
-
-          <aside class="result-column" aria-label="Classification result">
-            <div class="result-topline">
-              <span id="resultTopLabel">Decision</span>
-              <strong id="resultClass">No scan yet</strong>
-            </div>
-            <div class="confidence-block">
-              <div>
-                <span id="confidenceLabel">Confidence</span>
-                <strong id="resultConfidence">--</strong>
-              </div>
-              <div class="meter" aria-hidden="true"><span id="confidenceMeter"></span></div>
-            </div>
-            <div class="bin-route is-idle" id="binRoute">
-              <span>Bin route</span>
-              <strong>Waiting</strong>
-            </div>
-            <dl class="result-facts">
-              <div><dt>Possible material</dt><dd id="possibleMaterialValue">--</dd></div>
-              <div><dt>Waste state</dt><dd id="wasteStateValue">Not scanned</dd></div>
-              <div><dt>Context</dt><dd id="contextValue">--</dd></div>
-              <div><dt>Latency</dt><dd id="latencyValue">--</dd></div>
-            </dl>
-          </aside>
         </section>
-      </section>
 
-      <section class="history-section" id="history" aria-labelledby="history-title">
-        <div class="section-heading compact">
-          <h2 id="history-title">Recent scans</h2>
-          <p>Restore a saved upload to bring back the image, result, confidence, route, and boxes.</p>
+        <section class="teasers">
+          <a class="teaser" href="#pipeline" data-page-link>
+            <span class="kicker">How it works</span>
+            <strong>Six steps, S1 to S6</strong>
+            <p>Upload, localize, crop, verify, fuse, decide &mdash; with the full methodology diagram.</p>
+          </a>
+          <a class="teaser dark" href="#evidence" data-page-link>
+            <span class="kicker accent-light">Evidence</span>
+            <strong>93.77% &mdash; and how it was audited</strong>
+            <p>Every metric is tied to a report in the repository, measured after leakage quarantine.</p>
+          </a>
+          <a class="teaser" href="#limits" data-page-link>
+            <span class="kicker tone-warn">Limits</span>
+            <strong>What still breaks, honestly</strong>
+            <p>Domain shift, tiny objects, and the conservative waste-state gate.</p>
+          </a>
+        </section>
+      </main>
+
+      <!-- ============================================================ PAGE: PIPELINE -->
+      <main class="page" data-page="pipeline" id="page-pipeline" hidden>
+        <p class="kicker">Methodology</p>
+        <h2 class="page-title">Localize first, classify second.</h2>
+        <p class="page-intro">
+          Stage 1 finds objects &mdash; what YOLO is good at. Stage 2 verifies the material of
+          each crop &mdash; what a dedicated classifier is good at &mdash; and filters false
+          alarms.
+        </p>
+
+        <div class="step-stack">
+          <article class="step-card">
+            <span class="step-id">S1</span>
+            <div><strong>Upload image</strong><p>A JPG, PNG, or WEBP photo of waste. Saved scans stay in browser history for review and hard-case collection.</p></div>
+          </article>
+          <article class="step-card">
+            <span class="step-id">S2</span>
+            <div><strong>Stage 1 &mdash; YOLO26n localization</strong><p>YOLO26n proposes a box around every candidate object. 100-epoch retrain on the quarantined split: 72.1% mAP50, 77.7% precision on clean validation.</p></div>
+          </article>
+          <article class="step-card">
+            <span class="step-id">S3</span>
+            <div><strong>Crop extraction &amp; size filter</strong><p>Each kept box is cropped with 10&nbsp;px padding; boxes smaller than 24&times;24&nbsp;px are rejected before classification.</p></div>
+          </article>
+          <article class="step-card">
+            <span class="step-id">S4</span>
+            <div><strong>Stage 2 &mdash; crop verification</strong><p>A ConvNeXt-Tiny + 637-handcrafted-feature classifier re-checks every crop across 7 classes, including a Background veto. Fine-tuned on the detector's own crops so training matches production.</p></div>
+          </article>
+          <article class="step-card">
+            <span class="step-id">S5</span>
+            <div><strong>Score fusion &amp; context prior</strong><p>Per-box score fuses detector and classifier confidences, then a scene-context prior adjusts the class scores.</p></div>
+          </article>
+          <article class="step-card">
+            <span class="step-id">S6</span>
+            <div><strong>Decision gate &amp; bin routing</strong><p>Class thresholds and the waste-state gate pick the final decision. Uncertain detections route to review instead of a bin &mdash; conservative by design.</p></div>
+          </article>
         </div>
 
-        <div class="history-panel">
+        <div class="diagram-card">
           <div class="panel-heading">
-            <span>Saved scans</span>
-            <strong class="badge" id="historyCount">0 saved</strong>
+            <span>Methodology workflow diagram</span>
+            <strong>S1 &rarr; S6</strong>
           </div>
-          <div class="history-actions">
-            <a class="btn secondary" href="#scan">Back to scanner</a>
-            <button class="btn secondary" id="clearHistory" type="button">Clear history</button>
-          </div>
-          <div class="timeline history-list" id="historyList"></div>
+          <img src="assets/workflow_pipeline.svg" alt="Two-stage localization-first pipeline workflow diagram" loading="lazy" />
         </div>
-      </section>
 
-      <section class="evidence-section" id="evidence" aria-labelledby="evidence-title">
-        <div class="section-heading">
-          <p class="kicker">Audited results</p>
-          <h2 id="evidence-title">Every number below is tied to a report in the repository.</h2>
-          <p>
-            The evaluation sets were audited with perceptual hashing; duplicated eval images were
-            quarantined before these metrics were measured.
-          </p>
+        <div class="page-cta">
+          <a class="btn primary" href="#scan" data-page-link>Try the scanner</a>
         </div>
+      </main>
+
+      <!-- ============================================================ PAGE: EVIDENCE -->
+      <main class="page" data-page="evidence" id="page-evidence" hidden>
+        <p class="kicker">Audited results</p>
+        <h2 class="page-title">Every number below is tied to a report in the repository.</h2>
+        <p class="page-intro">
+          The evaluation sets were audited with perceptual hashing; duplicated eval images were
+          quarantined before these metrics were measured.
+        </p>
 
         <section class="metrics" aria-label="Key verified metrics">
           <article class="metric-card tone-success">
             <span>Classifier accuracy, clean test</span>
-            <strong id="correctMetric">91.77%</strong>
-            <i>EfficientNetB0, 3,194 quarantined-test images</i>
+            <strong id="correctMetric">93.77%</strong>
+            <i>ConvNeXt + 637-feature classifier, 2,151 quarantined-test images</i>
           </article>
           <article class="metric-card tone-info">
             <span>Detector mAP50, clean val</span>
@@ -197,9 +293,11 @@
             </div>
             <h3>We found our own evaluation bug and corrected the numbers.</h3>
             <p>
-              The merged datasets ingest the same photos through different sources. Perceptual
-              hashing found duplicates across train and test splits; 2,406 leaked test images were
-              quarantined. Accuracy moved from an inflated 94.30% to an honest 91.77%.
+              The merged classifier dataset ingests the same photos through different sources.
+              Perceptual hashing found 2,406 leaked test images (43%) in an earlier EfficientNetB0
+              classifier's evaluation set, correcting its accuracy from an inflated 94.30% to an
+              honest 91.77%. The same audit method, applied to the deployed ConvNeXt's dataset,
+              found a smaller leak and is the basis for the 93.77% figure above.
             </p>
             <div class="artifact-row">
               <span>runs/audits/MODEL_RISK_AUDIT.md</span>
@@ -236,48 +334,40 @@
             <p>Best checkpoint of the 100-epoch retrain, promoted to the live localizer.</p>
           </article>
         </div>
-      </section>
 
-      <section class="validation-section" id="validation" aria-labelledby="validation-title">
-        <div class="section-heading compact">
-          <h2 id="validation-title">Class scores</h2>
-          <p>Each scan shows the top-3 predictions beside all seven class score bars.</p>
+        <article class="evidence-card baseline-card">
+          <div class="panel-heading">
+            <span>Classical ML baseline</span>
+            <strong>explainable evidence</strong>
+          </div>
+          <div class="baseline-row">
+            <strong>73.8%</strong>
+            <p>ExtraTrees on 637 handcrafted features per crop (8 spatial, 9 FFT, 44 color, 576 HOG). Kept for comparison and explainability evidence beside the deep pipeline.</p>
+          </div>
+        </article>
+      </main>
+
+      <!-- ============================================================ PAGE: HISTORY -->
+      <main class="page" data-page="history" id="page-history" hidden>
+        <p class="kicker">Saved scans</p>
+        <h2 class="page-title">Recent scans</h2>
+        <p class="page-intro">
+          Restore a saved scan to bring back the image, result, confidence, route, and boxes.
+          History lives in your browser.
+        </p>
+
+        <div class="history-toolbar">
+          <span class="badge" id="historyCount">0 saved</span>
+          <button class="btn secondary" id="clearHistory" type="button">Clear history</button>
         </div>
 
-        <div class="validation-layout">
-          <section class="score-panel" aria-label="Material confidence scores">
-            <div class="panel-heading">
-              <span>Top-3 predictions</span>
-              <strong id="scoreSummary">7 classes</strong>
-            </div>
-            <div class="top-prediction-list" id="topPredictionList"></div>
-            <div class="score-list" id="scoreList"></div>
-          </section>
+        <div class="history-grid" id="historyList"></div>
+      </main>
 
-          <section class="accordion-panel" aria-label="Evidence details">
-            <button class="accordion-item is-open" type="button">
-              <span>Two-stage pipeline</span>
-              <strong>Localize first, classify second</strong>
-              <p>YOLO26n proposes boxes; each crop is verified by the material classifier before routing.</p>
-            </button>
-            <button class="accordion-item" type="button">
-              <span>Corrected classifier result</span>
-              <strong>91.77% on the clean test set</strong>
-              <p>Measured after quarantining 2,406 leaked test images found by the audit.</p>
-            </button>
-            <button class="accordion-item" type="button">
-              <span>Classical ML baseline</span>
-              <strong>ExtraTrees 73.8% on 637 features</strong>
-              <p>Handcrafted-feature baseline kept for comparison and explainability evidence.</p>
-            </button>
-          </section>
-        </div>
-      </section>
-
-      <section class="limits-section" id="limits" aria-labelledby="limits-title">
-        <div class="section-heading">
-          <h2 id="limits-title">Measured limits, and what was done about them.</h2>
-        </div>
+      <!-- ============================================================ PAGE: LIMITS -->
+      <main class="page" data-page="limits" id="page-limits" hidden>
+        <p class="kicker tone-warn">Honesty section</p>
+        <h2 class="page-title">Measured limits, and what was done about them.</h2>
 
         <div class="limit-stack">
           <article>
@@ -308,19 +398,62 @@
             </p>
           </article>
         </div>
-      </section>
+
+        <div class="method-note">
+          <p><strong>Method note</strong> &mdash; metrics on this site come from the leakage-audited evaluation sets. The audit scripts, quarantine manifest, and reports live in the project repository.</p>
+          <a class="btn primary" href="#evidence" data-page-link>See the evidence</a>
+        </div>
+      </main>
+
+      <!-- ============================================================ PAGE: ABOUT -->
+      <main class="page" data-page="about" id="page-about" hidden>
+        <p class="kicker">Final Year Project</p>
+        <h2 class="page-title">WasteWise: waste detection and classification.</h2>
+        <p class="page-intro">
+          A Final Year Project for automated waste understanding. A two-stage deep-learning
+          pipeline detects and classifies waste in real photos, backed by a classical
+          machine-learning branch for explainable evidence. Every headline metric survives a
+          leakage-audited evaluation set.
+        </p>
+
+        <div class="about-grid">
+          <article class="about-card">
+            <span>Live deployment</span>
+            <h3>The real model, served publicly</h3>
+            <p>The trained YOLO26n localizer and ConvNeXt classifier run behind a public API on Hugging Face Spaces.</p>
+            <a class="btn primary" href="https://khoaphung-wastewise-ai.hf.space" target="_blank" rel="noopener">khoaphung-wastewise-ai.hf.space &nearr;</a>
+          </article>
+          <article class="about-card">
+            <span>Repository evidence</span>
+            <h3>Where each claim lives</h3>
+            <div class="artifact-list">
+              <div class="artifact-row"><span>runs/audits/</span><strong>leakage audit trail</strong></div>
+              <div class="artifact-row"><span>docs/01_final_report/FAILURES_AND_FIXES.md</span><strong>failure log</strong></div>
+              <div class="artifact-row"><span>models/trained/</span><strong>promoted checkpoints</strong></div>
+            </div>
+          </article>
+        </div>
+
+        <div class="about-stats">
+          <div><strong>2</strong><span>pipeline stages</span></div>
+          <div><strong>7</strong><span>material classes</span></div>
+          <div><strong>637</strong><span>handcrafted features</span></div>
+          <div><strong>80,993</strong><span>detector training boxes</span></div>
+        </div>
+      </main>
 
       <footer class="footer">
         <div>
-          <strong>Method note</strong>
-          <p>
-            Metrics on this page come from the leakage-audited evaluation sets. The audit scripts,
-            quarantine manifest, and reports live in the project repository.
-          </p>
+          <strong>WasteWise</strong>
+          <p>Final Year Project &middot; leakage-audited numbers only</p>
         </div>
-        <a class="btn primary" href="#scan">Run an image</a>
+        <div class="footer-links">
+          <a href="#evidence" data-page-link>Evidence</a>
+          <a href="#limits" data-page-link>Limits</a>
+          <a href="#about" data-page-link>About</a>
+        </div>
       </footer>
-    </main>
+    </div>
 
     <div class="toast" id="toast" role="status" aria-live="polite">Updated</div>
     <script src="./app.js"></script>
