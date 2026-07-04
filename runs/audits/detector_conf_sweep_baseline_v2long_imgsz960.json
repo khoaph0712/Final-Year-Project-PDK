@@ -1,0 +1,150 @@
+{
+  "weights": "C:\\FYP\\runs\\detect\\yolo26n_hardcase_v2_long\\weights\\best.pt",
+  "imgsz": 960,
+  "splits": {
+    "val": [
+      {
+        "conf": 0.1,
+        "precision": 0.7590884404190597,
+        "recall": 0.6032602466930408,
+        "map50": 0.6422820855200585,
+        "map50_95": 0.4075079038085373,
+        "organic_recall": 0.532,
+        "small_box_recall": 0.4173,
+        "large_box_recall": 0.7036
+      },
+      {
+        "conf": 0.15,
+        "precision": 0.7590884404190597,
+        "recall": 0.6032602466930408,
+        "map50": 0.6246868389820016,
+        "map50_95": 0.3988763675059639,
+        "organic_recall": 0.4844,
+        "small_box_recall": 0.3648,
+        "large_box_recall": 0.6683
+      },
+      {
+        "conf": 0.2,
+        "precision": 0.7590884404190597,
+        "recall": 0.6032602466930408,
+        "map50": 0.6101396493845664,
+        "map50_95": 0.3918090887496018,
+        "organic_recall": 0.4471,
+        "small_box_recall": 0.3252,
+        "large_box_recall": 0.6381
+      },
+      {
+        "conf": 0.25,
+        "precision": 0.7590884404190597,
+        "recall": 0.6032602466930408,
+        "map50": 0.5955329193415487,
+        "map50_95": 0.38509176912426657,
+        "organic_recall": 0.4124,
+        "small_box_recall": 0.2905,
+        "large_box_recall": 0.6094
+      },
+      {
+        "conf": 0.3,
+        "precision": 0.7314723756770967,
+        "recall": 0.623639115819422,
+        "map50": 0.5807073618782427,
+        "map50_95": 0.3775576269777718,
+        "organic_recall": 0.3832,
+        "small_box_recall": 0.2627,
+        "large_box_recall": 0.5857
+      },
+      {
+        "conf": 0.4,
+        "precision": 0.7948943326126715,
+        "recall": 0.5830171136724032,
+        "map50": 0.5491411355416201,
+        "map50_95": 0.36322408499697634,
+        "organic_recall": 0.3285,
+        "small_box_recall": 0.2103,
+        "large_box_recall": 0.5396
+      },
+      {
+        "conf": 0.5,
+        "precision": 0.8396031539458985,
+        "recall": 0.5424250313669042,
+        "map50": 0.5138198906078423,
+        "map50_95": 0.34611057810040974,
+        "organic_recall": 0.2776,
+        "small_box_recall": 0.1678,
+        "large_box_recall": 0.4899
+      }
+    ],
+    "test": [
+      {
+        "conf": 0.1,
+        "precision": 0.501795531439363,
+        "recall": 0.42888292559206487,
+        "map50": 0.3672808188486197,
+        "map50_95": 0.2079516985155677,
+        "organic_recall": 0.2391,
+        "small_box_recall": 0.3601,
+        "large_box_recall": 0.6697
+      },
+      {
+        "conf": 0.15,
+        "precision": 0.501795531439363,
+        "recall": 0.42888292559206487,
+        "map50": 0.35315575849779196,
+        "map50_95": 0.2026231382126583,
+        "organic_recall": 0.1957,
+        "small_box_recall": 0.3273,
+        "large_box_recall": 0.6252
+      },
+      {
+        "conf": 0.2,
+        "precision": 0.501795531439363,
+        "recall": 0.42888292559206487,
+        "map50": 0.3439906279781853,
+        "map50_95": 0.1983041141044653,
+        "organic_recall": 0.1739,
+        "small_box_recall": 0.3061,
+        "large_box_recall": 0.5847
+      },
+      {
+        "conf": 0.25,
+        "precision": 0.5025950695750748,
+        "recall": 0.4292018966904658,
+        "map50": 0.3336407714660893,
+        "map50_95": 0.1934051308190734,
+        "organic_recall": 0.1522,
+        "small_box_recall": 0.2831,
+        "large_box_recall": 0.5541
+      },
+      {
+        "conf": 0.3,
+        "precision": 0.525039544094125,
+        "recall": 0.3986519103671012,
+        "map50": 0.3184636287524814,
+        "map50_95": 0.18739604385600256,
+        "organic_recall": 0.087,
+        "small_box_recall": 0.27,
+        "large_box_recall": 0.5239
+      },
+      {
+        "conf": 0.4,
+        "precision": 0.5669014507255788,
+        "recall": 0.341047210042507,
+        "map50": 0.2929304639410576,
+        "map50_95": 0.17720597571207972,
+        "organic_recall": 0.0435,
+        "small_box_recall": 0.2422,
+        "large_box_recall": 0.4643
+      },
+      {
+        "conf": 0.5,
+        "precision": 0.5886029084111686,
+        "recall": 0.304793039703116,
+        "map50": 0.26681057590788726,
+        "map50_95": 0.16478557252136045,
+        "organic_recall": 0.0217,
+        "small_box_recall": 0.2144,
+        "large_box_recall": 0.4219
+      }
+    ]
+  }
+}

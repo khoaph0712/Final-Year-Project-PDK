@@ -1,0 +1,63 @@
+{
+  "weights": "runs\\detect\\yolo26n_hardcase_v2_long\\weights\\best.pt",
+  "imgsz": 640,
+  "conf": 0.3,
+  "splits": {
+    "val": {
+      "overall": {
+        "precision": 0.777311891752798,
+        "recall": 0.6499469786118167,
+        "map50": 0.7206215069751805,
+        "map50_95": 0.541579630505783
+      },
+      "per_class_recall": {
+        "plastic": 0.7916,
+        "glass": 0.7018,
+        "metal": 0.683,
+        "paper": 0.6538,
+        "cardboard": 0.5476,
+        "organic": 0.3594
+      },
+      "per_class_gt": {
+        "plastic": 1027,
+        "glass": 2307,
+        "metal": 1593,
+        "paper": 130,
+        "cardboard": 1459,
+        "organic": 12718
+      },
+      "small_box_recall": 0.2084,
+      "small_box_gt": 6746,
+      "large_box_recall": 0.6061,
+      "large_box_gt": 12488
+    },
+    "test": {
+      "overall": {
+        "precision": 0.5900071853650777,
+        "recall": 0.4560543647274651,
+        "map50": 0.47356785980735533,
+        "map50_95": 0.3481294864877734
+      },
+      "per_class_recall": {
+        "plastic": 0.5569,
+        "glass": 0.0,
+        "metal": 0.6143,
+        "paper": 0.4932,
+        "cardboard": 0.3846,
+        "organic": 0.1087
+      },
+      "per_class_gt": {
+        "plastic": 1519,
+        "glass": 0,
+        "metal": 490,
+        "paper": 1259,
+        "cardboard": 13,
+        "organic": 46
+      },
+      "small_box_recall": 0.275,
+      "small_box_gt": 611,
+      "large_box_recall": 0.5928,
+      "large_box_gt": 2716
+    }
+  }
+}

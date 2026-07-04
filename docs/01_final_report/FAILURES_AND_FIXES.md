@@ -109,6 +109,29 @@ wrong, how it was detected, and what fixed it. Each entry is thesis-usable evide
 - Scripts: `build_detector_crop_dataset.py`, `finetune_stage2_on_detector_crops.py`;
   results: `runs/dl/convnext_detector_crops_ft/finetune_result.json`.
 
+## F4c. Tile-augmented training tested, rejected (2026-07-04)
+
+- **Hypothesis:** F4 fixed convergence and data-diversity but tiny-object recall
+  (small-box GT <1% image area) was still 0.208-0.275. If small objects appear
+  larger in isolated tile crops during *training* (not just inference, which F4
+  already ruled out via sliced inference), the model might learn them better.
+- **Method:** `scripts/build_tiled_training_dataset.py` kept every original
+  training image and additionally cut images containing tiny GT boxes into 2x2
+  overlapping tiles (IoS-remapped boxes), capped to keep epoch time comparable.
+  `scripts/train_tiled.py` used the identical recipe as the deployed baseline
+  (100 epochs, imgsz 640, batch 16, cos_lr, fresh from pretrained yolo26n) so
+  the training data was the only variable. Both baseline and tiled evaluated
+  identically via `scripts/eval_detector_sizeclass.py` on the clean val+test.
+- **Result: tiled loses on clean test (the deployment-honest split) on every
+  metric** - mAP50 0.474 -> 0.449, mAP50-95 0.348 -> 0.335, small-box recall
+  0.275 -> 0.270, and organic recall collapses 0.109 -> **0.022** (5x worse).
+  Val shows the same direction at smaller magnitude. Training on tiles taught
+  the model a scale/context distribution that generalizes worse to whole,
+  untiled images at inference - the opposite of the intended fix.
+- **Outcome:** tiled weights (`runs/detect/yolo26n_hardcase_tiled_v1/`) are
+  **not deployed**; baseline (`yolo26n_hardcase_v2_long`) remains the deployed
+  detector. Full comparison: `runs/audits/TILED_TRAINING_v1.md`.
+
 ## F5. Detector precision/recall operating point was never tuned
 
 - **Symptom:** web app used default confidence; precision complaints.
@@ -116,6 +139,16 @@ wrong, how it was detected, and what fixed it. Each entry is thesis-usable evide
   Sweep (`scripts/yolo_precision_threshold_sweep.py`, commit 5794abb):
   P 0.759@conf0.001 -> 0.861@0.5 -> 0.922@0.7 (recall 0.592 -> 0.517 -> 0.424).
   High-precision deployments should run conf~0.5 instead of retraining.
+- **Update (2026-07-04), after F4c ruled out retraining:** re-swept on the
+  deployed baseline against the clean val+test at the real serving imgsz (960,
+  not 640) - `scripts/sweep_detector_conf_clean.py`,
+  `runs/audits/DETECTOR_CONF_SWEEP.md`. Lowering `conf` 0.30 -> 0.10 nearly
+  triples organic recall (test 0.087 -> 0.239) and lifts small-box recall
+  (test 0.270 -> 0.360) for a precision cost within noise (test -2.3pp, val
+  actually *higher* at 0.10). **Deployed:** `web/server.py` `YOLO_CONF`
+  0.30 -> 0.10, with a new `YOLO_GATE_CONF = 0.30` keeping the "auto-label as
+  waste" decision gate at the old, separately-validated threshold so only the
+  candidate-box pool got wider, not the no-review-needed bar.
 
 ## F6. Label/data hygiene issues (minor, quantified)
 
@@ -159,8 +192,8 @@ wrong, how it was detected, and what fixed it. Each entry is thesis-usable evide
 | F1 eval leakage | Critical | Quarantined eval sets built; re-validation pending training completion |
 | F2 cross-dataset broken | High | Fixed + committed |
 | F3 PCA cherry-pick | Medium | Fixed + committed |
-| F4 tiny-object recall | High | Retrain running; imgsz-960 run planned |
-| F5 untuned conf | Medium | Sweep committed; deploy conf decision pending |
+| F4 tiny-object recall | High | Long retrain + 960px + sliced-inference + tile-training all tried; baseline (long retrain) stays deployed |
+| F5 untuned conf | Medium | Re-swept post-F4c at serving imgsz; conf 0.30->0.10 deployed |
 | F6 label hygiene | Low | Quantified; no action needed |
 | F7 environment | Medium | All root-caused; rules recorded |
 | F8 architecture swap | Info | Documented |
