@@ -2,7 +2,7 @@
   {
     "id": "taco_official",
     "name": "TACO: Trash Annotations in Context",
-    "status": "candidate_next",
+    "status": "downloaded_full",
     "source_url": "https://github.com/pedropro/TACO",
     "reference_url": "https://datasetninja.com/taco",
     "annotation_format": "COCO instance segmentation; can derive boxes from segmentation/bbox fields",
@@ -12,7 +12,52 @@
     "similar_to_taco": "reference dataset",
     "strength": "Real-world litter scenes, hierarchical waste taxonomy, masks and boxes",
     "risk": "No official train/val/test split; many rare classes; needs COCO-to-YOLO/class-crop conversion",
-    "action": "Download official annotations/images, run COCO adapter, map 60 classes to project classes and/or TACO-10"
+    "action": "Downloaded under external_datasets/hard_case_full/taco_official; use source-aware YOLO split manifest and review 35 fallback-640 images before final annotation training"
+  },
+  {
+    "id": "realwaste_hf_uci",
+    "name": "RealWaste",
+    "status": "downloaded_full",
+    "source_url": "https://huggingface.co/datasets/shahzaibvohra/realwaste",
+    "reference_url": "https://doi.org/10.24432/C5SS4G",
+    "annotation_format": "Image classification folders / Hugging Face imagefolder",
+    "classes": 9,
+    "images": 4752,
+    "objects": 4752,
+    "similar_to_taco": "medium",
+    "strength": "Authentic landfill reception images; strong hard-case source for material classifier",
+    "risk": "Classification-only, no boxes; textile/miscellaneous/vegetation labels require careful mapping to WasteWise classes",
+    "action": "Downloaded under external_datasets/hard_case_full/realwaste_hf_uci; use classifier train/val/test recommendations in source_aware_split_manifest.csv"
+  },
+  {
+    "id": "outerview_global_trash_debris",
+    "name": "Outerview Global Trash & Debris Index",
+    "status": "downloaded_full_audit_only",
+    "source_url": "https://huggingface.co/datasets/Outerview/global-trash-and-debris-index",
+    "reference_url": "https://outerview.com",
+    "annotation_format": "Hugging Face image/geospatial dataset; image classification and object detection metadata",
+    "classes": null,
+    "images": 30000,
+    "objects": null,
+    "similar_to_taco": "medium-high",
+    "strength": "Geotagged real-world trash and debris observations across varied environments; CC-BY-4.0 sample dataset",
+    "risk": "Dataset card says it is a sample subset and detection accuracy can vary; labels may be CV-generated rather than manually verified",
+    "action": "Downloaded metadata and image archive under external_datasets/hard_case_full/outerview_global_trash_debris; keep as OOD review pool until material labels are visually audited"
+  },
+  {
+    "id": "openlittermap",
+    "name": "OpenLitterMap",
+    "status": "candidate_audit_only",
+    "source_url": "https://openlittermap.com/",
+    "reference_url": "https://openlittermap.com/terms",
+    "annotation_format": "Geotagged litter photos with classified tags; export/API access must be verified",
+    "classes": null,
+    "images": null,
+    "objects": null,
+    "similar_to_taco": "high",
+    "strength": "Open litter and plastic-pollution observations from real public environments",
+    "risk": "ODbL attribution/share-alike requirements and export access need review before merging into project data",
+    "action": "Verify data access and license obligations, then sample environment-litter hard cases for review/OOD evaluation"
   },
   {
     "id": "mju_waste",
@@ -88,5 +133,21 @@
     "strength": "Real-world garbage in images; useful for background/negative context and one-class detection",
     "risk": "Single class; not enough for material sorting",
     "action": "EDA/features only or binary trash-vs-background; do not use as standalone multi-class model"
+  },
+  {
+    "id": "plastopol",
+    "name": "PlastOPol (Roboflow v4)",
+    "status": "downloaded_built_clean",
+    "source_url": "https://universe.roboflow.com/gregorioha-naver-com/plastopol/dataset/4",
+    "reference_url": "https://zenodo.org/records/5829156",
+    "annotation_format": "YOLO single-class 'litter'; Roboflow export had segmentation polygons, converted to bboxes",
+    "classes": 1,
+    "images": 2397,
+    "objects": 5246,
+    "license": "CC BY 4.0",
+    "similar_to_taco": "low (Marine Debris Tracker ground-level litter, distinct source)",
+    "strength": "NEW real-world field diversity for class-agnostic detector recall (F11 next lever)",
+    "risk": "1-class only -> requires class-agnostic (nc=1) detector; 21/2418 near-dups of existing data dropped",
+    "action": "clean split at external_datasets/plastopol_clean_v1; audit runs/audits/plastopol_leakage_audit.json"
   }
 ]

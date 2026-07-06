@@ -1,0 +1,109 @@
+{
+  "plastopol_counts": {
+    "train": 1686,
+    "valid": 248,
+    "test": 484
+  },
+  "hamming_threshold": 6,
+  "reference_images": {
+    "taco_field_clean_v1": 1389,
+    "hardcase_train": 20593
+  },
+  "leaks_found": {
+    "train": 15,
+    "valid": 1,
+    "test": 5
+  },
+  "leak_detail": {
+    "train": [
+      {
+        "image": "135524_jpg.rf.c9017f3918c26dc8b3c17842919bca74.jpg",
+        "matches_ref": "hardcase_train"
+      },
+      {
+        "image": "135945_jpg.rf.f3d19a1a60ac8bc63e5fb04632b83b1f.jpg",
+        "matches_ref": "hardcase_train"
+      },
+      {
+        "image": "136175_jpg.rf.dcb16d6af05bfec2606a26d48de684af.jpg",
+        "matches_ref": "hardcase_train"
+      },
+      {
+        "image": "136180_jpg.rf.0cce76c23832f6f077fcab0b48be8693.jpg",
+        "matches_ref": "taco_field_clean_v1"
+      },
+      {
+        "image": "136212_jpg.rf.1e01ca64270013cc43b9bec6ee287003.jpg",
+        "matches_ref": "taco_field_clean_v1"
+      },
+      {
+        "image": "137609_jpg.rf.f39ce5da2a524f15c8313781da1c6250.jpg",
+        "matches_ref": "hardcase_train"
+      },
+      {
+        "image": "204403_jpg.rf.4b19d8a789f5247fdd7d3d1498bf0514.jpg",
+        "matches_ref": "hardcase_train"
+      },
+      {
+        "image": "204411_jpg.rf.6907db28b13a0afb1dbd950428ae852d.jpg",
+        "matches_ref": "hardcase_train"
+      },
+      {
+        "image": "266341_jpg.rf.e1bde70b2d4e0c6c084a5b015ced8e67.jpg",
+        "matches_ref": "hardcase_train"
+      },
+      {
+        "image": "296436_jpg.rf.2c28a85307ec656beff69d8ad4821e17.jpg",
+        "matches_ref": "hardcase_train"
+      },
+      {
+        "image": "297100_jpg.rf.50784a5ddd35f369e1e38ef967378661.jpg",
+        "matches_ref": "hardcase_train"
+      },
+      {
+        "image": "297148_jpg.rf.768d96392dbd510bcb308448197d5f9c.jpg",
+        "matches_ref": "hardcase_train"
+      },
+      {
+        "image": "303046_jpg.rf.41994085c856fe6fb96638000729e901.jpg",
+        "matches_ref": "hardcase_train"
+      },
+      {
+        "image": "323890_jpg.rf.e534ac442365981498be9bf062180c46.jpg",
+        "matches_ref": "hardcase_train"
+      },
+      {
+        "image": "331533_jpg.rf.0cb7123963a7a1157e858f72d7a36e94.jpg",
+        "matches_ref": "hardcase_train"
+      }
+    ],
+    "valid": [
+      {
+        "image": "422398_jpg.rf.2f7a31d5de58d74e4b4608a342c973a4.jpg",
+        "matches_ref": "taco_field_clean_v1"
+      }
+    ],
+    "test": [
+      {
+        "image": "135548_jpg.rf.b08d0fcfc9e449adafeebbc37788798a.jpg",
+        "matches_ref": "hardcase_train"
+      },
+      {
+        "image": "135947_jpg.rf.d8366d84a65131ed49c1b0e2bab97bff.jpg",
+        "matches_ref": "hardcase_train"
+      },
+      {
+        "image": "136181_jpg.rf.cafdb878b93f3b684c933a5c784cde1e.jpg",
+        "matches_ref": "hardcase_train"
+      },
+      {
+        "image": "263765_jpg.rf.31f8a97e2f39f371319e1d23954cb118.jpg",
+        "matches_ref": "hardcase_train"
+      },
+      {
+        "image": "279637_jpg.rf.2365302ba9660d9c413a52a3d24a2a8f.jpg",
+        "matches_ref": "hardcase_train"
+      }
+    ]
+  }
+}

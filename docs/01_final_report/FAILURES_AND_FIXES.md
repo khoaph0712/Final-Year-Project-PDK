@@ -185,6 +185,206 @@ wrong, how it was detected, and what fixed it. Each entry is thesis-usable evide
   precision 0.745 -> 0.757, recall ~equal, latency ~equal. The swap alone did not
   move the needle; convergence (F4) and data quality (F1) dominate.
 
+## F9. Serving resolution mismatch: 640-trained detector served at 960 (2026-07-05)
+
+- **Symptom:** none visible - `YOLO_IMG_SIZE = 960` had been set in `web/server.py` as an
+  "accuracy-first" setting (2026-06-09) and survived every later model promotion.
+- **Root cause:** the deployed detector (`yolo26n_hardcase_v2_long`) is trained at
+  imgsz=640. Serving it at 960 breaks the anchor-free scale priors it learned; the F4
+  experiment that showed 960 helps was a 960 *fine-tune* (different weights, not
+  deployed), and the serving default was never re-validated against the deployed 640
+  weights.
+- **Measured impact** (deployed weights, `runs/audits/detector_imgsz_sweep_clean_test.json`
+  and `runs/audits/detector_imgsz_sweep_realworld_v2_test.json`):
+  - clean test: recall 0.456@640 vs 0.429@960, mAP50 0.474 vs 0.409, mAP50-95 0.348 vs 0.229
+  - realworld_v2 test: recall 0.492@640 vs 0.486@960, mAP50 0.499 vs 0.475
+    (NOTE: this split is later shown to be 74% leaked - see F10. The 640>960
+    *direction* is unaffected since leakage hits both sides equally, so the F9
+    decision stands, but do NOT quote these as absolute field-generalization numbers.)
+  - conf-sweep grids agree at the serving operating point (conf 0.10, clean test):
+    P 0.590/R 0.456 @640 vs P 0.502/R 0.429 @960; organic recall 0.261 vs 0.239.
+    Only small-box recall marginally favors 960 (0.360 vs 0.344).
+  - 960 also costs ~2.25x the CPU inference compute on the Hugging Face Space.
+- **Fix:** `web/server.py` `YOLO_IMG_SIZE` default 960 -> 640 (env-overridable as before).
+  The conf=0.10 operating point remains optimal at 640 (best organic + small-box recall
+  in the 640 grid with no overall recall cost).
+- **Lesson:** serving-time inference parameters are model-coupled hyperparameters; every
+  weight promotion must re-validate the full serving config (imgsz, conf, iou, max_det),
+  not just the weights.
+
+## F10. `yolo26_balanced_realworld_v2` is a leaked benchmark, not a field set (2026-07-05)
+
+- **Symptom:** the set was named/treated as a "real-world" field benchmark and cited as a
+  deployment proxy (F9). Investigated before launching a field-recall fine-tune.
+- **Root cause:** `scripts/build_balanced_yolo_dataset.py` builds it by greedily
+  box-count-rebalancing the SAME `yolo26_hardcase_dataset_v1` (studio-heavy) and
+  hard-linking + hash-renaming the files (`test_*/val_*/train_*`), which hides their
+  origin. It is not a new domain and it inherits F1's cross-split leakage.
+- **Measured impact** (MD5 of raw bytes, hard links = identical files):
+  **53/72 (74%) of realworld_v2 test images are byte-identical to hardcase TRAIN** -
+  the deployed detector's own training data - plus 12 in hardcase val, 7 in hardcase test.
+  0/72 are TACO field images. So R 0.492 / mAP50 0.499 on this split is train-test
+  leakage, not generalization.
+- **Consequence:** there is currently **no clean field detector benchmark with usable n**.
+  The leakage-quarantined clean test has only 4 TACO images (167/171 TACO test images were
+  quarantined as perceptual near-dups of train, F1); realworld_v2 is leaked studio; the only
+  honest field signal is the 24-image TACO pipeline eval (R 0.265, ~+/-10pp noise).
+- **Fix / policy:** realworld_v2 is retired from any accuracy claim (relative imgsz/conf
+  comparisons only). The planned Step-1 "oversample the existing 1,034 TACO train images"
+  is **rejected before running**: those TACO images are exactly the ones with perceptual
+  near-dups in val/test, so a measured "+field recall" would be memorization on leaked
+  eval images, and no clean split exists to measure it on anyway.
+- **Corrected next action:** the field-domain work is gated on first building a clean,
+  source-isolated field eval set (and matching train data) from EXTERNAL imagery not
+  entangled with hardcase - PlastOPol (own images + class-agnostic litter boxes) with a
+  fresh source-aware split and a mandatory dHash near-dup audit against every existing
+  split (F1 procedure). Only then is a field fine-tune measurable.
+- **Lesson:** a dataset's name is not its provenance. Audit any "real-world"/"balanced"
+  derived set for its source and leakage before using it as a benchmark.
+
+## F11. Field-rebalance fine-tune tested, rejected; honest field baseline established (2026-07-05)
+
+- **Context:** F10 left no valid field benchmark. First built a clean, source-isolated
+  field eval from the official TACO COCO annotations, split BY PHOTO with test/val drawn
+  ONLY from photos the deployed model never trained on (MD5-verified 0 overlap with
+  hardcase train): `external_datasets/taco_field_clean_v1` (train 1,113 / val 90 / test 120,
+  461 test boxes). Script: `scripts/build_taco_field_clean.py`.
+- **Honest field baseline** (deployed weights, class-agnostic IoU>=0.5 match at the serving
+  operating point conf 0.10/imgsz 640 - class-agnostic because the pipeline re-labels each
+  crop, so localization recall is what matters): **field recall 0.505**, small-box recall
+  0.318, 1/120 zero-detection images. This CORRECTS the widely-quoted 0.265, which came from
+  class-AWARE matching on 24 pipeline images and conflated localization misses with material
+  mismatches. Evidence: `runs/audits/field_recall_baseline_deployed.json`. The real weakness
+  is small objects (63% of field boxes are small).
+- **Intervention:** fine-tuned the deployed YOLO26n on a 26.6%-field rebalanced set (studio
+  19,559 x1 + clean TACO field x6 = `field_rebalance_v1`), from deployed weights, lr0 1e-4,
+  mosaic on / mixup+copy_paste off, early-stop on field-val. Scripts:
+  `build_field_rebalance.py`, `finetune_field_rebalance.py`.
+- **Result (both gates failed):**
+  - field test recall 0.505 -> **0.518 (+1.3pp)**, small-box 0.318 -> 0.336 (+1.8pp) -
+    within noise (461 boxes), below the +5pp promote bar. Best epoch = 2 (model saturated
+    on this field data in 2 epochs, then memorized oversampled dups -> val recall decayed
+    0.68->0.62). Evidence: `runs/audits/field_recall_finetuned_k6.json`.
+  - studio guard (clean val) recall 0.650 -> **0.627 (-2.3pp)**, mAP50-95 0.542 -> 0.495 -
+    regressed beyond the -2pp guard. Evidence: `runs/audits/field_rebalance_k6_studio_guard.json`.
+- **Root cause of the null result:** only 287 of the 1,113 field-train images were novel to
+  the deployed model (it already trained on 826); reweighting data it already had cannot add
+  field generalization. Same conclusion as F4c: the constraint is field data VOLUME/diversity,
+  not the sampling factor. **Not promoted; deployed baseline kept.**
+- **Next lever (evidence-backed):** external field imagery that adds NEW scenes - PlastOPol
+  (own images + class-agnostic litter boxes, no entanglement with hardcase) merged with a
+  fresh source-aware split + dHash near-dup audit (F1 procedure), evaluated on the now-clean
+  `taco_field_clean_v1` test + a held-out PlastOPol test. Expected field recall 0.52 -> 0.60+
+  only from genuinely new field scenes, not repetition.
+
+## F12. Class-agnostic (nc=1) field expansion with PlastOPol — large field gains, studio tradeoff (2026-07-05)
+
+- **Motivation:** F11 proved oversampling *existing* field data does nothing; the lever is NEW
+  field data. Added PlastOPol (Roboflow v4, 2,418 real-world Marine-Debris-Tracker litter
+  images, one-class). Since PlastOPol has no material labels, this also realigns the detector
+  with the intended architecture: a **class-agnostic (nc=1) 'litter' detector**, classifier
+  owns material ID.
+- **Data hygiene (F1 procedure):** dHash audit of PlastOPol vs taco_field_clean_v1 + hardcase
+  train found 21/2,418 near-dups (18 hardcase, 3 field-test) - all dropped. Clean split
+  `plastopol_clean_v1` (1,671/247/479). Roboflow export was segmentation polygons -> converted
+  to boxes. Audit: `runs/audits/plastopol_leakage_audit.json`.
+- **Training:** collapsed studio+TACO labels to class 0, unioned with PlastOPol (field x2 =
+  22.6% share), retrained YOLO26n nc=1 from the deployed 6-class backbone (696/708 items
+  transferred, head reinitialized). Best epoch 27, field-val mAP50 0.803 (vs F11's ~0.70).
+  Scripts: `build_class_agnostic_field.py`, `finetune_class_agnostic.py`.
+- **Results** (class-agnostic IoU>=0.5 match; each model at its own tuned conf - the reinit
+  head needed re-tuning 0.10->0.04, per F5/F9; `runs/audits/class_agnostic_field_v1_results.json`):
+
+  | test set | baseline@0.10 | nc=1@0.04 | Δ recall | Δ small-box |
+  |---|---|---|---|---|
+  | TACO field (held-out) | 0.505 | **0.614** | **+10.9pp** | +16.5pp |
+  | PlastOPol field | 0.573 | **0.777** | **+20.4pp** | +21.7pp |
+  | studio (crowded clean-val) | 0.584 | 0.536 | **-4.8pp** | -3.9pp |
+
+- **Verdict:** the field lever WORKS - large recall gains exactly on the weakness (small
+  field objects, +16-22pp), confirming F11's conclusion that new data (not resampling) is
+  the constraint. Cost: -4.8pp studio recall (crowded lab piles, NOT the real-world upload
+  distribution the app serves). The pre-registered -2pp studio guard is not met, so not
+  auto-promoted; this is a deployment-priority decision. Promotion also needs a small
+  `web/server.py` change (drop the detector-class material vote in the alpha-blend, since the
+  detector is now class-agnostic) + conf 0.10->0.04 + HF redeploy.
+- **Initially promoted field-first, then REVERTED (2026-07-05) - see F13.** The promotion
+  compared nc=1@conf0.04 against the 6-class baseline@conf0.10, an unfair operating-point
+  comparison. Re-running the 6-class detector at matched conf 0.04 showed most of the apparent
+  field gain was the conf drop (an ALLOWED lever), not the architecture: 6-class 0.505@0.10 ->
+  0.586@0.04. The nc=1 head added only +2.8pp field over 6-class@0.04 while costing -10pp studio
+  recall. Reverted to the 6-class detector; kept the conf lever instead (F13). Lesson: always
+  compare candidate models at each model's own tuned operating point before attributing a gain
+  to an architecture change.
+
+## F13. Detector conf lever captures the field gain without the architecture change (2026-07-05)
+
+- **Problem (taxonomy A, YOLO missed detection):** field recall 0.505 far below target; F12
+  attributed the fix to a class-agnostic (nc=1) architecture change.
+- **Debug-first check (the one F12 skipped):** swept the DEPLOYED 6-class detector's conf below
+  0.10 - an allowed lever never tested on the field split. Clean held-out field test, class-agnostic
+  match (`runs/audits/detector_conf_sweep_field_6class.json`):
+
+  | conf | field recall | field small-box | studio recall |
+  |---:|---:|---:|---:|
+  | 0.10 (old) | 0.505 | 0.318 | 0.584 |
+  | 0.05 | 0.557 | 0.390 | - |
+  | **0.04** | **0.586** | **0.432** | **0.637** |
+
+- **Result:** dropping conf 0.10 -> 0.04 lifts field recall **+8.1pp** AND studio recall **+5.3pp**
+  AND small-box **+11pp** - a strict, no-cost recall gain across both domains from a pure threshold
+  change. The nc=1 model (F12) reached 0.614 field but only +2.8pp over 6-class@0.04, at -10pp studio.
+- **Fix:** reverted the F12 nc=1 promotion; deployed detector stays 6-class at
+  `web/server.py YOLO_CONF = 0.04` (gate stays 0.30). End-to-end smoke test passes. The PlastOPol
+  clean split and class-agnostic experiment are kept as documented evidence, not deployed.
+  **Pending: HF Space redeploy.**
+- **Lesson:** exhaust the cheap allowed levers (conf/IoU/aug/hard-neg) and compare at matched
+  operating points BEFORE any architecture change. Recall is threshold-sensitive; a mismatched-conf
+  comparison can make a threshold gain look like an architecture win.
+
+## F14. Glass->Plastic: detector material vote overrode the classifier (2026-07-05)
+
+- **Problem (taxonomy D, misclassification via pipeline):** real-world field glass labeled plastic.
+- **Root cause (debug-first, NOT classifier weakness):** classifier is strong on glass (clean GT
+  glass F1 0.921, recall 0.87-0.91). The alpha-blend (`server.py`) injected the DETECTOR's material
+  vote at alpha up to 0.70. The detector is plastic-biased on field - it predicts plastic for
+  516/662 (78%) field boxes, glass for 6 (measured on taco_field_clean test). So a confident field
+  "plastic" box flips a correct glass crop: at alpha 0.70, plastic 0.52 > glass 0.22.
+- **Fix:** cap alpha at 0.40 (top tier 0.70->0.40). A confident classifier call now survives a
+  confident wrong detector (glass 0.45 > plastic 0.34). Studio alpha-cap sweep (n=2835, glass n=400):
+  macroF1 0.893@0.70 -> 0.886@0.40 (-0.7pp), glass recall 0.912 -> 0.900. Small measured cost on the
+  domain where the detector is reliable; removes the override on the domain where it is not.
+- **Note:** benchmarks (clean GT crops, studio-trained detector) do NOT reproduce the bug - the blend
+  even helps glass there. The failure is field-domain glass, for which there is no GT benchmark
+  (taco field test has 2 glass boxes). Fix justified by the mechanism + the plastic-bias measurement,
+  not a benchmark delta. **Pending: HF redeploy.**
+
+## F15. Hard-negative mining for small-object recall (2026-07-05)
+
+- **Problem (taxonomy A):** field small-object recall still low (~0.43); user reports missed small litter.
+- **Approach (beats the F11 wall by NOT resampling seen data):** mined the deployed detector's
+  small-object false negatives on the field train sets (`scripts/mine_small_fn.py`): 295 hard taco
+  imgs / 673 small-FN, 237 hard PlastOPol imgs / 725 small-FN. PlastOPol is NEW (never trained on).
+  Pseudo-labeled PlastOPol's class-agnostic boxes with the ConvNeXt classifier (the 92.9% material
+  authority; `scripts/pseudo_label_plastopol.py`) so new field data can train the 6-class detector.
+  Built a hard-emphasized fine-tune set (8,442 imgs, 52.6% field, hard imgs x4, studio x4000 anchor;
+  `scripts/build_hardneg_finetune.py`) and fine-tuned from deployed weights with small-object aug
+  (mosaic + scale 0.6; bbox-only so no copy_paste). Early-stopped epoch 5.
+- **Results** (class-agnostic recall, conf 0.04; `runs/detect/hardneg_smallobj_v1/`):
+
+  | test set | baseline | fine-tuned | Δ recall | Δ small-box |
+  |---|---|---|---|---|
+  | TACO field | 0.586 | 0.566 | -2.0pp (within noise) | -1.1pp (noise) |
+  | PlastOPol field (held-out) | 0.573 | **0.746** | **+17.3pp** | **+16.1pp** |
+  | studio guard | 0.637 | 0.647 | +1.0pp | +5.4pp |
+
+- **Verdict: PROMOTED.** Large held-out gain on the deployment-like PlastOPol domain (ground-level
+  real litter), studio preserved (guard passes), TACO flat (within ~1 SE). Same 6-class architecture
+  so NO server change (conf 0.04 and the F14 alpha-cap still apply). Backup:
+  `best_before_hardneg_20260705.pt`. Smoke-tested. **HF redeploy pending.**
+- **Limit:** gain is PlastOPol-domain-specific; a universal small-object fix still needs new labeled
+  small-object data (the actual RoLID boxes - the shared RoLID zip was unlabeled raw dashcam frames).
+
 ## Status summary
 
 | Failure | Severity | Status |
@@ -197,3 +397,8 @@ wrong, how it was detected, and what fixed it. Each entry is thesis-usable evide
 | F6 label hygiene | Low | Quantified; no action needed |
 | F7 environment | Medium | All root-caused; rules recorded |
 | F8 architecture swap | Info | Documented |
+| F9 serving resolution mismatch | Medium | Fixed: YOLO_IMG_SIZE 960 -> 640, re-measured on both eval domains |
+| F10 realworld_v2 leaked benchmark | High | Quantified (74% leaked); retired from accuracy claims; field work gated on external clean eval |
+| F11 field-rebalance fine-tune | Info | Rejected (field +1.3pp within noise, studio -2.3pp); honest field baseline 0.505 set; next lever = external field data (PlastOPol) |
+| F12 class-agnostic + PlastOPol | Info | REVERTED - apparent gain was mostly the conf lever (see F13); kept as evidence, not deployed |
+| F13 detector conf lever (field) | High | Deployed: 6-class @ conf 0.04 -> field recall +8.1pp, studio +5.3pp, small-box +11pp, no architecture change; HF redeploy pending |

@@ -1,0 +1,3 @@
+6class conf 0.05 taco: "recall":0.5574837310195228,"small_recall":0.3904109589041096,
+6class conf 0.04 taco: "recall":0.5856832971800434,"small_recall":0.4315068493150685,
+6class conf 0.03 taco: "recall":0.6030368763557483,"small_recall":0.4520547945205479,

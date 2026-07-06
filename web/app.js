@@ -926,12 +926,12 @@ function startEvidenceCounts() {
   if (evidenceCounted) return;
   evidenceCounted = true;
   countUp(document.querySelector("#correctMetric"), 93.77, 2, 1100, (v) => `${v.toFixed(2)}%`);
-  countUp(document.querySelector("#riskMetric"), 72.1, 1, 1100, (v) => `${v.toFixed(1)}%`);
+  countUp(document.querySelector("#riskMetric"), 70.9, 1, 1100, (v) => `${v.toFixed(1)}%`);
   countUp(document.querySelector("#scanMetric"), 2406, 0, 1200, (v) => Math.round(v).toLocaleString());
   countUp(document.querySelector("#domainMetric"), 39.8, 1, 1100, (v) => `${v.toFixed(1)}%`);
-  countUp(document.querySelector("#yoloPrecision"), 77.7, 1, 1100, (v) => `${v.toFixed(1)}%`);
-  countUp(document.querySelector("#yoloRecall"), 65.0, 1, 1100, (v) => `${v.toFixed(1)}%`);
-  countUp(document.querySelector("#yoloMap5095"), 54.2, 1, 1100, (v) => `${v.toFixed(1)}%`);
+  countUp(document.querySelector("#yoloPrecision"), 77.8, 1, 1100, (v) => `${v.toFixed(1)}%`);
+  countUp(document.querySelector("#yoloRecall"), 62.6, 1, 1100, (v) => `${v.toFixed(1)}%`);
+  countUp(document.querySelector("#yoloMap5095"), 50.0, 1, 1100, (v) => `${v.toFixed(1)}%`);
 }
 
 /* ---------------------------------------------------------------- hero: demo loop */

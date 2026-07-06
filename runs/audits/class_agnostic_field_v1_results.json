@@ -1,0 +1,18 @@
+{
+  "experiment": "class-agnostic (nc=1) field-expansion retrain vs deployed 6-class baseline",
+  "date": "2026-07-05",
+  "model": "runs/detect/class_agnostic_field_v1/weights/best.pt (best epoch 27, field-val mAP50 0.803)",
+  "matching": "class-agnostic, IoU>=0.5 greedy, imgsz 640",
+  "operating_points": {"baseline": 0.10, "class_agnostic": 0.04},
+  "recall": {
+    "taco_field_test":   {"baseline": 0.505, "ca": 0.614, "delta": 0.109},
+    "plastopol_field_test": {"baseline": 0.573, "ca": 0.777, "delta": 0.204},
+    "studio_clean_val":  {"baseline": 0.584, "ca": 0.536, "delta": -0.048}
+  },
+  "small_box_recall": {
+    "taco_field_test":   {"baseline": 0.318, "ca": 0.483, "delta": 0.165},
+    "plastopol_field_test": {"baseline": 0.386, "ca": 0.603, "delta": 0.217},
+    "studio_clean_val":  {"baseline": 0.341, "ca": 0.302, "delta": -0.039}
+  },
+  "verdict": "Large field gains (+11 to +20pp recall, +16 to +22pp small-box) at a moderate studio cost (-4.8pp). Studio guard (-2pp) not met; studio clean-val is crowded lab piles, not the real-world deployment distribution. conf re-tune (0.10->0.04) required for the reinit nc=1 head."
+}

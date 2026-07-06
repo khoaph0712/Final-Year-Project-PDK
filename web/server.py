@@ -30,16 +30,22 @@ YOLO_PATH = ROOT / "models" / "trained" / "yolov11_detector" / "best.pt"
 LOCALIZER_LABEL = "YOLO26n hard-case localizer"
 
 CLASSIFIER_CLASSES = ["plastic", "glass", "metal", "paper", "cardboard", "organic", "Background"]
-# Conf sweep (runs/audits/DETECTOR_CONF_SWEEP.md) at the real serving imgsz=960: dropping
-# 0.30 -> 0.10 nearly triples organic recall (0.087 -> 0.239) and lifts small-box recall
-# (0.270 -> 0.360) on the clean test split for a ~2pp precision cost. YOLO_GATE_CONF keeps
-# the "confident waste" decision gate at the original, separately-validated threshold so the
-# extra low-confidence boxes only widen the candidate pool for the classifier, not the bar
-# for auto-labeling something as waste outright.
-YOLO_CONF = 0.10
+# Detector candidate-generation confidence. Lowered 0.10 -> 0.04 (F13): sweeping the deployed
+# 6-class detector's conf on the clean held-out field test (runs/audits/detector_conf_sweep_field_6class.json)
+# lifts class-agnostic field recall 0.505@0.10 -> 0.557@0.05 -> 0.586@0.04 AND studio clean-val
+# recall 0.584 -> 0.637, small-box +11pp - a strict recall gain across BOTH domains from a pure
+# threshold change (the F12 class-agnostic retrain was reverted after this showed ~75% of its
+# apparent field gain was just this conf drop, at a -10pp studio cost). YOLO_GATE_CONF keeps the
+# "confident waste" decision at 0.30 on the box objectness score, so the extra low-conf boxes only
+# widen the classifier's candidate pool; they cannot be auto-labeled waste (F5 mechanism).
+YOLO_CONF = 0.04
 YOLO_GATE_CONF = 0.30
-YOLO_RECOVERY_CONF = 0.30
-YOLO_IMG_SIZE = int(os.environ.get("WASTEWISE_YOLO_IMG_SIZE", "960"))
+YOLO_RECOVERY_CONF = 0.10
+# Serve at the training resolution. The model was trained at imgsz=640; running it at 960
+# measurably hurts on BOTH eval domains (F9 in docs/01_final_report/FAILURES_AND_FIXES.md):
+# clean test mAP50 0.474@640 vs 0.409@960, recall 0.456 vs 0.429; realworld_v2 test mAP50
+# 0.499@640 vs 0.475@960 - and 960 costs ~2.25x the CPU inference time on the HF Space.
+YOLO_IMG_SIZE = int(os.environ.get("WASTEWISE_YOLO_IMG_SIZE", "640"))
 YOLO_IOU = 0.55
 YOLO_MAX_DETECTIONS = int(os.environ.get("WASTEWISE_YOLO_MAX_DETECTIONS", "80"))
 MAX_CROP_VERIFICATIONS = int(os.environ.get("WASTEWISE_MAX_CROP_VERIFICATIONS", str(YOLO_MAX_DETECTIONS)))
@@ -697,15 +703,19 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
             crop_key = CLASSIFIER_CLASSES[crop_idx]
             crop_conf = float(crop_probs[crop_idx])
 
-            # Dynamic Alpha Blending
+            # Dynamic Alpha Blending. Alpha caps at 0.40: the detector's material vote
+            # can nudge but NOT override a confident crop-classifier call. The detector is
+            # material-reliable on studio but plastic-biased on field (predicts plastic for
+            # ~78% of field boxes), so at the old cap 0.70 a confident field "plastic" vote
+            # flipped correct glass/metal crops to plastic. Cap 0.40 keeps the 92.9% material
+            # classifier as the authority on confident calls; costs -0.7pp studio macro-F1.
+            # ponytail: cap 0.40, revisit only with a material-reliable field detector.
             yolo_probs = np.zeros(7)
             if yolo_key in CLASSIFIER_CLASSES:
                 yidx = class_index(yolo_key)
                 yolo_probs[yidx] = yolo_score
 
-            if yolo_score >= 0.65:
-                alpha = 0.70
-            elif yolo_score >= 0.30:
+            if yolo_score >= 0.30:
                 alpha = 0.40
             else:
                 alpha = 0.15

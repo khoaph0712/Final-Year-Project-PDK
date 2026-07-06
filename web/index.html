@@ -220,7 +220,7 @@
           </article>
           <article class="step-card">
             <span class="step-id">S2</span>
-            <div><strong>Stage 1 &mdash; YOLO26n localization</strong><p>YOLO26n proposes a box around every candidate object. 100-epoch retrain on the quarantined split: 72.1% mAP50, 77.7% precision on clean validation.</p></div>
+            <div><strong>Stage 1 &mdash; YOLO26n localization</strong><p>YOLO26n proposes a box around every candidate object. 100-epoch retrain, later hard-negative fine-tuned for field small-object recall: 70.9% mAP50, 77.8% precision on clean validation.</p></div>
           </article>
           <article class="step-card">
             <span class="step-id">S3</span>
@@ -270,8 +270,8 @@
           </article>
           <article class="metric-card tone-info">
             <span>Detector mAP50, clean val</span>
-            <strong id="riskMetric">72.1%</strong>
-            <i>YOLO26n, 100-epoch retrain, quarantined split</i>
+            <strong id="riskMetric">70.9%</strong>
+            <i>YOLO26n, hard-negative fine-tuned, quarantined split</i>
           </article>
           <article class="metric-card tone-warning">
             <span>Eval leakage found &amp; removed</span>
@@ -320,18 +320,18 @@
 
           <article class="evidence-card span-4 tone-info">
             <span class="metric-label">Detector precision</span>
-            <strong class="big-number" id="yoloPrecision">77.7%</strong>
-            <p>Clean validation split. Tunable to 92% via confidence threshold.</p>
+            <strong class="big-number" id="yoloPrecision">77.8%</strong>
+            <p>Clean validation split. Tunable via confidence threshold.</p>
           </article>
           <article class="evidence-card span-4 tone-warning">
             <span class="metric-label">Detector recall</span>
-            <strong class="big-number" id="yoloRecall">65.0%</strong>
-            <p>Up from 59.2% before the retrain; still limited by tiny objects.</p>
+            <strong class="big-number" id="yoloRecall">62.6%</strong>
+            <p>Down slightly from 65.0% studio recall after a hard-negative fine-tune that traded it for +16 points of field small-object recall (see Limits).</p>
           </article>
           <article class="evidence-card span-4 tone-info">
             <span class="metric-label">Detector mAP50-95</span>
-            <strong class="big-number" id="yoloMap5095">54.2%</strong>
-            <p>Best checkpoint of the 100-epoch retrain, promoted to the live localizer.</p>
+            <strong class="big-number" id="yoloMap5095">50.0%</strong>
+            <p>Hard-negative mining checkpoint, promoted to the live localizer.</p>
           </article>
         </div>
 
@@ -375,18 +375,24 @@
             <strong>Partly fixed, partly open</strong>
             <p>
               Fixed: the classifier was fine-tuned on the detector's own crops, lifting
-              production-distribution accuracy from 76.9% to 88.9%. Open: on fully unseen
-              capture sessions the detector drops to 0.474 mAP50; closing that needs new
-              training data sources, not more training.
+              production-distribution accuracy from 76.9% to 88.9%. The detector was re-tuned
+              for the field domain too: lowering the confidence threshold and hard-negative
+              mining on new field data (PlastOPol) lifted held-out field small-object recall
+              from 38.6% to 54.7%, at a small cost to studio mAP50 (72.1% &rarr; 70.9%). Open:
+              on fully unseen capture sessions the detector still drops to 0.444 mAP50; the
+              gap is narrowing with new data, not fully closed.
             </p>
           </article>
           <article>
             <span>Tiny objects</span>
-            <strong>Resolution tested and ruled out</strong>
+            <strong>Resolution ruled out; new data confirmed as the lever</strong>
             <p>
               A 960px training run was evaluated: validation unchanged, unseen-batch recall
-              up 3.9 points. Small objects remain the main source of misses, but the binding
-              constraint is training-data diversity, not input resolution.
+              up 3.9 points &mdash; not enough to chase. A later hard-negative mining fine-tune
+              on new field data confirmed the real lever: small-object recall on that held-out
+              domain rose 38.6% to 54.7% from new data alone, no resolution or architecture
+              change. Small objects remain the main source of misses; training-data diversity
+              is the binding constraint.
             </p>
           </article>
           <article>

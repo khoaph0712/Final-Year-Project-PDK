@@ -1,0 +1,12 @@
+{
+  "experiment": "Deployed 6-class detector conf sweep on clean held-out field + studio (F13 - tests whether the allowed conf lever captures the F12 field gain)",
+  "date": "2026-07-05",
+  "weights": "models/trained/yolov11_detector/best.pt (6-class, restored)",
+  "matching": "class-agnostic IoU>=0.5, imgsz 640",
+  "taco_field_test_recall": {"0.10": 0.505, "0.07": 0.529, "0.05": 0.557, "0.04": 0.586},
+  "taco_field_test_small_box_recall": {"0.10": 0.318, "0.07": 0.356, "0.05": 0.390, "0.04": 0.432},
+  "studio_clean_val_recall": {"0.10": 0.584, "0.04": 0.637},
+  "studio_clean_val_small_box_recall": {"0.10": 0.341, "0.04": 0.402},
+  "nc1_at_0.04_for_reference": {"taco_field_recall": 0.614, "taco_small": 0.483, "studio_recall": 0.536},
+  "conclusion": "Dropping the 6-class conf 0.10->0.04 lifts field recall +8.1pp AND studio recall +5.3pp (strict gain, no architecture change). The nc=1 retrain added only +2.8pp field over 6-class@0.04 while costing -10pp studio; reverted. Deployed operating point: 6-class @ conf 0.04."
+}
