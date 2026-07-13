@@ -1,0 +1,149 @@
+{
+  "data": "C:\\FYP\\data\\hard_case_classifier_v1\\data.yaml",
+  "model": "convnextv2_tiny.fcmae_ft_in22k_in1k frozen + 637 features + MLP head",
+  "train_samples": 12600,
+  "val_samples": 2680,
+  "test_samples": 2696,
+  "feature_dim": 1405,
+  "train_seconds": 17.05,
+  "splits": {
+    "val": {
+      "accuracy": 0.9324626865671641,
+      "macro_f1": 0.9336520526179648,
+      "weighted_f1": 0.9323549991162197,
+      "classification_report": {
+        "plastic": {
+          "precision": 0.9170403587443946,
+          "recall": 0.927437641723356,
+          "f1-score": 0.9222096956031567,
+          "support": 441.0
+        },
+        "glass": {
+          "precision": 0.9305555555555556,
+          "recall": 0.9228650137741047,
+          "f1-score": 0.9266943291839558,
+          "support": 363.0
+        },
+        "metal": {
+          "precision": 0.8923444976076556,
+          "recall": 0.8966346153846154,
+          "f1-score": 0.894484412470024,
+          "support": 416.0
+        },
+        "paper": {
+          "precision": 0.9285714285714286,
+          "recall": 0.898936170212766,
+          "f1-score": 0.9135135135135135,
+          "support": 376.0
+        },
+        "cardboard": {
+          "precision": 0.9452054794520548,
+          "recall": 0.9324324324324325,
+          "f1-score": 0.9387755102040817,
+          "support": 370.0
+        },
+        "organic": {
+          "precision": 0.9620853080568721,
+          "recall": 0.9806763285024155,
+          "f1-score": 0.9712918660287081,
+          "support": 414.0
+        },
+        "Background": {
+          "precision": 0.9606557377049181,
+          "recall": 0.9766666666666667,
+          "f1-score": 0.968595041322314,
+          "support": 300.0
+        },
+        "accuracy": 0.9324626865671641,
+        "macro avg": {
+          "precision": 0.9337797665275543,
+          "recall": 0.9336641240994794,
+          "f1-score": 0.9336520526179648,
+          "support": 2680.0
+        },
+        "weighted avg": {
+          "precision": 0.9323845892779355,
+          "recall": 0.9324626865671641,
+          "f1-score": 0.9323549991162197,
+          "support": 2680.0
+        }
+      }
+    },
+    "test": {
+      "accuracy": 0.9454747774480712,
+      "macro_f1": 0.9458687857669494,
+      "weighted_f1": 0.9453684165403119,
+      "classification_report": {
+        "plastic": {
+          "precision": 0.927570093457944,
+          "recall": 0.9341176470588235,
+          "f1-score": 0.9308323563892146,
+          "support": 425.0
+        },
+        "glass": {
+          "precision": 0.9507246376811594,
+          "recall": 0.9213483146067416,
+          "f1-score": 0.9358059914407989,
+          "support": 356.0
+        },
+        "metal": {
+          "precision": 0.9342403628117913,
+          "recall": 0.9406392694063926,
+          "f1-score": 0.9374288964732651,
+          "support": 438.0
+        },
+        "paper": {
+          "precision": 0.9527777777777777,
+          "recall": 0.9122340425531915,
+          "f1-score": 0.9320652173913043,
+          "support": 376.0
+        },
+        "cardboard": {
+          "precision": 0.9321148825065274,
+          "recall": 0.9545454545454546,
+          "f1-score": 0.9431968295904888,
+          "support": 374.0
+        },
+        "organic": {
+          "precision": 0.9590909090909091,
+          "recall": 0.9882903981264637,
+          "f1-score": 0.9734717416378316,
+          "support": 427.0
+        },
+        "Background": {
+          "precision": 0.9698996655518395,
+          "recall": 0.9666666666666667,
+          "f1-score": 0.9682804674457429,
+          "support": 300.0
+        },
+        "accuracy": 0.9454747774480712,
+        "macro avg": {
+          "precision": 0.9466311898397068,
+          "recall": 0.9454059704233906,
+          "f1-score": 0.9458687857669494,
+          "support": 2696.0
+        },
+        "weighted avg": {
+          "precision": 0.9455599658734939,
+          "recall": 0.9454747774480712,
+          "f1-score": 0.9453684165403119,
+          "support": 2696.0
+        }
+      }
+    }
+  },
+  "latency_cpu": {
+    "current_convnext_637": {
+      "images": 60,
+      "mean_ms": 55.354184999881305,
+      "median_ms": 50.27209999934712,
+      "p95_ms": 66.79028999897128
+    },
+    "candidate_convnextv2_637_mlp": {
+      "images": 60,
+      "mean_ms": 68.52794499997496,
+      "median_ms": 65.58910000057949,
+      "p95_ms": 84.29964000042672
+    }
+  }
+}

@@ -162,8 +162,8 @@ def main():
     
     if not yolo_weights_path.exists():
         print(f"[WARNING] Custom YOLOv11 weights not found at: {yolo_weights_path}")
-        print("[INFO] Falling back to official 'yolo11n.pt' for structural verification...")
-        yolo_weights_path = Path("yolo11n.pt")
+        print("[INFO] Falling back to pretrained YOLO11n for structural verification...")
+        yolo_weights_path = ROOT_DIR / "models" / "pretrained" / "yolo11n.pt"
         
     if not cnn_weights_path.exists():
         # Fallback to .h5 if .tflite is not found

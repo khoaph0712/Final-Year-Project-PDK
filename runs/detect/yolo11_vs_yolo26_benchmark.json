@@ -1,0 +1,30 @@
+{
+  "data": "external_datasets\\yolo26_hardcase_dataset_v1\\data.yaml",
+  "imgsz": 640,
+  "models": [
+    {
+      "name": "old_yolo11",
+      "weights": "models\\trained\\yolov11_detector\\best_before_.pt",
+      "map50": 0.6693096616301971,
+      "map50_95": 0.49612644894238417,
+      "precision": 0.7447378232377416,
+      "recall": 0.5929878264185141,
+      "latency_images": 80,
+      "latency_ms_mean": 50.13934625003458,
+      "latency_ms_median": 46.357150000403635,
+      "latency_ms_p95": 54.00070000177948
+    },
+    {
+      "name": "new_yolo26n",
+      "weights": "runs\\detect\\yolo26n_hardcase_dataset_v1\\weights\\best.pt",
+      "map50": 0.6722577682091293,
+      "map50_95": 0.5053507204049389,
+      "precision": 0.7568752075265256,
+      "recall": 0.5921750726338926,
+      "latency_images": 80,
+      "latency_ms_mean": 52.10877500003335,
+      "latency_ms_median": 46.05615000036778,
+      "latency_ms_p95": 73.13650000287453
+    }
+  ]
+}

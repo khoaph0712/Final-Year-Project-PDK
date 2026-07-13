@@ -1,0 +1,12 @@
+{
+  "baseline": {
+    "detector_crop_val_acc": 0.7690586675505469,
+    "clean_gt_test_acc": 0.9293351929335193
+  },
+  "finetuned": {
+    "detector_crop_val_acc": 0.8888382499171362,
+    "detector_crop_val_f1": 0.798900731703114,
+    "clean_gt_test_acc": 0.9377033937703394
+  },
+  "promote": true
+}

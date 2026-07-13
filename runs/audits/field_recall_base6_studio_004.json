@@ -1,0 +1,15 @@
+{
+  "tag": "base6_studio_004",
+  "dataset": "yolo26_hardcase_clean_eval",
+  "split": "val",
+  "conf": 0.04,
+  "imgsz": 640,
+  "images": 2627,
+  "gt_boxes": 19234,
+  "tp": 12250,
+  "recall": 0.6368930019756681,
+  "small_gt": 6746,
+  "small_tp": 2713,
+  "small_recall": 0.40216424547880225,
+  "zero_detection_images": 1
+}

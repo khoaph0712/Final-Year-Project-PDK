@@ -1,0 +1,12 @@
+{
+  "audit": "realworld_v2 test vs hardcase splits, raw-byte MD5",
+  "date": "2026-07-05",
+  "rw_v2_test_images": 72,
+  "overlap_md5": {
+    "hardcase_train": 53,
+    "hardcase_val": 12,
+    "hardcase_test": 7
+  },
+  "rw_v2_test_that_are_taco_field": 0,
+  "conclusion": "74% of realworld_v2 test is byte-identical to the deployed detector's train set; not a valid field benchmark. See F10 in docs/01_final_report/FAILURES_AND_FIXES.md."
+}

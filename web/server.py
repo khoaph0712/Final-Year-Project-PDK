@@ -27,7 +27,7 @@ CLASSIFIER_PATH = ROOT / "models" / "trained" / "efficientnet_classifier" / "bes
 TUNED_CLASSIFIER_PATH = ROOT / "runs" / "dl" / "convnext_ensemble_tuned" / "best_convnext_ensemble_tuned.pth"
 TUNED_SCALER_PATH = ROOT / "runs" / "dl" / "convnext_ensemble_tuned" / "handcrafted_scaler.npz"
 YOLO_PATH = ROOT / "models" / "trained" / "yolov11_detector" / "best.pt"
-LOCALIZER_LABEL = "YOLO26n hard-case localizer"
+LOCALIZER_LABEL = "YOLO26s hard-case localizer"
 
 CLASSIFIER_CLASSES = ["plastic", "glass", "metal", "paper", "cardboard", "organic", "Background"]
 # Detector candidate-generation confidence. Lowered 0.10 -> 0.04 (F13): sweeping the deployed
@@ -36,10 +36,22 @@ CLASSIFIER_CLASSES = ["plastic", "glass", "metal", "paper", "cardboard", "organi
 # recall 0.584 -> 0.637, small-box +11pp - a strict recall gain across BOTH domains from a pure
 # threshold change (the F12 class-agnostic retrain was reverted after this showed ~75% of its
 # apparent field gain was just this conf drop, at a -10pp studio cost). YOLO_GATE_CONF keeps the
-# "confident waste" decision at 0.30 on the box objectness score, so the extra low-conf boxes only
+# "confident waste" decision on the box objectness score, so the extra low-conf boxes only
 # widen the classifier's candidate pool; they cannot be auto-labeled waste (F5 mechanism).
+#
+# 2026-07-12: promoted YOLO26n hard-neg fine-tune -> YOLO26s (100-epoch retrain, same 6-class
+# hardcase dataset). Re-swept conf/gate/alpha on the new backbone (runs/audits/yolo26s_conf_gate_alpha_sweep.json):
+# YOLO_CONF=0.04 still holds (going lower keeps buying recall at a fast-eroding rate: +1.1pp
+# field recall per step past 0.04, while candidate volume balloons). YOLO_GATE_CONF raised
+# 0.30 -> 0.40: yolo26s is less locally-precise than yolo26n at the same gate threshold
+# (field precision 0.762 vs yolo26n's documented 0.812 @ gate=0.30); gate=0.40 restores that
+# field-precision guarantee (0.811) at a small recall cost (0.549 -> 0.512), while raw field
+# recall at conf=0.04 is still +14.3pp over the old deployed model either way. Alpha cap kept
+# at 0.40 (unchanged): yolo26s predicts "plastic" for 84.2% of field boxes (vs yolo26n's 78%),
+# so the detector's material vote is equally or more unreliable on field images - no basis to
+# trust it more.
 YOLO_CONF = 0.04
-YOLO_GATE_CONF = 0.30
+YOLO_GATE_CONF = 0.40
 YOLO_RECOVERY_CONF = 0.10
 # Serve at the training resolution. The model was trained at imgsz=640; running it at 960
 # measurably hurts on BOTH eval domains (F9 in docs/01_final_report/FAILURES_AND_FIXES.md):
@@ -709,6 +721,8 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
             # ~78% of field boxes), so at the old cap 0.70 a confident field "plastic" vote
             # flipped correct glass/metal crops to plastic. Cap 0.40 keeps the 92.9% material
             # classifier as the authority on confident calls; costs -0.7pp studio macro-F1.
+            # Re-checked 2026-07-12 after the YOLO26s promotion: yolo26s is equally biased
+            # (84.2% field plastic-vote rate) so the cap still applies unchanged.
             # ponytail: cap 0.40, revisit only with a material-reliable field detector.
             yolo_probs = np.zeros(7)
             if yolo_key in CLASSIFIER_CLASSES:

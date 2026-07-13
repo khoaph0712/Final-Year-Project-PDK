@@ -1,0 +1,76 @@
+====================================================
+Hard-case ConvNeXt + 637-feature retraining
+====================================================
+[INFO] Dataset: C:\FYP\data\hard_case_classifier_v1
+[INFO] Output:  runs\dl\convnext_hardcase_tuned
+[INFO] Raw samples train=11163 val=2680 test=2696
+[INFO] Balanced train split:
+  * plastic     : raw  1855 ->  1800
+  * glass       : raw  1501 ->  1800 augmented
+  * metal       : raw  1736 ->  1800 augmented
+  * paper       : raw  1548 ->  1800 augmented
+  * cardboard   : raw  1517 ->  1800 augmented
+  * organic     : raw  1806 ->  1800
+  * Background  : raw  1200 ->  1800 augmented
+  - train features: 0/12600
+  - train features: 500/12600
+  - train features: 1000/12600
+  - train features: 1500/12600
+  - train features: 2000/12600
+  - train features: 2500/12600
+  - train features: 3000/12600
+  - train features: 3500/12600
+  - train features: 4000/12600
+  - train features: 4500/12600
+  - train features: 5000/12600
+  - train features: 5500/12600
+  - train features: 6000/12600
+  - train features: 6500/12600
+  - train features: 7000/12600
+  - train features: 7500/12600
+  - train features: 8000/12600
+  - train features: 8500/12600
+  - train features: 9000/12600
+  - train features: 9500/12600
+  - train features: 10000/12600
+  - train features: 10500/12600
+  - train features: 11000/12600
+  - train features: 11500/12600
+  - train features: 12000/12600
+  - train features: 12500/12600
+  - val features: 0/2680
+  - val features: 500/2680
+  - val features: 1000/2680
+  - val features: 1500/2680
+  - val features: 2000/2680
+  - val features: 2500/2680
+  - test features: 0/2696
+  - test features: 500/2696
+  - test features: 1000/2696
+  - test features: 1500/2696
+  - test features: 2000/2696
+  - test features: 2500/2696
+[INFO] Device: cuda
+
+--- WARMUP (3 epochs) ---
+  * Warmup 01 | loss=1.1144 train_acc=70.98% val_acc=85.49% val_f1=0.8549
+  * Warmup 02 | loss=0.8366 train_acc=84.41% val_acc=89.03% val_f1=0.8913
+  * Warmup 03 | loss=0.7676 train_acc=87.08% val_acc=89.55% val_f1=0.8964
+
+--- FINE-TUNE (7 epochs) ---
+[INFO] Unfreezing ConvNeXt final stage features[7].
+  * Fine 01 | loss=0.6863 train_acc=91.54% val_acc=91.34% val_f1=0.9147
+  * Fine 02 | loss=0.6466 train_acc=93.70% val_acc=92.05% val_f1=0.9214
+  * Fine 03 | loss=0.6226 train_acc=94.68% val_acc=92.50% val_f1=0.9258
+  * Fine 04 | loss=0.6053 train_acc=95.76% val_acc=92.76% val_f1=0.9284
+  * Fine 05 | loss=0.5951 train_acc=96.19% val_acc=92.91% val_f1=0.9298
+  * Fine 06 | loss=0.5907 train_acc=96.26% val_acc=92.99% val_f1=0.9307
+  * Fine 07 | loss=0.5883 train_acc=96.45% val_acc=93.13% val_f1=0.9322
+
+====================================================
+[SUCCESS] Hard-case classifier retraining completed
+  - Best val macro F1: 0.9322
+  - Test accuracy: 93.88%
+  - Test macro F1: 0.9398
+  - Model: runs\dl\convnext_hardcase_tuned\best_convnext_ensemble_tuned.pth
+====================================================

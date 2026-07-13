@@ -25,7 +25,7 @@ import yaml
 # =====================================================================
 # Configuration Paths
 # =====================================================================
-ROOT_DIR = Path(__file__).resolve().parent.parent
+ROOT_DIR = Path(__file__).resolve().parents[2]
 TACO_DATA_DIR = ROOT_DIR / "external_datasets" / "taco_official" / "data"
 OUT_YOLO_DIR = ROOT_DIR / "external_datasets" / "taco_yolo"
 

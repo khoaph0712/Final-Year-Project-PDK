@@ -1,0 +1,15 @@
+{
+  "tag": "ca_pp",
+  "dataset": "plastopol_clean_v1",
+  "split": "test",
+  "conf": 0.1,
+  "imgsz": 640,
+  "images": 479,
+  "gt_boxes": 1116,
+  "tp": 805,
+  "recall": 0.7213261648745519,
+  "small_gt": 448,
+  "small_tp": 231,
+  "small_recall": 0.515625,
+  "zero_detection_images": 11
+}

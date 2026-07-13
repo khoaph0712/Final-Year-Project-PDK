@@ -385,6 +385,40 @@ wrong, how it was detected, and what fixed it. Each entry is thesis-usable evide
 - **Limit:** gain is PlastOPol-domain-specific; a universal small-object fix still needs new labeled
   small-object data (the actual RoLID boxes - the shared RoLID zip was unlabeled raw dashcam frames).
 
+## F16. Waste-state gate loosening tested, rejected — "stale threshold" hypothesis falsified (2026-07-06)
+
+- **Problem (taxonomy D/F):** confidently-classified trash is shown as `review`, not `waste`. Tracing
+  the 6 demo samples through `predict_image`: on `outdoor_street_cans` the classifier calls 9 cans
+  Metal @ 90-97%, yet 8/9 return `review` ("material known, disposal state unknown"). No sample ever
+  returns `not_waste`. Every `not_waste`/"clean" path requires the detector to MISS the item (no box
+  -> `Background` scene fallback) — i.e. it's the F15 recall problem, not the decision logic.
+- **Hypothesis:** the waste gate needs `yolo_score >= YOLO_GATE_CONF (0.30)`, but F13 dropped the
+  detector to conf 0.04, so box scores are now systematically 0.04-0.20. Guess: `0.30` is a *stale*
+  threshold left over from the conf-0.10 detector, wrongly demoting confident material to `review`.
+  Fix tried: also gate `waste` when `label_conf >= 0.55 AND yolo_key == label_key` (trust a confident
+  material call when the localizer agrees on the class, regardless of box score).
+- **Demo looked great, then the precision check killed it.** On the 6 samples the cans/bottles flipped
+  to `waste -> Recycling` with zero `not_waste`/Background promotions. But a class-agnostic IoU>=0.5
+  precision check vs GT on 120 field + 150 studio images, sweeping the confidence floor T:
+
+  | gate | field waste-precision | studio waste-precision | promoted-box precision |
+  |---|---|---|---|
+  | OLD (`yolo_score>=0.30`) | **0.812** | **0.816** | — |
+  | loosened, any T in 0.55-0.85 | 0.63-0.73 | 0.68-0.70 | ~0.48 both domains |
+
+  Loosening ~doubled the boxes tagged `waste`; the extra promotions were only ~48% IoU-matched to a
+  real object (duplicate / poorly-localized / spurious conf-0.04 boxes) — which makes the separate
+  "detects wrong boxes" complaint WORSE.
+- **Verdict: REJECTED, reverted.** `YOLO_GATE_CONF=0.30` is NOT stale — it is an active, well-calibrated
+  precision guard worth ~0.81 on both domains; removing it costs ~15pp precision. The safe fallback is
+  benign (`review` routes to manual check, not a wrong bin), so trading precision + more spurious boxes
+  to relabel `review`->`waste` is the wrong trade for a waste-sorter. No server change shipped.
+- **Lesson:** a 6-image demo is the F3 cherry-pick trap in miniature — a change that flatters the demo
+  can regress a 270-image two-domain precision measurement. Validate serving-logic changes on a real
+  matched-operating-point precision check BEFORE trusting them. The honest lever for "obvious trash
+  shown as review" is upstream detector precision (tighter boxes / de-duplication), not a looser gate;
+  a learned clean-vs-dirty *state* model remains blocked (no contamination label exists in any dataset).
+
 ## Status summary
 
 | Failure | Severity | Status |
@@ -401,4 +435,7 @@ wrong, how it was detected, and what fixed it. Each entry is thesis-usable evide
 | F10 realworld_v2 leaked benchmark | High | Quantified (74% leaked); retired from accuracy claims; field work gated on external clean eval |
 | F11 field-rebalance fine-tune | Info | Rejected (field +1.3pp within noise, studio -2.3pp); honest field baseline 0.505 set; next lever = external field data (PlastOPol) |
 | F12 class-agnostic + PlastOPol | Info | REVERTED - apparent gain was mostly the conf lever (see F13); kept as evidence, not deployed |
-| F13 detector conf lever (field) | High | Deployed: 6-class @ conf 0.04 -> field recall +8.1pp, studio +5.3pp, small-box +11pp, no architecture change; HF redeploy pending |
+| F13 detector conf lever (field) | High | Deployed: 6-class @ conf 0.04 -> field recall +8.1pp, studio +5.3pp, small-box +11pp, no architecture change |
+| F14 glass->plastic fusion bug | High | Fixed + deployed: alpha-blend cap 0.70->0.40 (detector vote can't override a confident classifier call); -0.7pp studio macro-F1 |
+| F15 hard-negative mining | High | Promoted + deployed: PlastOPol field small-object recall +16pp, studio preserved, TACO flat; same architecture |
+| F16 waste-gate loosening | Info | Rejected, reverted - 6-sample demo flattered it but a 270-image two-domain check showed ~15pp precision loss; the 0.30 box gate is a real precision guard, not stale |

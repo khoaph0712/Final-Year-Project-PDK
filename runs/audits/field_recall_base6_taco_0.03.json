@@ -1,0 +1,15 @@
+{
+  "tag": "base6_taco_0.03",
+  "dataset": "taco_field_clean_v1",
+  "split": "test",
+  "conf": 0.03,
+  "imgsz": 640,
+  "images": 120,
+  "gt_boxes": 461,
+  "tp": 278,
+  "recall": 0.6030368763557483,
+  "small_gt": 292,
+  "small_tp": 132,
+  "small_recall": 0.4520547945205479,
+  "zero_detection_images": 0
+}

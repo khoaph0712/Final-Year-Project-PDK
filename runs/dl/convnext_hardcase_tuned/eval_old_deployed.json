@@ -1,0 +1,133 @@
+{
+  "data": "C:\\FYP\\data\\hard_case_classifier_v1\\data.yaml",
+  "weights": "runs\\dl\\convnext_ensemble_tuned\\best_convnext_ensemble_tuned.pth",
+  "scaler": "runs\\dl\\convnext_ensemble_tuned\\handcrafted_scaler.npz",
+  "splits": {
+    "val": {
+      "accuracy": 0.8343283582089552,
+      "macro_f1": 0.8384607135064112,
+      "weighted_f1": 0.8357336257360247,
+      "classification_report": {
+        "plastic": {
+          "precision": 0.6842105263157895,
+          "recall": 0.854875283446712,
+          "f1-score": 0.7600806451612904,
+          "support": 441.0
+        },
+        "glass": {
+          "precision": 0.8609467455621301,
+          "recall": 0.8016528925619835,
+          "f1-score": 0.8302425106990015,
+          "support": 363.0
+        },
+        "metal": {
+          "precision": 0.8702290076335878,
+          "recall": 0.8221153846153846,
+          "f1-score": 0.8454882571075402,
+          "support": 416.0
+        },
+        "paper": {
+          "precision": 0.8475452196382429,
+          "recall": 0.8723404255319149,
+          "f1-score": 0.8597640891218873,
+          "support": 376.0
+        },
+        "cardboard": {
+          "precision": 0.9242424242424242,
+          "recall": 0.8243243243243243,
+          "f1-score": 0.8714285714285714,
+          "support": 370.0
+        },
+        "organic": {
+          "precision": 0.953416149068323,
+          "recall": 0.7415458937198067,
+          "f1-score": 0.8342391304347826,
+          "support": 414.0
+        },
+        "Background": {
+          "precision": 0.7966573816155988,
+          "recall": 0.9533333333333334,
+          "f1-score": 0.8679817905918058,
+          "support": 300.0
+        },
+        "accuracy": 0.8343283582089552,
+        "macro avg": {
+          "precision": 0.8481782077251567,
+          "recall": 0.838598219647637,
+          "f1-score": 0.8384607135064112,
+          "support": 2680.0
+        },
+        "weighted avg": {
+          "precision": 0.8472514842061682,
+          "recall": 0.8343283582089552,
+          "f1-score": 0.8357336257360247,
+          "support": 2680.0
+        }
+      },
+      "samples": 2680
+    },
+    "test": {
+      "accuracy": 0.8271513353115727,
+      "macro_f1": 0.8303794983878657,
+      "weighted_f1": 0.82898955982779,
+      "classification_report": {
+        "plastic": {
+          "precision": 0.6654611211573237,
+          "recall": 0.8658823529411764,
+          "f1-score": 0.7525562372188139,
+          "support": 425.0
+        },
+        "glass": {
+          "precision": 0.8847352024922118,
+          "recall": 0.797752808988764,
+          "f1-score": 0.8389955686853766,
+          "support": 356.0
+        },
+        "metal": {
+          "precision": 0.8840579710144928,
+          "recall": 0.8356164383561644,
+          "f1-score": 0.8591549295774648,
+          "support": 438.0
+        },
+        "paper": {
+          "precision": 0.8611111111111112,
+          "recall": 0.824468085106383,
+          "f1-score": 0.842391304347826,
+          "support": 376.0
+        },
+        "cardboard": {
+          "precision": 0.8988095238095238,
+          "recall": 0.8074866310160428,
+          "f1-score": 0.8507042253521127,
+          "support": 374.0
+        },
+        "organic": {
+          "precision": 0.950920245398773,
+          "recall": 0.7259953161592506,
+          "f1-score": 0.8233731739707836,
+          "support": 427.0
+        },
+        "Background": {
+          "precision": 0.7512953367875648,
+          "recall": 0.9666666666666667,
+          "f1-score": 0.8454810495626822,
+          "support": 300.0
+        },
+        "accuracy": 0.8271513353115727,
+        "macro avg": {
+          "precision": 0.8423415016815717,
+          "recall": 0.8319811856049212,
+          "f1-score": 0.8303794983878657,
+          "support": 2696.0
+        },
+        "weighted avg": {
+          "precision": 0.8443502171318704,
+          "recall": 0.8271513353115727,
+          "f1-score": 0.82898955982779,
+          "support": 2696.0
+        }
+      },
+      "samples": 2696
+    }
+  }
+}

@@ -266,12 +266,12 @@ def build_doc() -> None:
     configure_styles(doc)
     add_header_footer(doc)
 
-    doc.add_paragraph("WasteWise Project Tracking Report", style="Title")
-    doc.add_paragraph("Final Year Project: automated waste classification, feature-based ML, and classification-first localization", style="Subtitle")
+    doc.add_paragraph("WasteWise: Project Status and Experiment Tracking Report", style="Title")
+    doc.add_paragraph("Final Year Project: automated waste classification, feature-based ML, and localization-first classification", style="Subtitle")
     add_callout(
         doc,
         "Current project position",
-        "Current datasets are `external_datasets/super_yolo_dataset` for YOLO localization and `data/merged_dataset_v5` for classification. Older `merged_dataset_v3` results remain useful historical ML evidence, but they should not be described as the newest dataset.",
+        "Current datasets are `external_datasets/super_yolo_dataset` for YOLO localization and `data/merged_dataset_v5` for classification. A newest-dataset 637-feature ML rerun now exists, while older `merged_dataset_v3` results remain useful historical lecturer evidence.",
         fill="EAF4EE",
     )
 
@@ -280,11 +280,10 @@ def build_doc() -> None:
         ["Area", "Current status", "Main evidence"],
         [
             ["Dataset", "Use newest datasets for current tracking.", "super_yolo_dataset: 23,929 images / 102,777 boxes; merged_dataset_v5: 29,639 classification images."],
-            ["ML", "Keep as main explainable pipeline, but rerun if all final metrics must use newest data.", "Legacy/stable lecturer artifact: 637 handcrafted features; XGBoost accuracy 0.6742, F1-macro 0.6506."],
-            ["PCA", "Completed but final claim must match artifact.", "637 -> 128 components keeps 99.90% variance; current artifact shows 4.53 pp accuracy drop."],
+            ["ML", "Keep as main explainable pipeline; report legacy and newest-dataset evidence separately.", "Newest super_yolo_dataset rerun: XGBoost accuracy 0.5408, F1-macro 0.3691. Legacy lecturer artifact: 0.6742 / 0.6506."],
+            ["PCA", "Controlled model sweep completed.", "637 -> 128 keeps 99.90% variance; Linear SVM drops 62.43% -> 59.90%, a 2.52 pp trade-off."],
             ["DL classification", "Use as comparison / gate, not final localization metric.", "EfficientNetB0 crop classifier 94.29% in architecture comparison."],
-            ["DL localization", "Improved after Stage 2 rework.", "YOLO localization-only conf=0.35: precision 0.7614, recall 0.5134, mean IoU 0.9004."],
-            ["Mobile", "Implementation exists, physical validation still required.", "Expo app, TFLite model assets, scan/history/settings UI."],
+            ["DL localization", "Improved after Stage 2 rework.", "YOLO localization-only conf=0.30 on 300 images: precision 0.6999, recall 0.5729, F1 0.6301, mean IoU 0.9057."],
         ],
         [1500, 4200, 3660],
     )
@@ -297,8 +296,8 @@ def build_doc() -> None:
         doc,
         [
             "Primary ML goal: classify waste object crops using lecturer-explainable handcrafted features.",
-            "Primary DL goal after rework: perform classification first, then localize objects as a localization-only task.",
-            "Deployment direction: mobile/edge-ready inference with sorting guidance, history, and settings.",
+            "Primary DL goal: perform YOLO object localization first, then verify/classify crops.",
+            "Deployment direction: web-based inference with sorting guidance, history, and settings.",
         ],
     )
 
@@ -350,7 +349,7 @@ def build_doc() -> None:
     add_callout(
         doc,
         "Reporting note",
-        "The newest YOLO dataset is imbalanced, especially in validation/test class distribution. The newest classification dataset is much more balanced and includes a Background class. Legacy ML metrics from `merged_dataset_v3` should be labelled as legacy unless rerun on the newest dataset.",
+        "The newest YOLO dataset is imbalanced, especially in validation/test class distribution. The newest classification dataset is much more balanced and includes a Background class. Legacy ML metrics from `merged_dataset_v3` are now labelled separately from the newest `super_yolo_dataset` ML rerun.",
         fill="FFF7DF",
     )
 
@@ -361,7 +360,7 @@ def build_doc() -> None:
     add_callout(
         doc,
         "Dataset alignment note",
-        "The model scores below come from saved lecturer-facing artifacts, not a fresh rerun on `super_yolo_dataset` or `merged_dataset_v5`. To make the final thesis fully newest-dataset-aligned, rerun feature extraction and ML model comparison on the newest selected dataset.",
+        "There are now two ML evidence tracks: the stronger lecturer-facing legacy run on `merged_dataset_v3`, and a newest-dataset rerun on `super_yolo_dataset`. Use the newest run when answering dataset-version questions; use the legacy run as historical evidence only.",
         fill="FFF7DF",
     )
     add_table(
@@ -378,7 +377,26 @@ def build_doc() -> None:
     )
     add_table(
         doc,
-        ["Model", "Accuracy", "F1-macro", "Decision"],
+        ["Current-dataset model", "Accuracy", "F1-macro", "Decision"],
+        [
+            ["XGBoost", "0.5408", "0.3691", "Best on newest `super_yolo_dataset` rerun."],
+            ["Random Forest", "0.5063", "0.3456", "Tree baseline with feature importance chart."],
+            ["ExtraTrees", "0.5045", "0.3414", "Close to RF on newest data."],
+            ["Linear SVM", "0.4628", "0.3159", "Margin-based baseline."],
+            ["Logistic Regression", "0.4494", "0.3054", "Linear standardized baseline."],
+            ["Decision Tree", "0.3750", "0.2631", "Simple interpretable baseline."],
+        ],
+        [2500, 1400, 1400, 4060],
+    )
+    add_callout(
+        doc,
+        "Newest ML support warning",
+        "The newest ML rerun used 24,000 train crops, but only 2,232 test crops because the test split has very low support for glass (9), cardboard (35), and organic (46). Report the lower F1 as current-dataset evidence under test imbalance, not as a balanced benchmark.",
+        fill="FFF7DF",
+    )
+    add_table(
+        doc,
+        ["Legacy lecturer model", "Accuracy", "F1-macro", "Decision"],
         [
             ["XGBoost", "0.6742", "0.6506", "Best lecturer-facing ML result."],
             ["Random Forest", "0.6317", "0.6111", "Useful for feature importance."],
@@ -400,28 +418,30 @@ def build_doc() -> None:
         ],
         [5200, 4160],
     )
-    add_figure(doc, ROOT / "runs" / "ml" / "feature_ml_lecturer_6class_4k" / "chart_model_comparison.png", "Figure 1. Classical ML model comparison.", 5.8)
-    add_figure(doc, ROOT / "runs" / "ml" / "feature_ml_lecturer_6class_4k" / "chart_domain_importance.png", "Figure 2. Feature group / domain importance.", 5.8)
+    add_figure(doc, ROOT / "runs" / "ml" / "feature_ml_super_yolo_6class_4k" / "chart_model_comparison.png", "Figure 1. Current-dataset classical ML model comparison.", 5.8)
+    add_figure(doc, ROOT / "runs" / "ml" / "feature_ml_super_yolo_6class_4k" / "chart_domain_importance.png", "Figure 2. Current-dataset feature group / domain importance.", 5.8)
 
     doc.add_paragraph("4. PCA Dimensionality Reduction", style="Heading 1")
     add_table(
         doc,
-        ["Components", "Explained variance", "Accuracy", "Weighted F1", "Latency"],
+        ["Evidence", "Model", "Components", "Accuracy", "F1", "Drop"],
         [
-            ["637", "100.00%", "73.24%", "0.7319", "0.0533 ms"],
-            ["64", "99.78%", "67.48%", "0.6736", "0.0284 ms"],
-            ["128", "99.90%", "68.71%", "0.6863", "0.0314 ms"],
-            ["256", "99.97%", "66.95%", "0.6691", "0.0296 ms"],
+            ["Controlled ML sweep", "Linear SVM", "637", "62.43%", "0.6235", "0.00 pp"],
+            ["Controlled ML sweep", "Linear SVM", "128", "59.90%", "0.5947", "2.52 pp"],
+            ["Controlled ML sweep", "Logistic Regression", "637", "60.24%", "0.6019", "0.00 pp"],
+            ["Controlled ML sweep", "Logistic Regression", "128", "59.71%", "0.5954", "0.52 pp"],
+            ["ANN-only artifact", "MLP", "637", "73.24%", "0.7319", "0.00 pp"],
+            ["ANN-only artifact", "MLP", "128", "68.71%", "0.6863", "4.53 pp"],
         ],
-        [1700, 2300, 1600, 1800, 1960],
+        [2300, 2100, 1300, 1300, 1200, 1260],
     )
     add_callout(
         doc,
         "PCA claim control",
-        "Current artifact shows 637 -> 128 drops accuracy from 73.24% to 68.71%, a 4.53 percentage-point drop. If slides need to say around 2%, rerun PCA or replace with the matching artifact.",
-        fill="FFF7DF",
+        "Use the controlled ML sweep for the 'about 2%' statement: Linear SVM drops 2.52 percentage points when reducing 637 features to 128 PCA components. The older ANN-only PCA artifact drops 4.53 points, so it must be labelled separately.",
+        fill="EAF4EE",
     )
-    add_figure(doc, ROOT / "runs" / "dl" / "pca_experiments" / "pca_dimensionality_chart.png", "Figure 3. PCA component count vs accuracy and latency.", 5.8)
+    add_figure(doc, ROOT / "runs" / "ml" / "pca_feature_model_sweep" / "pca_model_sweep_accuracy.png", "Figure 3. PCA components vs accuracy by classical model.", 5.8)
 
     doc.add_paragraph("5. Deep Learning Experiments", style="Heading 1")
     add_table(
@@ -463,57 +483,46 @@ def build_doc() -> None:
     )
     add_table(
         doc,
-        ["Stage 2 localizer", "Precision", "Recall", "Mean IoU", "TP", "FP", "FN"],
+        ["Stage 2 localizer", "Images", "Precision", "Recall", "F1", "Mean IoU", "TP/FP/FN"],
         [
-            ["Grad-CAM baseline", "0.2568", "0.0728", "0.7127", "19", "55", "242"],
-            ["YOLO localization-only, conf=0.25", "0.6352", "0.5670", "0.9012", "148", "85", "113"],
-            ["YOLO localization-only, conf=0.35", "0.7614", "0.5134", "0.9004", "134", "42", "127"],
+            ["Grad-CAM baseline", "60", "0.2568", "0.0728", "0.1134", "0.7127", "19 / 55 / 242"],
+            ["YOLO conf=0.25 ablation", "60", "0.6352", "0.5670", "0.5991", "0.9012", "148 / 85 / 113"],
+            ["YOLO conf=0.30 promoted final", "300", "0.6999", "0.5729", "0.6301", "0.9057", "660 / 283 / 492"],
+            ["YOLO conf=0.35 balanced sweep", "300", "0.7571", "0.5356", "0.6274", "0.9043", "617 / 198 / 535"],
+            ["YOLO conf=0.40 precision sweep", "300", "0.8035", "0.5148", "0.6275", "0.9050", "593 / 145 / 559"],
         ],
-        [3000, 1200, 1200, 1400, 800, 800, 960],
+        [3000, 850, 1000, 1000, 850, 1200, 1460],
     )
     add_callout(
         doc,
         "Recommended DL localization setting",
-        "`--localizer yolo --yolo-conf 0.35` gives the best quick-check balance: higher precision, still useful recall, and high localization IoU.",
+        "`--localizer yolo --yolo-conf 0.30` is the promoted balanced setting from the 300-image sweep: best F1/recall among tested thresholds and mean matched IoU above 0.90. Use `conf=0.40` only when the report wants the highest precision trade-off.",
         fill="EAF4EE",
     )
     add_figure(
         doc,
-        ROOT / "runs" / "dl" / "localization_rework" / "yolo_conf025_stratified60" / "visuals" / "rf_garbage_metal391_jpg.rf.d2d79150c42df8cd64bea8d65acc58ab_yolo.jpg",
-        "Figure 5. Example classification-first / YOLO localization-only output.",
+        ROOT / "runs" / "dl" / "localization_rework" / "yolo_conf030_stratified300_final" / "visuals" / "rf_garbage_metal391_jpg.rf.d2d79150c42df8cd64bea8d65acc58ab_yolo.jpg",
+        "Figure 5. Example localization-first crop-verification output.",
         5.8,
     )
 
-    doc.add_paragraph("7. Mobile Application Tracking", style="Heading 1")
-    add_table(
-        doc,
-        ["Component", "Status"],
-        [
-            ["Framework", "Expo Dev Client / React Native mobile app in `mobile/`."],
-            ["Inference", "Vision Camera + `react-native-fast-tflite` + YOLO post-processing."],
-            ["Model assets", "`best_float16.tflite`, `best_float32.tflite`, `best_metadata.json`."],
-            ["User features", "Live scan, result page, history, settings, sorting guidance, leaderboard skeleton."],
-            ["Validation gap", "Physical Android device or emulator runtime validation still required."],
-        ],
-        [2400, 6960],
-    )
-
-    doc.add_paragraph("8. Reproducible Commands", style="Heading 1")
+    doc.add_paragraph("7. Reproducible Commands", style="Heading 1")
     add_table(
         doc,
         ["Task", "Command / path"],
         [
-            ["Feature ML run", r".\.venv311\Scripts\python.exe scripts\feature_ml_analysis.py --data merged_dataset_v3\data.yaml --out runs\ml\feature_ml_lecturer_6class_4k --exclude-classes other --max-per-class-train 4000 --max-per-class-test 800"],
+            ["Current feature ML run", r".\.venv311\Scripts\python.exe scripts\feature_ml_analysis.py --data external_datasets\super_yolo_dataset\data.yaml --out runs\ml\feature_ml_super_yolo_6class_4k --exclude-classes= --max-per-class-train 4000 --max-per-class-test 800 --domain-out runs\ml\feature_ml_super_yolo_6class_4k\frequency_analysis"],
+            ["Legacy feature ML run", r".\.venv311\Scripts\python.exe scripts\feature_ml_analysis.py --data merged_dataset_v3\data.yaml --out runs\ml\feature_ml_lecturer_6class_4k --exclude-classes other --max-per-class-train 4000 --max-per-class-test 800"],
             ["Current YOLO dataset", r"external_datasets\super_yolo_dataset\data.yaml"],
             ["Current classification dataset", r"data\merged_dataset_v5\data.yaml"],
-            ["PCA experiment", r".\.venv311\Scripts\python.exe scripts\train_pca_ann.py"],
-            ["DL localization rework", r".\.venv311\Scripts\python.exe scripts\classification_to_localization_pipeline.py --max-images 60 --sample-mode stratified --seed 42 --localizer yolo --yolo-conf 0.35 --out-dir runs\dl\localization_rework\yolo_conf035_stratified60_final"],
-            ["Mobile static check", r"cd mobile && node .\node_modules\typescript\bin\tsc --noEmit"],
+            ["Controlled PCA model sweep", r".\.venv311\Scripts\python.exe scripts\pca_feature_model_sweep.py --out runs\ml\pca_feature_model_sweep --components 637 64 128 256 --seed 42"],
+            ["Legacy ANN PCA experiment", r".\.venv311\Scripts\python.exe scripts\train_pca_ann.py"],
+            ["DL localization rework", r".\.venv311\Scripts\python.exe scripts\classification_to_localization_pipeline.py --max-images 300 --max-visuals 24 --sample-mode stratified --seed 42 --localizer yolo --yolo-conf 0.30 --out-dir runs\dl\localization_rework\yolo_conf030_stratified300_final"],
         ],
         [2200, 7160],
     )
 
-    doc.add_paragraph("9. Artifact Index", style="Heading 1")
+    doc.add_paragraph("8. Artifact Index", style="Heading 1")
     add_table(
         doc,
         ["Area", "Key artifact"],
@@ -522,24 +531,24 @@ def build_doc() -> None:
             ["Current workflow/report notes", r"docs\01_final_report\WORKFLOW_APPROACHES_AND_DL_REWORK.md"],
             ["Newest YOLO dataset", r"external_datasets\super_yolo_dataset"],
             ["Newest classification dataset", r"data\merged_dataset_v5"],
-            ["ML lecturer run", r"runs\ml\feature_ml_lecturer_6class_4k\REPORT.md"],
-            ["PCA report", r"runs\dl\pca_experiments\PCA_Dimensionality_Report.md"],
+            ["Current ML rerun", r"runs\ml\feature_ml_super_yolo_6class_4k\REPORT.md"],
+            ["Legacy ML lecturer run", r"runs\ml\feature_ml_lecturer_6class_4k\REPORT.md"],
+            ["PCA model sweep", r"runs\ml\pca_feature_model_sweep\PCA_Model_Sweep_Report.md"],
+            ["Legacy ANN PCA report", r"runs\dl\pca_experiments\PCA_Dimensionality_Report.md"],
             ["ML vs DL comparison", r"runs\comparisons\model_comparison\REPORT.md"],
             ["DL architecture comparison", r"runs\dl\comparison_models\model_comparison_report.md"],
-            ["DL localization improved", r"runs\dl\localization_rework\yolo_conf035_stratified60_final\REPORT.md"],
-            ["Mobile model assets", r"mobile\assets\model"],
+            ["DL localization improved", r"runs\dl\localization_rework\yolo_conf030_stratified300_final\REPORT.md"],
         ],
         [2700, 6660],
     )
 
-    doc.add_paragraph("10. Next Actions", style="Heading 1")
+    doc.add_paragraph("9. Next Actions", style="Heading 1")
     add_numbered(
         doc,
         [
-            "Keep ML pipeline as the main explainable result and avoid changing its artifact paths unless rerunning all tables.",
-            "Decide whether to keep PCA artifact as-is or rerun if the final presentation must claim about 2% accuracy loss.",
-            "Use the classification-first YOLO-localization run for DL localization evidence.",
-            "Run mobile app on a physical Android device or emulator and record FPS, detection stability, and model toggle behavior.",
+            "Use the newest `super_yolo_dataset` ML rerun for dataset-alignment claims, and label the stronger lecturer run as legacy evidence.",
+            "For PCA, cite the controlled Linear SVM row for the about-2% 637-to-128 claim and keep the ANN-only PCA result separate.",
+            "Use the localization-first YOLO-localization run at conf=0.30 for final DL localization evidence.",
             "Add final thesis text explaining why classification accuracy and localization metrics are reported separately.",
         ],
     )

@@ -1,0 +1,9 @@
+{
+  "weights": "runs\\detect\\yolo26n_balanced_realworld_v2\\weights\\best.pt",
+  "data": "external_datasets\\yolo26_balanced_realworld_v2\\data.yaml",
+  "split": "test",
+  "precision": 0.3984581548400235,
+  "recall": 0.27647507647508934,
+  "map50": 0.2218546749846604,
+  "map50_95": 0.09416152219251739
+}

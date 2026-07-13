@@ -1,12 +1,12 @@
 {
   "hardcase": {
     "val": {
-      "kept": 2627,
-      "removed": 823
+      "kept": 2620,
+      "removed": 918
     },
     "test": {
-      "kept": 899,
-      "removed": 376
+      "kept": 906,
+      "removed": 457
     }
   },
   "merged": {
@@ -16,8 +16,8 @@
     }
   },
   "quarantined": {
-    "hardcase_val": 823,
-    "hardcase_test": 376,
+    "hardcase_val": 918,
+    "hardcase_test": 457,
     "merged_test": 2406
   }
 }

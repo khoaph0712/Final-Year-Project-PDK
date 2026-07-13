@@ -8,8 +8,9 @@ Static provenance (verified by code reading, see plan/session notes):
 
 ## Dataset: hardcase
 
-- Cross-split duplicates: **0 exact**, **4427 near (Hamming<=4)**
+- Cross-split duplicates: **1 exact**, **4808 near (Hamming<=4)**
 - Undecodable images: **0**
+  - EXACT train<->val: `super_yolo_273253d888.jpg` == `super_yolo_823c20fd37.jpg`
   - NEAR ham=4 test<->train: `super_yolo_f44800e091.jpg` ~ `super_yolo_001e2cd2ad.jpg`
   - NEAR ham=3 test<->train: `super_yolo_ff8556589d.jpg` ~ `super_yolo_00853c353e.jpg`
   - NEAR ham=4 test<->train: `super_yolo_c7afedef25.jpg` ~ `super_yolo_00853c353e.jpg`
@@ -23,35 +24,36 @@ Static provenance (verified by code reading, see plan/session notes):
 
 | split | class | boxes | median area | tiny <1% img |
 |---|---|---:|---:|---:|
-| test | plastic | 1897 | 3.86% | 24.8% |
-| test | glass | 71 | 0.11% | 76.1% |
-| test | metal | 566 | 8.11% | 15.7% |
-| test | paper | 1375 | 18.2% | 13.2% |
-| test | cardboard | 46 | 12.2% | 17.4% |
-| test | organic | 46 | 1.29% | 41.3% |
-| train | plastic | 15903 | 2.58% | 33.0% |
-| train | glass | 7148 | 10.53% | 13.9% |
-| train | metal | 8604 | 7.04% | 12.9% |
-| train | paper | 4639 | 24.35% | 7.8% |
-| train | cardboard | 7276 | 13.67% | 5.4% |
-| train | organic | 31640 | 1.3% | 43.2% |
-| val | plastic | 1632 | 1.63% | 39.6% |
-| val | glass | 2478 | 9.39% | 12.3% |
-| val | metal | 1742 | 4.29% | 23.2% |
-| val | paper | 179 | 8.57% | 15.6% |
-| val | cardboard | 1605 | 15.3% | 5.9% |
-| val | organic | 12747 | 1.24% | 44.5% |
+| test | plastic | 2052 | 3.33% | 27.6% |
+| test | glass | 77 | 0.15% | 75.3% |
+| test | metal | 603 | 7.43% | 19.2% |
+| test | paper | 1424 | 17.0% | 15.8% |
+| test | cardboard | 59 | 3.8% | 30.5% |
+| test | organic | 50 | 1.22% | 46.0% |
+| train | plastic | 16789 | 2.17% | 35.8% |
+| train | glass | 7324 | 10.2% | 15.7% |
+| train | metal | 8990 | 6.41% | 16.2% |
+| train | paper | 4750 | 22.3% | 9.2% |
+| train | cardboard | 7379 | 13.19% | 6.3% |
+| train | organic | 33871 | 1.14% | 47.0% |
+| val | plastic | 1735 | 1.54% | 41.1% |
+| val | glass | 2583 | 8.62% | 15.7% |
+| val | metal | 1840 | 3.71% | 27.2% |
+| val | paper | 186 | 8.12% | 18.3% |
+| val | cardboard | 1640 | 14.57% | 7.5% |
+| val | organic | 13824 | 1.05% | 48.8% |
 
 | split | label files | single-class img | noise |
 |---|---:|---:|---|
-| test | 1275 | 95.0% | {"polygon_rows": 10} |
-| train | 20593 | 72.1% | {"polygon_rows": 5783} |
-| val | 3450 | 76.9% | {"polygon_rows": 606} |
+| test | 1363 | 93.5% | {"polygon_rows": 10, "zero_area": 1} |
+| train | 21199 | 71.6% | {"polygon_rows": 6099, "zero_area": 10} |
+| val | 3538 | 76.4% | {"polygon_rows": 624, "zero_area": 6} |
 
 ## Dataset: super
 
-- Cross-split duplicates: **0 exact**, **3658 near (Hamming<=4)**
+- Cross-split duplicates: **1 exact**, **3880 near (Hamming<=4)**
 - Undecodable images: **0**
+  - EXACT train<->val: `taco_yolo_batch_8__000005.jpg` == `taco_yolo_batch_7__000000.jpg`
   - NEAR ham=4 test<->train: `rf_garbage_metal1253_jpg.rf.c93299f221d8b9614552891bf14f23be.jpg` ~ `rf_garbage_biodegradable1265_jpg.rf.b178945837b89b2a18caae9098f0cb1a.jpg`
   - NEAR ham=4 test<->train: `rf_garbage_metal139_jpg.rf.907bf662a10abd30090f560695897f2a.jpg` ~ `rf_garbage_biodegradable1701_jpg.rf.35d4b22043be99db700539cdf382a060.jpg`
   - NEAR ham=4 test<->train: `rf_garbage_metal292_jpg.rf.7b17daa581144a26f4f0bead419e5b6c.jpg` ~ `rf_garbage_biodegradable2004_jpeg.rf.7a706209be0dc1acb3f213e0017caebd.jpg`
@@ -65,30 +67,30 @@ Static provenance (verified by code reading, see plan/session notes):
 
 | split | class | boxes | median area | tiny <1% img |
 |---|---|---:|---:|---:|
-| test | plastic | 1658 | 4.57% | 21.7% |
-| test | glass | 9 | 0.21% | 77.8% |
-| test | metal | 542 | 8.53% | 15.1% |
-| test | paper | 1347 | 19.24% | 13.1% |
-| test | cardboard | 35 | 12.74% | 14.3% |
-| test | organic | 46 | 1.29% | 41.3% |
-| train | plastic | 14475 | 3.18% | 29.7% |
-| train | glass | 6960 | 10.95% | 12.2% |
-| train | metal | 8310 | 7.4% | 11.4% |
-| train | paper | 4493 | 26.33% | 6.3% |
-| train | cardboard | 7071 | 14.22% | 4.5% |
-| train | organic | 31632 | 1.3% | 43.2% |
-| val | plastic | 1149 | 2.17% | 32.6% |
-| val | glass | 2474 | 9.38% | 12.2% |
-| val | metal | 1699 | 4.35% | 22.5% |
-| val | paper | 153 | 10.66% | 10.5% |
-| val | cardboard | 1578 | 15.87% | 5.4% |
-| val | organic | 12747 | 1.24% | 44.5% |
+| test | plastic | 1813 | 3.79% | 25.2% |
+| test | glass | 15 | 0.39% | 73.3% |
+| test | metal | 579 | 7.89% | 18.8% |
+| test | paper | 1396 | 17.28% | 15.8% |
+| test | cardboard | 48 | 7.95% | 31.2% |
+| test | organic | 50 | 1.22% | 46.0% |
+| train | plastic | 15361 | 2.6% | 32.9% |
+| train | glass | 7136 | 10.52% | 14.1% |
+| train | metal | 8696 | 6.78% | 14.8% |
+| train | paper | 4604 | 24.48% | 7.8% |
+| train | cardboard | 7174 | 13.76% | 5.5% |
+| train | organic | 33863 | 1.14% | 47.0% |
+| val | plastic | 1252 | 1.91% | 35.2% |
+| val | glass | 2579 | 8.61% | 15.7% |
+| val | metal | 1797 | 3.77% | 26.6% |
+| val | paper | 160 | 10.04% | 13.8% |
+| val | cardboard | 1613 | 14.7% | 7.0% |
+| val | organic | 13824 | 1.05% | 48.8% |
 
 | split | label files | single-class img | noise |
 |---|---:|---:|---|
-| test | 1104 | 96.7% | {"polygon_rows": 10} |
-| train | 19559 | 71.9% | {"polygon_rows": 5783} |
-| val | 3266 | 76.7% | {"polygon_rows": 606} |
+| test | 1192 | 95.0% | {"zero_area": 1, "polygon_rows": 10} |
+| train | 20165 | 71.4% | {"zero_area": 10, "polygon_rows": 6099} |
+| val | 3354 | 76.2% | {"zero_area": 6, "polygon_rows": 624} |
 
 ## Dataset: merged
 
@@ -132,15 +134,64 @@ Static provenance (verified by code reading, see plan/session notes):
 | train | paper | 3500 | 1905 | 1595 |
 | train | plastic | 3384 | 2000 | 1384 |
 
+## Dataset: hardcase_classifier
+
+- Cross-split duplicates: **516 exact**, **2775 near (Hamming<=4)**
+- Undecodable images: **0**
+  - EXACT test<->train: `baseline_test_d7382a518c.jpg` == `baseline_train_04be80318a.jpg`
+  - EXACT test<->train: `baseline_test_5659b9efad.jpg` == `baseline_train_05cabec63c.jpg`
+  - EXACT test<->train: `baseline_test_423808c9a2.jpg` == `baseline_train_199a135b7b.jpg`
+  - EXACT test<->train: `baseline_test_4600458ccc.jpg` == `baseline_train_206ae33213.jpg`
+  - EXACT test<->train: `baseline_test_6074f71007.jpg` == `baseline_train_2c9aefebbf.jpg`
+  - EXACT test<->train: `baseline_test_4458d7b259.jpg` == `baseline_train_2de90dd033.jpg`
+  - EXACT test<->train: `baseline_test_513a3f8cfb.jpg` == `baseline_train_356d4fbf9d.jpg`
+  - EXACT test<->train: `baseline_test_2441e2c477.jpg` == `baseline_train_4060dc94a6.jpg`
+  - EXACT test<->train: `baseline_test_7e7af0b301.jpg` == `baseline_train_4a23200484.jpg`
+  - EXACT test<->train: `baseline_test_8cec07b870.jpg` == `baseline_train_583296e037.jpg`
+  - NEAR ham=3 test<->train: `baseline_test_55804c6c0d.jpg` ~ `baseline_train_00fe5a3bce.jpg`
+  - NEAR ham=4 test<->train: `baseline_test_5b6f82e9c4.jpg` ~ `baseline_train_00fe5a3bce.jpg`
+  - NEAR ham=3 test<->train: `baseline_test_00578a3800.jpg` ~ `baseline_train_00fe5a3bce.jpg`
+  - NEAR ham=4 test<->train: `realwaste_fded7f271d.jpg` ~ `baseline_train_00fe5a3bce.jpg`
+  - NEAR ham=4 test<->train: `baseline_test_26f2c23ee5.jpg` ~ `baseline_train_00fe5a3bce.jpg`
+  - NEAR ham=2 test<->train: `baseline_test_2351bee43c.jpg` ~ `baseline_train_053a20270c.jpg`
+  - NEAR ham=3 test<->train: `baseline_test_bdd645325b.jpg` ~ `baseline_train_053a20270c.jpg`
+  - NEAR ham=3 test<->train: `baseline_test_8be49be0fd.jpg` ~ `baseline_train_1265873d12.jpg`
+  - NEAR ham=2 test<->train: `baseline_test_e117bcf74c.jpg` ~ `baseline_train_1265873d12.jpg`
+  - NEAR ham=4 test<->train: `baseline_test_ce713c9216.jpg` ~ `baseline_train_15dfd7d5a8.jpg`
+
+| split | class | total | field | studio |
+|---|---|---:|---:|---:|
+| test | Background | 300 | 300 | 0 |
+| test | cardboard | 374 | 300 | 74 |
+| test | glass | 356 | 300 | 56 |
+| test | metal | 438 | 300 | 138 |
+| test | organic | 427 | 300 | 127 |
+| test | paper | 376 | 300 | 76 |
+| test | plastic | 425 | 300 | 125 |
+| train | Background | 1200 | 1200 | 0 |
+| train | cardboard | 1517 | 1200 | 317 |
+| train | glass | 1501 | 1200 | 301 |
+| train | metal | 1736 | 1200 | 536 |
+| train | organic | 1806 | 1200 | 606 |
+| train | paper | 1548 | 1200 | 348 |
+| train | plastic | 1855 | 1200 | 655 |
+| val | Background | 300 | 300 | 0 |
+| val | cardboard | 370 | 300 | 70 |
+| val | glass | 363 | 300 | 63 |
+| val | metal | 416 | 300 | 116 |
+| val | organic | 414 | 300 | 114 |
+| val | paper | 376 | 300 | 76 |
+| val | plastic | 441 | 300 | 141 |
+
 ## Cross-dataset eval contamination (hardcase eval vs other train sets)
 
-- hardcase/val vs super/train: 0 exact + 650 near of 3450 images
-- hardcase/test vs super/train: 0 exact + 327 near of 1275 images
-- hardcase/val vs merged/train: 0 exact + 1338 near of 3450 images
-- hardcase/test vs merged/train: 0 exact + 561 near of 1275 images
+- hardcase/val vs super/train: 1 exact + 795 near of 3538 images
+- hardcase/test vs super/train: 0 exact + 366 near of 1363 images
+- hardcase/val vs merged/train: 0 exact + 1340 near of 3538 images
+- hardcase/test vs merged/train: 0 exact + 561 near of 1363 images
 
 ## Overfitting signals (yolo26n_hardcase_v2_long, may be mid-training)
 
-- Epochs done: 44; best mAP50-95 0.5228 at epoch 44
-- Last epoch: P 0.753 R 0.617 mAP50 0.695
-- val-train cls-loss gap: 0.031 (mild gap normal; watch for val loss rising while train falls)
+- Epochs done: 100; best mAP50-95 0.5364 at epoch 100
+- Last epoch: P 0.791 R 0.630 mAP50 0.707
+- val-train cls-loss gap: 0.368 (mild gap normal; watch for val loss rising while train falls)

@@ -17,11 +17,11 @@ import yaml
 from collections import Counter
 
 # Configure paths
-ROOT_DIR = Path(r"C:\FYP_v2")
+ROOT_DIR = Path(__file__).resolve().parents[2]
 EXT_DIR = ROOT_DIR / "external_datasets"
 TACO_YOLO_DIR = EXT_DIR / "taco_yolo"
-RF_TACO_DIR = ROOT_DIR / "rf_taco_trash"
-RF_GARBAGE_DIR = ROOT_DIR / "rf_garbage_cls"
+RF_TACO_DIR = EXT_DIR / "rf_taco_trash"
+RF_GARBAGE_DIR = EXT_DIR / "rf_garbage_cls"
 SUPER_DIR = EXT_DIR / "super_yolo_dataset"
 
 TARGET_CLASSES = ["plastic", "glass", "metal", "paper", "cardboard", "organic"]
@@ -173,10 +173,12 @@ def main():
         5: "plastic"
     }
     
-    # Clear previous merge directory to start fresh
+    # Clear previous merge directory to start fresh (contents only, in case
+    # SUPER_DIR is a junction/symlink to another drive)
     if SUPER_DIR.exists():
         print(f"[INFO] Cleaning up old directory: {SUPER_DIR}...")
-        shutil.rmtree(SUPER_DIR)
+        for child in SUPER_DIR.iterdir():
+            shutil.rmtree(child) if child.is_dir() else child.unlink()
     SUPER_DIR.mkdir(parents=True, exist_ok=True)
     
     # 2. Configure Source splits mapping (val vs valid)

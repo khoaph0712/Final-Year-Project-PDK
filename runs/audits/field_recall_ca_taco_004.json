@@ -1,0 +1,15 @@
+{
+  "tag": "ca_taco_004",
+  "dataset": "taco_field_clean_v1",
+  "split": "test",
+  "conf": 0.04,
+  "imgsz": 640,
+  "images": 120,
+  "gt_boxes": 461,
+  "tp": 283,
+  "recall": 0.613882863340564,
+  "small_gt": 292,
+  "small_tp": 141,
+  "small_recall": 0.4828767123287671,
+  "zero_detection_images": 0
+}

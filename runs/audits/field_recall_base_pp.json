@@ -1,0 +1,15 @@
+{
+  "tag": "base_pp",
+  "dataset": "plastopol_clean_v1",
+  "split": "test",
+  "conf": 0.1,
+  "imgsz": 640,
+  "images": 479,
+  "gt_boxes": 1116,
+  "tp": 640,
+  "recall": 0.5734767025089605,
+  "small_gt": 448,
+  "small_tp": 173,
+  "small_recall": 0.3861607142857143,
+  "zero_detection_images": 49
+}

@@ -13,6 +13,10 @@ from pathlib import Path
 # Setup paths
 ROOT_DIR = Path(__file__).resolve().parent.parent
 DATA_YAML = ROOT_DIR / "external_datasets" / "super_yolo_dataset" / "data.yaml"
+PROJECT_DIR = ROOT_DIR / "runs" / "detect"
+RUN_NAME = "yolov11_super_dataset"
+LAST_CHECKPOINT = PROJECT_DIR / RUN_NAME / "weights" / "last.pt"
+PRETRAINED_YOLO11 = ROOT_DIR / "models" / "pretrained" / "yolo11n.pt"
 
 def main():
     print("=====================================================================")
@@ -36,17 +40,22 @@ def main():
         print("[WARNING] CUDA GPU not found! Super dataset is extremely large; training on CPU is not feasible.")
         sys.exit(1)
 
-    # 2. Load model config (yolo11n - Nano for quick training and edge deployment)
-    model_name = "yolo11n.pt"
-    print(f"[INFO] Initializing model with pre-trained weights: {model_name}...")
+    # 2. Resume from the last checkpoint when available; otherwise start from
+    # yolo11n for quick training and edge deployment.
+    resume_training = LAST_CHECKPOINT.exists()
+    model_name = str(LAST_CHECKPOINT) if resume_training else str(PRETRAINED_YOLO11)
+    if resume_training:
+        print(f"[INFO] Resuming YOLO training from checkpoint: {LAST_CHECKPOINT}")
+    else:
+        print(f"[INFO] Initializing model with pre-trained weights: {model_name}...")
     model = YOLO(model_name)
     
     # 3. Configure training hyperparameters
     epochs = 30  # Optimized for super-dataset size
     batch_size = 32  # Optimized for RTX 3060 (12GB VRAM)
     img_size = 640
-    project_dir = ROOT_DIR / "runs" / "detect"
-    name = "yolov11_super_dataset"
+    project_dir = PROJECT_DIR
+    name = RUN_NAME
     
     print("\n[INFO] Starting training with the following parameters:")
     print(f"  - Dataset Config: {DATA_YAML}")
@@ -67,6 +76,7 @@ def main():
             project=str(project_dir),
             name=name,
             exist_ok=True,
+            resume=resume_training,
             val=True,
             cache=True,  # Cache images in RAM for maximum speed
             workers=8

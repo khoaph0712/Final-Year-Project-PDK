@@ -1,0 +1,20 @@
+[
+    {
+        "source":  "realwaste",
+        "pid":  23376,
+        "out":  "runs\\dataset_downloads\\full_realwaste_20260609_152513.out.log",
+        "err":  "runs\\dataset_downloads\\full_realwaste_20260609_152513.err.log"
+    },
+    {
+        "source":  "taco",
+        "pid":  33764,
+        "out":  "runs\\dataset_downloads\\full_taco_20260609_152513.out.log",
+        "err":  "runs\\dataset_downloads\\full_taco_20260609_152513.err.log"
+    },
+    {
+        "source":  "outerview",
+        "pid":  30572,
+        "out":  "runs\\dataset_downloads\\full_outerview_20260609_152513.out.log",
+        "err":  "runs\\dataset_downloads\\full_outerview_20260609_152513.err.log"
+    }
+]

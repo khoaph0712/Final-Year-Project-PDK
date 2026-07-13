@@ -1,0 +1,5 @@
+{
+    "pid":  8536,
+    "out":  "runs\\training_logs\\convnext_hardcase_20260609_160326.out.log",
+    "err":  "runs\\training_logs\\convnext_hardcase_20260609_160326.err.log"
+}

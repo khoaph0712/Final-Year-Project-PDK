@@ -1,0 +1,15 @@
+{
+  "tag": "ft_pp",
+  "dataset": "plastopol_clean_v1",
+  "split": "test",
+  "conf": 0.04,
+  "imgsz": 640,
+  "images": 479,
+  "gt_boxes": 1116,
+  "tp": 832,
+  "recall": 0.7455197132616488,
+  "small_gt": 448,
+  "small_tp": 245,
+  "small_recall": 0.546875,
+  "zero_detection_images": 9
+}

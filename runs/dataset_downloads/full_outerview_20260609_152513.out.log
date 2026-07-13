@@ -1,0 +1,33 @@
+source outerview: files
+download 1775001918223-Trash___Debris_Dataset.csv: start=0 total=3576102
+download 1775001918985-Trash___Debris_Dataset.geojson: start=0 total=9851110
+download 1775001920664-Trash___Debris_Dataset.parquet: start=0 total=3385712
+download 1775002681200-Trash___Debris_Dataset-image.zip: start=0 total=1073068085
+download 1775002681200-Trash___Debris_Dataset-image.zip: 216.0 MB
+download 1775002681200-Trash___Debris_Dataset-image.zip: 432.0 MB
+download 1775002681200-Trash___Debris_Dataset-image.zip: 616.0 MB
+download 1775002681200-Trash___Debris_Dataset-image.zip: 816.0 MB
+download 1775002681200-Trash___Debris_Dataset-image.zip: 1016.0 MB
+download README.md: start=0 total=4147
+source outerview: extracting image zip
+source outerview: 5000 metadata rows processed
+source outerview: 10000 metadata rows processed
+source outerview: 15000 metadata rows processed
+source outerview: 20000 metadata rows processed
+source outerview: 25000 metadata rows processed
+{
+  "output": "C:\\FYP\\external_datasets\\hard_case_full",
+  "sources": [
+    {
+      "source_id": "outerview_global_trash_debris",
+      "records": 25000,
+      "by_download_status": {
+        "image_found": 23297,
+        "metadata_only": 1703
+      },
+      "by_target_class": {
+        "review": 25000
+      }
+    }
+  ]
+}

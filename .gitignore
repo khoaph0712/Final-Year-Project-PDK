@@ -2,9 +2,11 @@
 .venv*/
 venv/
 ENV/
+.serena/
 __pycache__/
 *.pyc
 _archive/
+open-design/
 
 # Large data / weights / datasets (keep out of git)
 runs/*/weights/*.pt
@@ -31,11 +33,6 @@ ml/
 Thumbs.db
 .idea/
 .vscode/
-mobile/node_modules/
-mobile/.expo/
-mobile/android/.gradle/
-mobile/android/build/
-mobile/android/app/build/
 
 # Secrets
 .env

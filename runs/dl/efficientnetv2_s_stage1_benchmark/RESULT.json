@@ -1,0 +1,149 @@
+{
+  "data": "C:\\FYP\\data\\hard_case_classifier_v1\\data.yaml",
+  "model": "tf_efficientnetv2_s.in21k_ft_in1k frozen + 637 features + MLP head",
+  "train_samples": 12600,
+  "val_samples": 2680,
+  "test_samples": 2696,
+  "feature_dim": 1917,
+  "train_seconds": 24.47,
+  "splits": {
+    "val": {
+      "accuracy": 0.7925373134328358,
+      "macro_f1": 0.7908245294937866,
+      "weighted_f1": 0.792344791488855,
+      "classification_report": {
+        "plastic": {
+          "precision": 0.837037037037037,
+          "recall": 0.7687074829931972,
+          "f1-score": 0.8014184397163121,
+          "support": 441.0
+        },
+        "glass": {
+          "precision": 0.739010989010989,
+          "recall": 0.7410468319559229,
+          "f1-score": 0.7400275103163686,
+          "support": 363.0
+        },
+        "metal": {
+          "precision": 0.7712082262210797,
+          "recall": 0.7211538461538461,
+          "f1-score": 0.7453416149068323,
+          "support": 416.0
+        },
+        "paper": {
+          "precision": 0.7545219638242894,
+          "recall": 0.776595744680851,
+          "f1-score": 0.765399737876802,
+          "support": 376.0
+        },
+        "cardboard": {
+          "precision": 0.8301886792452831,
+          "recall": 0.8324324324324325,
+          "f1-score": 0.8313090418353576,
+          "support": 370.0
+        },
+        "organic": {
+          "precision": 0.8665105386416861,
+          "recall": 0.893719806763285,
+          "f1-score": 0.8799048751486326,
+          "support": 414.0
+        },
+        "Background": {
+          "precision": 0.7299703264094956,
+          "recall": 0.82,
+          "f1-score": 0.7723704866562009,
+          "support": 300.0
+        },
+        "accuracy": 0.7925373134328358,
+        "macro avg": {
+          "precision": 0.7897782514842656,
+          "recall": 0.7933794492827907,
+          "f1-score": 0.7908245294937866,
+          "support": 2680.0
+        },
+        "weighted avg": {
+          "precision": 0.79358711757145,
+          "recall": 0.7925373134328358,
+          "f1-score": 0.792344791488855,
+          "support": 2680.0
+        }
+      }
+    },
+    "test": {
+      "accuracy": 0.8022997032640949,
+      "macro_f1": 0.798913210330868,
+      "weighted_f1": 0.802067353153967,
+      "classification_report": {
+        "plastic": {
+          "precision": 0.8484848484848485,
+          "recall": 0.7905882352941176,
+          "f1-score": 0.8185140073081608,
+          "support": 425.0
+        },
+        "glass": {
+          "precision": 0.716931216931217,
+          "recall": 0.7612359550561798,
+          "f1-score": 0.7384196185286104,
+          "support": 356.0
+        },
+        "metal": {
+          "precision": 0.7918660287081339,
+          "recall": 0.7557077625570776,
+          "f1-score": 0.7733644859813084,
+          "support": 438.0
+        },
+        "paper": {
+          "precision": 0.8011204481792717,
+          "recall": 0.7606382978723404,
+          "f1-score": 0.7803547066848567,
+          "support": 376.0
+        },
+        "cardboard": {
+          "precision": 0.8217054263565892,
+          "recall": 0.8502673796791443,
+          "f1-score": 0.835742444152431,
+          "support": 374.0
+        },
+        "organic": {
+          "precision": 0.8669623059866962,
+          "recall": 0.9156908665105387,
+          "f1-score": 0.8906605922551253,
+          "support": 427.0
+        },
+        "Background": {
+          "precision": 0.7443365695792881,
+          "recall": 0.7666666666666667,
+          "f1-score": 0.7553366174055829,
+          "support": 300.0
+        },
+        "accuracy": 0.8022997032640949,
+        "macro avg": {
+          "precision": 0.7987724063180064,
+          "recall": 0.8001135948051522,
+          "f1-score": 0.798913210330868,
+          "support": 2696.0
+        },
+        "weighted avg": {
+          "precision": 0.8029317091656575,
+          "recall": 0.8022997032640949,
+          "f1-score": 0.802067353153967,
+          "support": 2696.0
+        }
+      }
+    }
+  },
+  "latency_cpu": {
+    "current_convnext_637": {
+      "images": 120,
+      "mean_ms": 69.65057833322135,
+      "median_ms": 58.67080000007263,
+      "p95_ms": 90.09672000074715
+    },
+    "candidate_efficientnetv2_s_637_mlp": {
+      "images": 120,
+      "mean_ms": 66.64061166667732,
+      "median_ms": 61.06400000044232,
+      "p95_ms": 79.14735499998642
+    }
+  }
+}

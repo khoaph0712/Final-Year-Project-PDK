@@ -76,6 +76,58 @@ function Remove-WorkspaceItem {
     Write-Host "REMOVED $RelativePath"
 }
 
+function Get-WorkspaceFileSha256 {
+    param([Parameter(Mandatory=$true)][string]$Path)
+
+    $stream = [System.IO.File]::OpenRead($Path)
+    try {
+        $sha = [System.Security.Cryptography.SHA256]::Create()
+        try {
+            return [System.BitConverter]::ToString($sha.ComputeHash($stream)).Replace("-", "")
+        }
+        finally {
+            $sha.Dispose()
+        }
+    }
+    finally {
+        $stream.Dispose()
+    }
+}
+
+function Remove-WorkspaceFileIfDuplicate {
+    param(
+        [Parameter(Mandatory=$true)][string]$SourceRel,
+        [Parameter(Mandatory=$true)][string]$CanonicalRel
+    )
+
+    $source = Get-FullPathInRoot $SourceRel
+    $canonical = Get-FullPathInRoot $CanonicalRel
+
+    if (-not (Test-Path -LiteralPath $source)) {
+        Write-Host "SKIP missing: $SourceRel"
+        return
+    }
+    if (-not (Test-Path -LiteralPath $canonical)) {
+        Write-Host "SKIP canonical missing: $CanonicalRel"
+        return
+    }
+
+    $sourceHash = Get-WorkspaceFileSha256 -Path $source
+    $canonicalHash = Get-WorkspaceFileSha256 -Path $canonical
+    if ($sourceHash -ne $canonicalHash) {
+        Write-Host "SKIP not duplicate: $SourceRel differs from $CanonicalRel"
+        return
+    }
+
+    if ($WhatIfOnly) {
+        Write-Host "REMOVE duplicate $SourceRel (canonical: $CanonicalRel)"
+        return
+    }
+
+    Remove-Item -LiteralPath $source -Force
+    Write-Host "REMOVED duplicate $SourceRel"
+}
+
 $archiveMoves = @(
     @{ Source = "scratch"; Target = "$ArchiveRel\scratch" },
     @{ Source = "assets\internet_test_images"; Target = "$ArchiveRel\assets\internet_test_images_raw" },
@@ -107,5 +159,16 @@ Remove-WorkspaceItem -RelativePath "docs\01_final_report\rendered_tracking_repor
 Remove-WorkspaceItem -RelativePath "data\convnext_training_crops"
 Remove-WorkspaceItem -RelativePath "scripts\__pycache__"
 Remove-WorkspaceItem -RelativePath "scripts\archive\__pycache__"
+Remove-WorkspaceItem -RelativePath "web\__pycache__"
+Remove-WorkspaceItem -RelativePath "docs\figma_pipelines" -RequireEmpty
+Remove-WorkspaceItem -RelativePath "runs\detect\runs"
+Remove-WorkspaceItem -RelativePath "runs\dl\convnextv2_material_stage1_smoke"
+Remove-WorkspaceItem -RelativePath "runs\dl\convnextv2_material_stage1_candidate" -RequireEmpty
+Remove-WorkspaceItem -RelativePath "external_datasets\yolo26_balanced_realworld_v1"
+Remove-WorkspaceItem -RelativePath "open-design"
+
+Move-WorkspaceItem -SourceRel "yolo26n.pt" -TargetRel "models\pretrained\yolo26n.pt"
+Remove-WorkspaceFileIfDuplicate -SourceRel "yolo26n.pt" -CanonicalRel "models\pretrained\yolo26n.pt"
+Remove-WorkspaceFileIfDuplicate -SourceRel "yolo11n.pt" -CanonicalRel "models\pretrained\yolo11n.pt"
 
 Write-Host "Workspace organization pass complete."

@@ -1,0 +1,1576 @@
+source taco: metadata
+download annotations.json: start=0 total=3022022
+download annotations_unofficial.json: start=0 total=3936209
+download all_image_urls.csv: start=0 total=557149
+download 000019.jpg: start=0 total=unknown
+download 000014.jpg: start=0 total=unknown
+download 000026.jpg: start=0 total=unknown
+download 000047.jpg: start=0 total=unknown
+download 000055.jpg: start=0 total=unknown
+download 000008.jpg: start=0 total=unknowndownload 000006.jpg: start=0 total=unknown
+
+download 000005.jpg: start=0 total=unknown
+download 000001.jpg: start=0 total=unknown
+download 000010.jpg: start=0 total=unknown
+download 000012.jpg: start=0 total=unknown
+download 000007.jpg: start=0 total=unknown
+download 000048.jpg: start=0 total=unknowndownload 000053.jpg: start=0 total=unknowndownload 000056.jpg: start=0 total=unknown
+
+
+download 000058.jpg: start=0 total=unknowndownload 000003.jpg: start=0 total=unknown
+download 000060.jpg: start=0 total=unknown
+
+download 000011.jpg: start=0 total=unknown
+download 000032.jpg: start=0 total=unknown
+download 000043.jpg: start=0 total=unknown
+download 000040.jpg: start=0 total=unknown
+download 000049.jpg: start=0 total=unknown
+download 000061.jpg: start=0 total=unknowndownload 000054.jpg: start=0 total=unknown
+
+download 000022.jpg: start=0 total=unknown
+download 000023.jpg: start=0 total=unknown
+download 000021.jpg: start=0 total=unknown
+download 000024.jpg: start=0 total=unknowndownload 000027.jpg: start=0 total=unknown
+
+download 000030.jpg: start=0 total=unknown
+download 000028.jpg: start=0 total=unknown
+download 000042.jpg: start=0 total=unknown
+download 000031.jpg: start=0 total=unknown
+download 000050.jpg: start=0 total=unknown
+download 000000.jpg: start=0 total=unknown
+download 000013.jpg: start=0 total=unknown
+download 000015.jpg: start=0 total=unknown
+download 000059.jpg: start=0 total=unknown
+download 000016.jpg: start=0 total=unknown
+download 000037.jpg: start=0 total=unknowndownload 000025.jpg: start=0 total=unknown
+
+download 000045.jpg: start=0 total=unknowndownload 000029.jpg: start=0 total=unknown
+
+download 000017.jpg: start=0 total=unknown
+download 000038.jpg: start=0 total=unknown
+download 000065.JPG: start=0 total=unknown
+download 000066.JPG: start=0 total=unknown
+download 000067.JPG: start=0 total=unknown
+download 000035.jpg: start=0 total=unknown
+download 000068.JPG: start=0 total=unknown
+download 000069.JPG: start=0 total=unknown
+download 000070.JPG: start=0 total=unknown
+download 000071.JPG: start=0 total=unknown
+download 000072.JPG: start=0 total=unknown
+download 000073.JPG: start=0 total=unknown
+download 000078.JPG: start=0 total=unknown
+download 000076.JPG: start=0 total=unknown
+download 000074.JPG: start=0 total=unknown
+download 000079.JPG: start=0 total=unknown
+download 000082.JPG: start=0 total=unknown
+download 000083.JPG: start=0 total=unknown
+download 000084.JPG: start=0 total=unknown
+download 000081.JPG: start=0 total=unknown
+download 000085.JPG: start=0 total=unknown
+download 000086.JPG: start=0 total=unknown
+download 000087.JPG: start=0 total=unknown
+download 000088.JPG: start=0 total=unknown
+download 000090.JPG: start=0 total=unknowndownload 000091.JPG: start=0 total=unknown
+
+download 000093.JPG: start=0 total=unknown
+download 000094.JPG: start=0 total=unknown
+download 000095.JPG: start=0 total=unknown
+download 000096.JPG: start=0 total=unknown
+download 000092.JPG: start=0 total=unknown
+download 000099.JPG: start=0 total=unknown
+download 000098.JPG: start=0 total=unknown
+download 000062.JPG: start=0 total=unknown
+download 000101.JPG: start=0 total=unknown
+download 000102.JPG: start=0 total=unknown
+download 000100.JPG: start=0 total=unknown
+download 000104.JPG: start=0 total=unknown
+download 000064.JPG: start=0 total=unknown
+download 000106.JPG: start=0 total=unknowndownload 000105.JPG: start=0 total=unknown
+
+download 000107.JPG: start=0 total=unknown
+download 000110.JPG: start=0 total=unknown
+download 000108.JPG: start=0 total=unknown
+download 000111.JPG: start=0 total=unknown
+download 000115.JPG: start=0 total=unknown
+download 000119.JPG: start=0 total=unknown
+download 000120.JPG: start=0 total=unknown
+download 000117.JPG: start=0 total=unknown
+download 000118.JPG: start=0 total=unknown
+download 000122.JPG: start=0 total=unknown
+download 000121.JPG: start=0 total=unknown
+download 000004.jpg: start=0 total=unknown
+download 000127.JPG: start=0 total=unknown
+download 000128.JPG: start=0 total=unknown
+download 000124.JPG: start=0 total=unknown
+download 000129.JPG: start=0 total=unknown
+download 000000.jpg: start=0 total=unknown
+download 000003.jpg: start=0 total=unknown
+download 000002.jpg: start=0 total=unknown
+download 000001.jpg: start=0 total=unknown
+download 000004.jpg: start=0 total=unknown
+source taco: 100/1500 images processed
+download 000005.jpg: start=0 total=unknown
+download 000006.jpg: start=0 total=unknown
+download 000007.jpg: start=0 total=unknown
+download 000009.jpg: start=0 total=unknown
+download 000010.jpg: start=0 total=unknown
+download 000008.jpg: start=0 total=unknown
+download 000012.jpg: start=0 total=unknown
+download 000011.jpg: start=0 total=unknown
+download 000014.jpg: start=0 total=unknowndownload 000013.jpg: start=0 total=unknown
+
+download 000015.jpg: start=0 total=unknown
+download 000016.jpg: start=0 total=unknown
+download 000017.jpg: start=0 total=unknown
+download 000021.jpg: start=0 total=unknowndownload 000020.jpg: start=0 total=unknown
+
+download 000019.jpg: start=0 total=unknown
+download 000018.jpg: start=0 total=unknown
+download 000022.jpg: start=0 total=unknown
+download 000024.jpg: start=0 total=unknown
+download 000026.jpg: start=0 total=unknown
+download 000027.jpg: start=0 total=unknowndownload 000023.jpg: start=0 total=unknown
+
+download 000025.jpg: start=0 total=unknown
+download 000028.jpg: start=0 total=unknown
+download 000029.jpg: start=0 total=unknown
+download 000032.jpg: start=0 total=unknown
+download 000030.jpg: start=0 total=unknown
+download 000031.jpg: start=0 total=unknown
+download 000033.jpg: start=0 total=unknown
+download 000034.jpg: start=0 total=unknown
+download 000036.jpg: start=0 total=unknown
+download 000035.jpg: start=0 total=unknown
+download 000037.jpg: start=0 total=unknown
+download 000038.jpg: start=0 total=unknown
+download 000039.jpg: start=0 total=unknown
+download 000040.jpg: start=0 total=unknown
+download 000041.jpg: start=0 total=unknown
+download 000042.jpg: start=0 total=unknown
+download 000043.jpg: start=0 total=unknown
+download 000044.jpg: start=0 total=unknown
+download 000045.jpg: start=0 total=unknown
+download 000046.jpg: start=0 total=unknown
+download 000047.jpg: start=0 total=unknown
+download 000049.jpg: start=0 total=unknown
+download 000050.jpg: start=0 total=unknown
+download 000048.jpg: start=0 total=unknown
+download 000052.jpg: start=0 total=unknown
+download 000053.jpg: start=0 total=unknown
+download 000051.jpg: start=0 total=unknowndownload 000054.jpg: start=0 total=unknown
+
+download 000055.jpg: start=0 total=unknown
+download 000058.jpg: start=0 total=unknown
+download 000056.jpg: start=0 total=unknowndownload 000057.jpg: start=0 total=unknown
+
+download 000061.jpg: start=0 total=unknown
+download 000059.jpg: start=0 total=unknown
+download 000062.jpg: start=0 total=unknown
+download 000060.jpg: start=0 total=unknown
+download 000063.jpg: start=0 total=unknown
+download 000064.jpg: start=0 total=unknown
+download 000065.jpg: start=0 total=unknown
+download 000066.jpg: start=0 total=unknown
+download 000069.jpg: start=0 total=unknowndownload 000068.jpg: start=0 total=unknown
+
+download 000070.jpg: start=0 total=unknowndownload 000067.jpg: start=0 total=unknown
+
+download 000071.jpg: start=0 total=unknown
+download 000072.jpg: start=0 total=unknown
+download 000073.jpg: start=0 total=unknown
+download 000074.jpg: start=0 total=unknown
+download 000075.jpg: start=0 total=unknown
+download 000077.jpg: start=0 total=unknowndownload 000076.jpg: start=0 total=unknown
+download 000078.jpg: start=0 total=unknown
+
+download 000079.jpg: start=0 total=unknown
+download 000081.jpg: start=0 total=unknown
+download 000080.jpg: start=0 total=unknown
+download 000082.jpg: start=0 total=unknown
+download 000084.jpg: start=0 total=unknown
+download 000085.jpg: start=0 total=unknown
+download 000083.jpg: start=0 total=unknown
+download 000086.jpg: start=0 total=unknown
+download 000087.jpg: start=0 total=unknown
+download 000088.jpg: start=0 total=unknown
+download 000089.jpg: start=0 total=unknown
+download 000090.jpg: start=0 total=unknown
+download 000091.jpg: start=0 total=unknown
+download 000092.jpg: start=0 total=unknown
+download 000093.jpg: start=0 total=unknowndownload 000094.jpg: start=0 total=unknowndownload 000095.jpg: start=0 total=unknown
+
+
+download 000097.jpg: start=0 total=unknown
+download 000098.jpg: start=0 total=unknown
+download 000099.jpg: start=0 total=unknown
+download 000000.jpg: start=0 total=unknown
+download 000096.jpg: start=0 total=unknown
+download 000001.jpg: start=0 total=unknown
+download 000003.jpg: start=0 total=unknowndownload 000002.jpg: start=0 total=unknown
+
+download 000004.jpg: start=0 total=unknown
+download 000005.jpg: start=0 total=unknown
+source taco: 200/1500 images processed
+download 000006.jpg: start=0 total=unknown
+download 000007.jpg: start=0 total=unknowndownload 000008.jpg: start=0 total=unknown
+
+download 000009.jpg: start=0 total=unknown
+download 000010.jpg: start=0 total=unknown
+download 000011.jpg: start=0 total=unknown
+download 000012.jpg: start=0 total=unknown
+download 000014.jpg: start=0 total=unknowndownload 000013.jpg: start=0 total=unknown
+
+download 000016.jpg: start=0 total=unknown
+download 000015.jpg: start=0 total=unknown
+download 000018.jpg: start=0 total=unknown
+download 000017.jpg: start=0 total=unknown
+download 000020.jpg: start=0 total=11634669
+download 000019.jpg: start=0 total=11597906
+download 000021.jpg: start=0 total=14388314
+download 000022.jpg: start=0 total=14721495
+download 000023.jpg: start=0 total=13555559
+download 000024.jpg: start=0 total=14332734
+download 000025.jpg: start=0 total=10771208
+download 000027.jpg: start=0 total=7472218
+download 000026.jpg: start=0 total=11034308
+download 000028.jpg: start=0 total=6362288
+download 000029.jpg: start=0 total=6649338
+download 000030.jpg: start=0 total=5951998
+download 000031.jpg: start=0 total=6061611
+download 000032.jpg: start=0 total=6202117
+download 000033.jpg: start=0 total=5648230
+download 000034.jpg: start=0 total=1659434
+download 000035.jpg: start=0 total=1371917
+download 000036.jpg: start=0 total=1438048
+download 000020.jpg: 11.1 MB
+download 000037.jpg: start=0 total=2235310
+download 000039.jpg: start=0 total=2944536download 000038.jpg: start=0 total=3296811
+
+download 000040.jpg: start=0 total=3441378
+download 000041.jpg: start=0 total=842542
+download 000042.jpg: start=0 total=1898755
+download 000043.jpg: start=0 total=3607192
+download 000021.jpg: 13.7 MB
+download 000044.jpg: start=0 total=4236987
+download 000046.jpg: start=0 total=7385433
+download 000047.jpg: start=0 total=2111925
+download 000048.jpg: start=0 total=2845970
+download 000049.jpg: start=0 total=2751947
+download 000045.jpg: start=0 total=3596824
+download 000050.jpg: start=0 total=2492751
+download 000051.jpg: start=0 total=2628489
+download 000023.jpg: 8.0 MB
+download 000052.jpg: start=0 total=2377257
+download 000053.jpg: start=0 total=2893459
+download 000054.jpg: start=0 total=4574827
+download 000022.jpg: 14.0 MB
+download 000055.jpg: start=0 total=3884557
+download 000056.jpg: start=0 total=3771882
+download 000027.jpg: 7.1 MB
+download 000057.jpg: start=0 total=2350083
+download 000058.jpg: start=0 total=3988919
+download 000059.jpg: start=0 total=4213611
+download 000060.jpg: start=0 total=3386353
+download 000061.jpg: start=0 total=3921098
+download 000062.jpg: start=0 total=2802735
+download 000063.jpg: start=0 total=3756592
+download 000064.jpg: start=0 total=2951433
+download 000065.jpg: start=0 total=3599019
+download 000066.jpg: start=0 total=4055240
+download 000067.jpg: start=0 total=3316023
+download 000069.jpg: start=0 total=3833811
+download 000070.jpg: start=0 total=4346015
+download 000068.jpg: start=0 total=3415205download 000071.jpg: start=0 total=3722947
+
+download 000072.jpg: start=0 total=2254368
+download 000073.jpg: start=0 total=3816040
+download 000074.jpg: start=0 total=3558174
+download 000075.jpg: start=0 total=3539874
+download 000076.jpg: start=0 total=3439877
+download 000077.jpg: start=0 total=3261499
+download 000078.jpg: start=0 total=3276640
+download 000081.jpg: start=0 total=2069026
+download 000080.jpg: start=0 total=2223065
+download 000079.jpg: start=0 total=3666450
+download 000082.jpg: start=0 total=3258627
+download 000083.jpg: start=0 total=2836389
+download 000084.jpg: start=0 total=1966500
+download 000086.jpg: start=0 total=1066883
+download 000085.jpg: start=0 total=431905
+download 000087.jpg: start=0 total=4316644
+download 000088.jpg: start=0 total=2424969download 000050.jpg: 2.4 MB
+
+download 000089.jpg: start=0 total=3849221
+download 000090.jpg: start=0 total=2309391
+download 000091.jpg: start=0 total=3665678
+download 000092.jpg: start=0 total=2673593
+download 000093.jpg: start=0 total=2840453
+download 000094.jpg: start=0 total=7467969
+download 000096.jpg: start=0 total=5289760
+download 000095.jpg: start=0 total=5172322
+download 000097.jpg: start=0 total=4825628
+download 000098.jpg: start=0 total=7080361download 000099.jpg: start=0 total=6613221
+
+download 000000.jpg: start=0 total=6609453
+download 000001.jpg: start=0 total=5990500
+download 000002.jpg: start=0 total=8172203
+download 000004.jpg: start=0 total=660265
+download 000003.jpg: start=0 total=5767157
+download 000005.jpg: start=0 total=1180888
+download 000006.jpg: start=0 total=2714981
+source taco: 300/1500 images processed
+download 000007.jpg: start=0 total=4551517
+download 000008.jpg: start=0 total=5504828
+download 000009.jpg: start=0 total=4498885
+download 000010.jpg: start=0 total=5252002
+download 000011.jpg: start=0 total=4864724
+download 000012.jpg: start=0 total=4428655
+download 000068.jpg: 3.3 MB
+download 000013.jpg: start=0 total=7499276
+download 000014.jpg: start=0 total=4948322
+download 000016.jpg: start=0 total=748333
+download 000015.jpg: start=0 total=2115248
+download 000017.jpg: start=0 total=11241883
+download 000018.jpg: start=0 total=11520174
+download 000019.jpg: start=0 total=10874087
+download 000020.jpg: start=0 total=10718867
+download 000021.jpg: start=0 total=9011336
+download 000022.jpg: start=0 total=4752192
+download 000023.jpg: start=0 total=6534830
+download 000024.jpg: start=0 total=8137377
+download 000093.jpg: 2.7 MB
+download 000025.jpg: start=0 total=5867501
+download 000026.jpg: start=0 total=6854972
+download 000027.jpg: start=0 total=6793765
+download 000028.jpg: start=0 total=7223908
+download 000029.jpg: start=0 total=8009362
+download 000000.jpg: 6.3 MB
+download 000030.jpg: start=0 total=7965218
+download 000031.jpg: start=0 total=7900941
+download 000032.jpg: start=0 total=7593176
+download 000033.jpg: start=0 total=5513781
+download 000034.jpg: start=0 total=6583063
+download 000035.jpg: start=0 total=6854415
+download 000036.jpg: start=0 total=4385567
+download 000037.jpg: start=0 total=7047620
+download 000038.jpg: start=0 total=5314500
+download 000039.jpg: start=0 total=5918447
+download 000040.jpg: start=0 total=4572241
+download 000041.jpg: start=0 total=4505639
+download 000042.jpg: start=0 total=5063370
+download 000043.jpg: start=0 total=7061477
+download 000044.jpg: start=0 total=5347808
+download 000020.jpg: 10.2 MB
+download 000045.jpg: start=0 total=3804242
+download 000046.jpg: start=0 total=6112514
+download 000047.jpg: start=0 total=3956360
+download 000048.jpg: start=0 total=4362163
+download 000049.jpg: start=0 total=5039495
+download 000050.jpg: start=0 total=6365488
+download 000051.jpg: start=0 total=7242855
+download 000052.jpg: start=0 total=5933872
+download 000053.jpg: start=0 total=6971133
+download 000054.jpg: start=0 total=5244210
+download 000055.jpg: start=0 total=2432548
+download 000056.jpg: start=0 total=2584730
+download 000057.jpg: start=0 total=4279330
+download 000058.jpg: start=0 total=4122421
+download 000059.jpg: start=0 total=2413040
+download 000032.jpg: 7.2 MB
+download 000060.jpg: start=0 total=3909505
+download 000061.jpg: start=0 total=3292224
+download 000062.jpg: start=0 total=3580565
+download 000063.jpg: start=0 total=1546962
+download 000064.jpg: start=0 total=1419444
+download 000065.jpg: start=0 total=1335502
+download 000066.jpg: start=0 total=3013554
+download 000067.jpg: start=0 total=2358354
+download 000068.jpg: start=0 total=5387613
+download 000069.jpg: start=0 total=2338728
+download 000070.jpg: start=0 total=1658195
+download 000071.jpg: start=0 total=1101034
+download 000072.jpg: start=0 total=4776437
+download 000073.jpg: start=0 total=5199989
+download 000074.jpg: start=0 total=6792481
+download 000075.jpg: start=0 total=7206821
+download 000076.jpg: start=0 total=4851155
+download 000077.jpg: start=0 total=5892184
+download 000078.jpg: start=0 total=5737599
+download 000079.jpg: start=0 total=7120897
+download 000080.jpg: start=0 total=5060320
+download 000082.jpg: start=0 total=5797432
+download 000081.jpg: start=0 total=5684188
+download 000083.jpg: start=0 total=5659937
+download 000041.jpg: 4.3 MB
+download 000084.jpg: start=0 total=6555637
+download 000085.jpg: start=0 total=6927747
+download 000086.jpg: start=0 total=6138264
+download 000087.jpg: start=0 total=6940630
+download 000088.jpg: start=0 total=7736136
+download 000089.jpg: start=0 total=4700114
+download 000090.jpg: start=0 total=8001176
+download 000091.jpg: start=0 total=4521315
+download 000092.jpg: start=0 total=5968518
+download 000093.jpg: start=0 total=5398394
+download 000094.jpg: start=0 total=5030943
+download 000095.jpg: start=0 total=5737217
+download 000096.jpg: start=0 total=5272141
+download 000097.jpg: start=0 total=7713096
+download 000098.jpg: start=0 total=3586246
+download 000099.jpg: start=0 total=4014266
+download 000000.jpg: start=0 total=3727183
+download 000001.jpg: start=0 total=5756510
+download 000002.jpg: start=0 total=3832474
+download 000003.jpg: start=0 total=7368481
+download 000004.jpg: start=0 total=5688546
+download 000005.jpg: start=0 total=6347972
+source taco: 400/1500 images processed
+download 000006.jpg: start=0 total=2034396
+download 000007.jpg: start=0 total=6429193
+download 000008.jpg: start=0 total=5772861
+download 000009.jpg: start=0 total=6529371
+download 000010.jpg: start=0 total=5854993
+download 000011.jpg: start=0 total=3550199
+download 000012.jpg: start=0 total=5729581
+download 000013.jpg: start=0 total=2559269
+download 000014.jpg: start=0 total=1953795
+download 000015.jpg: start=0 total=3604432
+download 000016.jpg: start=0 total=7136227
+download 000017.jpg: start=0 total=6284797
+download 000018.jpg: start=0 total=5500818
+download 000019.jpg: start=0 total=6826288
+download 000020.jpg: start=0 total=5935864
+download 000021.jpg: start=0 total=6656874
+download 000022.jpg: start=0 total=4009053
+download 000024.jpg: start=0 total=8999542
+download 000023.jpg: start=0 total=1730808
+download 000025.jpg: start=0 total=6659301
+download 000026.jpg: start=0 total=5276515
+download 000027.jpg: start=0 total=3874658
+download 000028.jpg: start=0 total=5658939
+download 000029.jpg: start=0 total=6632345
+download 000030.jpg: start=0 total=4854322
+download 000031.jpg: start=0 total=4895260
+download 000032.jpg: start=0 total=5111319
+download 000006.jpg: 1.9 MB
+download 000033.jpg: start=0 total=3938845
+download 000034.jpg: start=0 total=6457244
+download 000035.jpg: start=0 total=3719040
+download 000036.jpg: start=0 total=7455869
+download 000037.jpg: start=0 total=5260370
+download 000038.jpg: start=0 total=7158653
+download 000039.jpg: start=0 total=7640187
+download 000040.jpg: start=0 total=6206556
+download 000041.jpg: start=0 total=6577484
+download 000042.jpg: start=0 total=7716106
+download 000043.jpg: start=0 total=3276289
+download 000044.jpg: start=0 total=8475668
+download 000017.jpg: 6.0 MB
+download 000045.jpg: start=0 total=6290492
+download 000047.jpg: start=0 total=8935251
+download 000046.jpg: start=0 total=7005891
+download 000048.jpg: start=0 total=4314130
+download 000049.jpg: start=0 total=4355602
+download 000050.jpg: start=0 total=7224664
+download 000051.jpg: start=0 total=3429609
+download 000052.jpg: start=0 total=4464063
+download 000053.jpg: start=0 total=6231555
+download 000054.jpg: start=0 total=3588436
+download 000055.jpg: start=0 total=5367799
+download 000056.jpg: start=0 total=4643921
+download 000057.jpg: start=0 total=8294149
+download 000058.jpg: start=0 total=5911282
+download 000059.jpg: start=0 total=2995823
+download 000060.jpg: start=0 total=3241139
+download 000061.jpg: start=0 total=3481826
+download 000062.jpg: start=0 total=3420432
+download 000063.jpg: start=0 total=1907543
+download 000064.jpg: start=0 total=2250225
+download 000065.jpg: start=0 total=952058
+download 000049.jpg: 4.2 MB
+download 000066.jpg: start=0 total=3078400
+download 000067.jpg: start=0 total=1864861
+download 000068.jpg: start=0 total=2254022
+download 000060.jpg: 3.1 MB
+download 000053.jpg: 5.9 MB
+download 000069.jpg: start=0 total=3777456
+download 000070.jpg: start=0 total=3401882
+download 000071.jpg: start=0 total=2386618
+download 000072.jpg: start=0 total=3072433
+download 000073.jpg: start=0 total=3335214
+download 000074.jpg: start=0 total=2402252
+download 000075.jpg: start=0 total=1878399
+download 000076.jpg: start=0 total=1343234
+download 000077.jpg: start=0 total=1894178
+download 000059.jpg: 2.9 MB
+download 000040.jpg: 5.9 MB
+download 000078.jpg: start=0 total=3664214
+download 000080.jpg: start=0 total=2009333
+download 000079.jpg: start=0 total=2070896
+download 000081.jpg: start=0 total=3286801
+download 000082.jpg: start=0 total=2235692
+download 000083.jpg: start=0 total=2271788
+download 000084.jpg: start=0 total=4095886
+download 000061.jpg: 3.3 MB
+download 000063.jpg: 1.8 MB
+download 000085.jpg: start=0 total=3489262
+download 000086.jpg: start=0 total=3151358
+download 000087.jpg: start=0 total=3967351
+download 000088.jpg: start=0 total=3565848
+download 000089.jpg: start=0 total=3918923
+download 000090.jpg: start=0 total=2084651
+download 000058.jpg: 5.6 MB
+download 000091.jpg: start=0 total=1498494
+download 000092.jpg: start=0 total=1779341
+download 000093.jpg: start=0 total=1404254download 000094.jpg: start=0 total=1588060
+
+download 000095.jpg: start=0 total=3239124
+download 000096.jpg: start=0 total=2495405
+download 000098.jpg: start=0 total=2048985download 000097.jpg: start=0 total=2476508download 000099.jpg: start=0 total=1506973
+
+
+download 000000.jpg: start=0 total=757522
+download 000001.jpg: start=0 total=3081100
+download 000002.jpg: start=0 total=1634923
+download 000003.jpg: start=0 total=2107539
+download 000005.jpg: start=0 total=673219
+download 000004.jpg: start=0 total=2119302
+source taco: 500/1500 images processed
+download 000006.jpg: start=0 total=978592
+download 000007.jpg: start=0 total=2702761
+download 000009.jpg: start=0 total=3211225download 000008.jpg: start=0 total=2356467
+
+download 000010.jpg: start=0 total=1615123
+download 000011.jpg: start=0 total=2220772
+download 000012.jpg: start=0 total=2313125
+download 000014.jpg: start=0 total=2090041
+download 000013.jpg: start=0 total=1728435
+download 000015.jpg: start=0 total=3049005
+download 000016.jpg: start=0 total=954730
+download 000018.jpg: start=0 total=823638
+download 000019.jpg: start=0 total=1988292download 000017.jpg: start=0 total=1524962
+download 000020.jpg: start=0 total=2610666
+
+download 000021.jpg: start=0 total=5067445
+download 000022.jpg: start=0 total=7585007
+download 000023.jpg: start=0 total=6129536
+download 000024.jpg: start=0 total=5872501
+download 000025.jpg: start=0 total=6272020
+download 000026.jpg: start=0 total=6653282
+download 000057.jpg: 7.9 MB
+download 000027.jpg: start=0 total=4160484
+download 000028.jpg: start=0 total=4524264
+download 000029.jpg: start=0 total=6669802
+download 000030.jpg: start=0 total=5655707
+download 000031.jpg: start=0 total=2702685
+download 000032.jpg: start=0 total=2010502
+download 000033.jpg: start=0 total=7827791
+download 000034.jpg: start=0 total=4656355
+download 000035.jpg: start=0 total=4354800
+download 000036.jpg: start=0 total=4659268
+download 000037.jpg: start=0 total=5667084
+download 000038.jpg: start=0 total=5271961
+download 000039.jpg: start=0 total=4924741
+download 000040.jpg: start=0 total=4986952
+download 000041.jpg: start=0 total=4476185
+download 000042.jpg: start=0 total=6015392
+download 000043.jpg: start=0 total=7082708
+download 000044.jpg: start=0 total=4663442
+download 000045.jpg: start=0 total=5741921
+download 000046.jpg: start=0 total=5215429
+download 000047.jpg: start=0 total=3078025
+download 000048.jpg: start=0 total=202713
+download 000049.jpg: start=0 total=4952467
+download 000050.jpg: start=0 total=2702819
+download 000051.jpg: start=0 total=3134410
+download 000052.jpg: start=0 total=5730793
+download 000053.jpg: start=0 total=3245338
+download 000054.jpg: start=0 total=2867249
+download 000055.jpg: start=0 total=6522533
+download 000056.jpg: start=0 total=6048180
+download 000057.jpg: start=0 total=3279040
+download 000058.jpg: start=0 total=3690288
+download 000059.jpg: start=0 total=5076577
+download 000060.jpg: start=0 total=4013475
+download 000061.jpg: start=0 total=4772454
+download 000062.jpg: start=0 total=4652943
+download 000063.jpg: start=0 total=4671932
+download 000064.jpg: start=0 total=3633636
+download 000065.jpg: start=0 total=4389612
+download 000040.jpg: 4.8 MB
+download 000066.jpg: start=0 total=4733360
+download 000067.jpg: start=0 total=5840776
+download 000068.jpg: start=0 total=2576495
+download 000069.jpg: start=0 total=4474928
+download 000070.jpg: start=0 total=5722549
+download 000071.jpg: start=0 total=5820175
+download 000072.jpg: start=0 total=5561390
+download 000073.jpg: start=0 total=4568880
+download 000074.jpg: start=0 total=4765358
+download 000075.jpg: start=0 total=4739034
+download 000076.jpg: start=0 total=4620544
+download 000077.jpg: start=0 total=3087235
+download 000079.jpg: start=0 total=3238016
+download 000078.jpg: start=0 total=2654096
+download 000080.jpg: start=0 total=2856927
+download 000081.jpg: start=0 total=3072942
+download 000082.jpg: start=0 total=2786136
+download 000083.jpg: start=0 total=4417968
+download 000084.jpg: start=0 total=4479435
+download 000085.jpg: start=0 total=3397573
+download 000086.jpg: start=0 total=3351651
+download 000087.jpg: start=0 total=4944213
+download 000089.jpg: start=0 total=4800045download 000088.jpg: start=0 total=5899826
+
+download 000090.jpg: start=0 total=5705762
+download 000091.jpg: start=0 total=5333953
+download 000092.jpg: start=0 total=4696283
+download 000093.jpg: start=0 total=5292599
+download 000094.jpg: start=0 total=4668521
+download 000095.jpg: start=0 total=6364669
+download 000096.jpg: start=0 total=5772823
+download 000061.jpg: 4.6 MB
+download 000097.jpg: start=0 total=4939358
+download 000098.jpg: start=0 total=2986595
+download 000099.jpg: start=0 total=5444648download 000000.jpg: start=0 total=4195030
+
+download 000002.jpg: start=0 total=1820019
+download 000001.jpg: start=0 total=3945658
+download 000003.jpg: start=0 total=5862202
+download 000004.jpg: start=0 total=4895836
+download 000005.jpg: start=0 total=4051853
+download 000006.jpg: start=0 total=5822557
+source taco: 600/1500 images processed
+download 000007.jpg: start=0 total=5454439
+download 000008.jpg: start=0 total=3355901
+download 000009.jpg: start=0 total=5380945
+download 000011.jpg: start=0 total=4647879download 000010.jpg: start=0 total=5091221
+
+download 000012.jpg: start=0 total=5943330
+download 000013.jpg: start=0 total=5332828
+download 000014.jpg: start=0 total=4288128
+download 000015.jpg: start=0 total=4268574
+download 000016.jpg: start=0 total=5286587
+download 000018.jpg: start=0 total=2221614
+download 000017.jpg: start=0 total=3696219
+download 000019.jpg: start=0 total=1797903
+download 000020.jpg: start=0 total=1818408
+download 000021.jpg: start=0 total=1604954
+download 000022.jpg: start=0 total=1454986
+download 000023.jpg: start=0 total=1345309
+download 000024.jpg: start=0 total=2398476
+download 000026.jpg: start=0 total=2024824
+download 000025.jpg: start=0 total=1973246
+download 000084.jpg: 4.3 MB
+download 000027.jpg: start=0 total=1340057
+download 000028.jpg: start=0 total=1835155
+download 000029.jpg: start=0 total=1816375
+download 000030.jpg: start=0 total=2007803
+download 000032.jpg: start=0 total=4534651
+download 000031.jpg: start=0 total=4273295
+download 000033.jpg: start=0 total=5300010
+download 000034.jpg: start=0 total=3110499
+download 000035.jpg: start=0 total=4460437
+download 000036.jpg: start=0 total=5847712
+download 000037.jpg: start=0 total=7402327
+download 000038.jpg: start=0 total=7878301
+download 000039.jpg: start=0 total=6053015
+download 000040.jpg: start=0 total=6961804
+download 000041.jpg: start=0 total=7339868
+download 000042.jpg: start=0 total=5985993
+download 000043.jpg: start=0 total=2182615
+download 000044.jpg: start=0 total=1881268
+download 000045.jpg: start=0 total=1985068
+download 000046.jpg: start=0 total=3397959
+download 000047.jpg: start=0 total=3949280
+download 000048.jpg: start=0 total=3766376
+download 000049.jpg: start=0 total=3120421
+download 000050.jpg: start=0 total=3280093
+download 000051.jpg: start=0 total=4267217
+download 000052.jpg: start=0 total=3634322
+download 000053.jpg: start=0 total=3835896
+download 000054.jpg: start=0 total=4006127
+download 000055.jpg: start=0 total=3219709
+download 000056.jpg: start=0 total=3242592
+download 000057.jpg: start=0 total=4616780
+download 000058.jpg: start=0 total=3655904
+download 000059.jpg: start=0 total=3764215
+download 000060.jpg: start=0 total=1241502
+download 000061.jpg: start=0 total=1856414
+download 000062.jpg: start=0 total=2315503
+download 000063.jpg: start=0 total=4878488
+download 000064.jpg: start=0 total=5960554
+download 000065.jpg: start=0 total=7722915
+download 000066.jpg: start=0 total=7971194
+download 000067.jpg: start=0 total=2217201
+download 000069.jpg: start=0 total=1779671
+download 000068.jpg: start=0 total=1952091
+download 000070.jpg: start=0 total=2424480
+download 000039.jpg: 5.8 MB
+download 000071.jpg: start=0 total=3743679
+download 000072.jpg: start=0 total=1497849
+download 000074.jpg: start=0 total=1955892download 000073.jpg: start=0 total=1238256download 000075.jpg: start=0 total=1629294
+
+
+download 000076.jpg: start=0 total=1807361
+download 000077.jpg: start=0 total=836402
+download 000078.jpg: start=0 total=3025832
+download 000079.jpg: start=0 total=3734275download 000080.jpg: start=0 total=1991254
+
+download 000081.jpg: start=0 total=1944373
+download 000082.jpg: start=0 total=2027737
+download 000083.jpg: start=0 total=1169729
+download 000084.jpg: start=0 total=2383467
+download 000001.JPG: start=0 total=unknown
+download 000000.JPG: start=0 total=unknown
+download 000003.JPG: start=0 total=unknown
+download 000005.JPG: start=0 total=unknown
+download 000006.JPG: start=0 total=unknown
+download 000007.JPG: start=0 total=unknowndownload 000008.JPG: start=0 total=unknown
+
+download 000010.JPG: start=0 total=unknown
+download 000012.JPG: start=0 total=unknown
+download 000016.JPG: start=0 total=unknown
+download 000017.JPG: start=0 total=unknown
+download 000009.JPG: start=0 total=unknown
+download 000020.JPG: start=0 total=unknown
+download 000015.JPG: start=0 total=unknown
+download 000018.JPG: start=0 total=unknowndownload 000013.JPG: start=0 total=unknown
+
+download 000021.JPG: start=0 total=unknown
+download 000019.JPG: start=0 total=unknown
+download 000022.JPG: start=0 total=unknown
+download 000023.JPG: start=0 total=unknown
+source taco: 700/1500 images processed
+download 000024.JPG: start=0 total=unknowndownload 000026.JPG: start=0 total=unknown
+
+download 000025.JPG: start=0 total=unknown
+download 000027.JPG: start=0 total=unknown
+download 000031.JPG: start=0 total=unknown
+download 000029.JPG: start=0 total=unknowndownload 000032.JPG: start=0 total=unknown
+
+download 000033.JPG: start=0 total=unknowndownload 000034.JPG: start=0 total=unknown
+
+download 000035.JPG: start=0 total=unknown
+download 000036.JPG: start=0 total=unknown
+download 000037.JPG: start=0 total=unknown
+download 000043.JPG: start=0 total=unknown
+download 000040.JPG: start=0 total=unknown
+download 000041.JPG: start=0 total=unknown
+download 000044.JPG: start=0 total=unknown
+download 000042.JPG: start=0 total=unknowndownload 000038.JPG: start=0 total=unknown
+
+download 000039.JPG: start=0 total=unknown
+download 000047.JPG: start=0 total=unknowndownload 000046.JPG: start=0 total=unknown
+
+download 000050.JPG: start=0 total=unknown
+download 000048.JPG: start=0 total=unknown
+download 000051.JPG: start=0 total=unknown
+download 000052.JPG: start=0 total=unknown
+download 000054.JPG: start=0 total=unknown
+download 000055.JPG: start=0 total=unknown
+download 000053.JPG: start=0 total=unknown
+download 000057.JPG: start=0 total=unknown
+download 000056.JPG: start=0 total=unknown
+download 000061.JPG: start=0 total=unknown
+download 000058.JPG: start=0 total=unknown
+download 000060.JPG: start=0 total=unknowndownload 000062.JPG: start=0 total=unknown
+
+download 000059.JPG: start=0 total=unknown
+download 000063.JPG: start=0 total=unknown
+download 000067.JPG: start=0 total=unknowndownload 000065.JPG: start=0 total=unknowndownload 000064.JPG: start=0 total=unknown
+
+
+download 000068.JPG: start=0 total=unknown
+download 000069.JPG: start=0 total=unknown
+download 000072.JPG: start=0 total=unknowndownload 000071.JPG: start=0 total=unknown
+
+download 000070.JPG: start=0 total=unknown
+download 000073.JPG: start=0 total=unknowndownload 000074.JPG: start=0 total=unknown
+
+download 000076.JPG: start=0 total=unknown
+download 000077.JPG: start=0 total=unknowndownload 000079.JPG: start=0 total=unknown
+
+download 000080.JPG: start=0 total=unknown
+download 000081.JPG: start=0 total=unknowndownload 000075.JPG: start=0 total=unknown
+
+download 000082.JPG: start=0 total=unknown
+download 000083.JPG: start=0 total=unknown
+download 000085.JPG: start=0 total=unknowndownload 000014.JPG: start=0 total=unknowndownload 000086.JPG: start=0 total=unknown
+
+
+download 000030.JPG: start=0 total=unknown
+download 000049.JPG: start=0 total=unknowndownload 000088.JPG: start=0 total=unknown
+
+download 000091.JPG: start=0 total=unknown
+download 000090.JPG: start=0 total=unknowndownload 000092.JPG: start=0 total=unknown
+
+download 000089.JPG: start=0 total=unknown
+download 000093.JPG: start=0 total=unknown
+download 000094.JPG: start=0 total=unknowndownload 000095.JPG: start=0 total=unknown
+
+download 000097.JPG: start=0 total=unknowndownload 000098.JPG: start=0 total=unknown
+
+download 000096.JPG: start=0 total=unknown
+download 000084.JPG: start=0 total=unknown
+download 000099.JPG: start=0 total=unknown
+download IMG_4977.JPG: start=0 total=unknown
+download IMG_4978.JPG: start=0 total=unknown
+download IMG_4972.JPG: start=0 total=unknown
+download IMG_4994.JPG: start=0 total=unknowndownload IMG_4997.JPG: start=0 total=unknowndownload IMG_4980.JPG: start=0 total=unknowndownload IMG_4996.JPG: start=0 total=unknown
+
+
+
+download IMG_4992.JPG: start=0 total=unknown
+download IMG_5002.JPG: start=0 total=unknown
+download IMG_5003.JPG: start=0 total=unknown
+download IMG_5039.JPG: start=0 total=unknowndownload IMG_5040.JPG: start=0 total=unknown
+download IMG_5036.JPG: start=0 total=unknown
+
+download IMG_4998.JPG: start=0 total=unknown
+download IMG_5041.JPG: start=0 total=unknown
+download IMG_5042.JPG: start=0 total=unknown
+download IMG_5044.JPG: start=0 total=unknowndownload IMG_5043.JPG: start=0 total=unknown
+download IMG_5045.JPG: start=0 total=unknown
+
+download IMG_5046.JPG: start=0 total=unknowndownload IMG_5048.JPG: start=0 total=unknown
+
+download IMG_5050.JPG: start=0 total=unknowndownload IMG_5049.JPG: start=0 total=unknown
+
+download IMG_5051.JPG: start=0 total=unknown
+download IMG_5053.JPG: start=0 total=unknown
+source taco: 800/1500 images processed
+download IMG_5054.JPG: start=0 total=unknown
+download IMG_5052.JPG: start=0 total=unknown
+download IMG_5057.JPG: start=0 total=unknowndownload IMG_5056.JPG: start=0 total=unknowndownload IMG_5055.JPG: start=0 total=unknown
+
+
+download IMG_5060.JPG: start=0 total=unknown
+download IMG_5058.JPG: start=0 total=unknowndownload IMG_4855.JPG: start=0 total=unknowndownload IMG_4856.JPG: start=0 total=unknown
+
+
+download IMG_4854.JPG: start=0 total=unknown
+download IMG_4852.JPG: start=0 total=unknowndownload IMG_4859.JPG: start=0 total=unknown
+download IMG_4862.JPG: start=0 total=unknown
+
+download IMG_4865.JPG: start=0 total=unknown
+download IMG_4869.JPG: start=0 total=unknown
+download IMG_4868.JPG: start=0 total=unknown
+download IMG_4874.JPG: start=0 total=unknown
+download IMG_4875.JPG: start=0 total=unknown
+download IMG_4876.JPG: start=0 total=unknown
+download IMG_4860.JPG: start=0 total=unknown
+download IMG_4877.JPG: start=0 total=unknown
+download IMG_4878.JPG: start=0 total=unknown
+download IMG_4879.JPG: start=0 total=unknown
+download IMG_4883.JPG: start=0 total=unknown
+download IMG_4891.JPG: start=0 total=unknown
+download IMG_4893.JPG: start=0 total=unknowndownload IMG_4889.JPG: start=0 total=unknown
+
+download IMG_4897.JPG: start=0 total=unknown
+download IMG_4887.JPG: start=0 total=unknown
+download IMG_4895.JPG: start=0 total=unknown
+download IMG_4898.JPG: start=0 total=unknown
+download IMG_4907.JPG: start=0 total=unknown
+download IMG_4901.JPG: start=0 total=unknown
+download IMG_4911.JPG: start=0 total=unknowndownload IMG_4902.JPG: start=0 total=unknown
+
+download IMG_4913.JPG: start=0 total=unknown
+download IMG_4914.JPG: start=0 total=unknown
+download IMG_4915.JPG: start=0 total=unknowndownload IMG_4916.JPG: start=0 total=unknown
+
+download IMG_4917.JPG: start=0 total=unknown
+download IMG_4919.JPG: start=0 total=unknown
+download IMG_4921.JPG: start=0 total=unknown
+download IMG_4922.JPG: start=0 total=unknown
+download IMG_4924.JPG: start=0 total=unknowndownload IMG_4926.JPG: start=0 total=unknown
+
+download IMG_4939.JPG: start=0 total=unknowndownload IMG_4936.JPG: start=0 total=unknowndownload IMG_4928.JPG: start=0 total=unknowndownload IMG_4934.JPG: start=0 total=unknowndownload IMG_4932.JPG: start=0 total=unknown
+
+
+
+
+download IMG_4941.JPG: start=0 total=unknown
+download IMG_4961.JPG: start=0 total=unknown
+download IMG_4963.JPG: start=0 total=unknown
+download IMG_4964.JPG: start=0 total=unknown
+download IMG_4965.JPG: start=0 total=unknowndownload IMG_4966.JPG: start=0 total=unknown
+
+download IMG_4971.JPG: start=0 total=unknowndownload IMG_4881.JPG: start=0 total=unknown
+
+download IMG_4929.JPG: start=0 total=unknown
+download IMG_4967.JPG: start=0 total=unknown
+download IMG_4969.JPG: start=0 total=unknown
+download IMG_4950.JPG: start=0 total=unknown
+download IMG_5037.JPG: start=0 total=unknowndownload IMG_4948.JPG: start=0 total=unknown
+
+download IMG_4857.JPG: start=0 total=unknown
+download IMG_5063.JPG: start=0 total=unknown
+download IMG_5061.JPG: start=0 total=unknown
+download IMG_5064.JPG: start=0 total=unknowndownload IMG_5066.JPG: start=0 total=unknowndownload IMG_5065.JPG: start=0 total=unknown
+
+
+download IMG_5067.JPG: start=0 total=unknown
+download IMG_5068.JPG: start=0 total=unknown
+download 000032.JPG: start=0 total=unknown
+download 000067.JPG: start=0 total=unknown
+download 000066.JPG: start=0 total=unknown
+download 000003.JPG: start=0 total=unknown
+download 000000.JPG: start=0 total=unknown
+download 000005.JPG: start=0 total=unknown
+download 000004.JPG: start=0 total=unknown
+download 000002.JPG: start=0 total=unknowndownload 000006.JPG: start=0 total=unknown
+
+download 000009.JPG: start=0 total=unknowndownload 000007.JPG: start=0 total=unknown
+
+download 000008.JPG: start=0 total=unknown
+download 000011.JPG: start=0 total=unknown
+download 000010.JPG: start=0 total=unknown
+download 000012.JPG: start=0 total=unknown
+download 000013.JPG: start=0 total=unknown
+download 000014.JPG: start=0 total=unknown
+download 000019.JPG: start=0 total=unknowndownload 000018.JPG: start=0 total=unknowndownload 000016.JPG: start=0 total=unknown
+
+
+download 000015.JPG: start=0 total=unknown
+download 000020.JPG: start=0 total=unknown
+download 000021.JPG: start=0 total=unknowndownload 000022.JPG: start=0 total=unknown
+
+download 000023.JPG: start=0 total=unknown
+download 000025.JPG: start=0 total=unknown
+download 000027.JPG: start=0 total=unknown
+download 000029.JPG: start=0 total=unknown
+source taco: 900/1500 images processed
+download 000028.JPG: start=0 total=unknowndownload 000026.JPG: start=0 total=unknowndownload 000031.JPG: start=0 total=unknown
+
+
+download 000035.JPG: start=0 total=unknown
+download 000034.JPG: start=0 total=unknown
+download 000036.JPG: start=0 total=unknown
+download 000039.JPG: start=0 total=unknown
+download 000037.JPG: start=0 total=unknown
+download 000043.JPG: start=0 total=unknown
+download 000040.JPG: start=0 total=unknown
+download 000045.JPG: start=0 total=unknowndownload 000042.JPG: start=0 total=unknown
+
+download 000046.JPG: start=0 total=unknown
+download 000041.JPG: start=0 total=unknown
+download 000047.JPG: start=0 total=unknowndownload 000048.JPG: start=0 total=unknown
+
+download 000050.JPG: start=0 total=unknowndownload 000051.JPG: start=0 total=unknowndownload 000049.JPG: start=0 total=unknown
+
+
+download 000053.JPG: start=0 total=unknowndownload 000052.JPG: start=0 total=unknown
+
+download 000054.JPG: start=0 total=unknown
+download 000055.JPG: start=0 total=unknown
+download 000057.JPG: start=0 total=unknown
+download 000059.JPG: start=0 total=unknown
+download 000060.JPG: start=0 total=unknown
+download 000056.JPG: start=0 total=unknowndownload 000061.JPG: start=0 total=unknown
+
+download 000062.JPG: start=0 total=unknown
+download 000058.JPG: start=0 total=unknown
+download 000064.JPG: start=0 total=unknown
+download 000063.JPG: start=0 total=unknown
+download 000065.JPG: start=0 total=unknown
+download 000068.JPG: start=0 total=unknown
+download 000069.JPG: start=0 total=unknown
+download 000070.JPG: start=0 total=unknown
+download 000071.JPG: start=0 total=unknown
+download 000072.JPG: start=0 total=unknown
+download 000073.JPG: start=0 total=unknown
+download 000074.JPG: start=0 total=unknown
+download 000076.JPG: start=0 total=unknown
+download 000077.JPG: start=0 total=unknown
+download 000079.JPG: start=0 total=unknown
+download 000081.JPG: start=0 total=unknown
+download 000083.JPG: start=0 total=unknown
+download 000082.JPG: start=0 total=unknown
+download 000080.JPG: start=0 total=unknown
+download 000086.JPG: start=0 total=unknown
+download 000085.JPG: start=0 total=unknowndownload 000084.JPG: start=0 total=unknown
+
+download 000087.JPG: start=0 total=unknown
+download 000089.JPG: start=0 total=unknown
+download 000090.JPG: start=0 total=unknown
+download 000092.JPG: start=0 total=unknown
+download 000095.JPG: start=0 total=unknowndownload 000088.JPG: start=0 total=unknown
+
+download 000094.JPG: start=0 total=unknown
+download 000093.JPG: start=0 total=unknown
+download 000096.JPG: start=0 total=unknown
+download 000097.JPG: start=0 total=unknowndownload 000098.JPG: start=0 total=unknown
+
+download 000071.JPG: start=0 total=unknown
+download 000072.JPG: start=0 total=unknown
+download 000074.JPG: start=0 total=unknown
+download 000073.JPG: start=0 total=unknown
+download 000075.JPG: start=0 total=unknown
+download 000079.JPG: start=0 total=unknown
+download 000083.JPG: start=0 total=unknown
+download 000082.JPG: start=0 total=unknown
+download 000086.JPG: start=0 total=unknowndownload 000081.JPG: start=0 total=unknown
+
+download 000119.JPG: start=0 total=unknowndownload 000084.JPG: start=0 total=unknown
+
+download 000085.JPG: start=0 total=unknowndownload 000076.JPG: start=0 total=unknown
+
+download 000087.JPG: start=0 total=unknown
+download 000088.JPG: start=0 total=unknown
+download 000089.JPG: start=0 total=unknown
+download 000090.JPG: start=0 total=unknown
+download 000091.JPG: start=0 total=unknown
+download 000092.JPG: start=0 total=unknown
+download 000093.JPG: start=0 total=unknown
+download 000094.JPG: start=0 total=unknown
+download 000096.JPG: start=0 total=unknown
+download 000095.JPG: start=0 total=unknown
+download 000097.JPG: start=0 total=unknown
+download 000098.JPG: start=0 total=unknown
+download 000099.JPG: start=0 total=unknown
+download 000100.JPG: start=0 total=unknown
+download 000062.JPG: start=0 total=unknowndownload 000063.JPG: start=0 total=unknown
+
+download 000066.JPG: start=0 total=unknowndownload 000064.JPG: start=0 total=unknown
+
+download 000067.JPG: start=0 total=unknown
+download 000069.JPG: start=0 total=unknown
+download 000102.JPG: start=0 total=unknown
+download 000070.JPG: start=0 total=unknowndownload 000101.JPG: start=0 total=unknowndownload 000103.JPG: start=0 total=unknown
+download 000104.JPG: start=0 total=unknown
+download 000068.JPG: start=0 total=unknown
+
+
+download 000107.JPG: start=0 total=unknown
+source taco: 1000/1500 images processed
+download 000105.JPG: start=0 total=unknowndownload 000108.JPG: start=0 total=unknown
+
+download 000106.JPG: start=0 total=unknown
+download 000110.JPG: start=0 total=unknown
+download 000111.JPG: start=0 total=unknown
+download 000120.JPG: start=0 total=unknown
+download 000112.JPG: start=0 total=unknown
+download 000113.JPG: start=0 total=unknown
+download 000114.JPG: start=0 total=unknown
+download 000116.JPG: start=0 total=unknown
+download 000115.JPG: start=0 total=unknown
+download 000118.JPG: start=0 total=unknown
+download 000006.JPG: start=0 total=unknown
+download 000117.JPG: start=0 total=unknown
+download 000001.JPG: start=0 total=unknowndownload 000000.JPG: start=0 total=unknown
+
+download 000004.JPG: start=0 total=unknown
+download 000005.JPG: start=0 total=unknown
+download 000008.JPG: start=0 total=unknown
+download 000007.JPG: start=0 total=unknown
+download 000009.JPG: start=0 total=unknown
+download 000011.JPG: start=0 total=unknown
+download 000002.JPG: start=0 total=unknown
+download 000013.JPG: start=0 total=unknown
+download 000010.JPG: start=0 total=unknown
+download 000012.JPG: start=0 total=unknown
+download 000014.JPG: start=0 total=unknown
+download 000017.JPG: start=0 total=unknown
+download 000015.JPG: start=0 total=unknown
+download 000019.JPG: start=0 total=unknown
+download 000016.JPG: start=0 total=unknown
+download 000018.JPG: start=0 total=unknown
+download 000021.JPG: start=0 total=unknown
+download 000020.JPG: start=0 total=unknown
+download 000022.JPG: start=0 total=unknown
+download 000024.JPG: start=0 total=unknown
+download 000025.JPG: start=0 total=unknown
+download 000026.JPG: start=0 total=unknown
+download 000027.JPG: start=0 total=unknown
+download 000023.JPG: start=0 total=unknowndownload 000028.JPG: start=0 total=unknown
+
+download 000029.JPG: start=0 total=unknowndownload 000031.JPG: start=0 total=unknowndownload 000030.JPG: start=0 total=unknown
+
+
+download 000034.JPG: start=0 total=unknowndownload 000033.JPG: start=0 total=unknown
+
+download 000035.JPG: start=0 total=unknown
+download 000036.JPG: start=0 total=unknown
+download 000037.JPG: start=0 total=unknown
+download 000038.JPG: start=0 total=unknown
+download 000039.JPG: start=0 total=unknowndownload 000040.JPG: start=0 total=unknown
+
+download 000041.JPG: start=0 total=unknown
+download 000042.JPG: start=0 total=unknown
+download 000043.JPG: start=0 total=unknown
+download 000047.JPG: start=0 total=unknowndownload 000046.JPG: start=0 total=unknown
+
+download 000048.JPG: start=0 total=unknown
+download 000045.JPG: start=0 total=unknown
+download 000050.JPG: start=0 total=unknown
+download 000051.JPG: start=0 total=unknowndownload 000049.JPG: start=0 total=unknown
+
+download 000054.JPG: start=0 total=unknown
+download 000052.JPG: start=0 total=unknowndownload 000055.JPG: start=0 total=unknown
+
+download 000056.JPG: start=0 total=unknown
+download 000057.JPG: start=0 total=unknown
+download 000058.JPG: start=0 total=unknown
+download 000059.JPG: start=0 total=unknown
+download 000060.JPG: start=0 total=unknown
+download 000061.JPG: start=0 total=unknowndownload 000052.JPG: start=0 total=unknowndownload 000104.JPG: start=0 total=unknown
+
+
+download 000103.JPG: start=0 total=unknown
+download 000100.JPG: start=0 total=unknown
+download 000099.JPG: start=0 total=unknowndownload 000101.JPG: start=0 total=unknown
+
+download 000102.JPG: start=0 total=unknown
+download 000098.JPG: start=0 total=unknowndownload 000095.JPG: start=0 total=unknown
+
+download 000096.JPG: start=0 total=unknown
+download 000097.JPG: start=0 total=unknown
+download 000093.JPG: start=0 total=unknown
+download 000091.JPG: start=0 total=unknown
+download 000090.JPG: start=0 total=unknowndownload 000094.JPG: start=0 total=unknown
+download 000089.JPG: start=0 total=unknown
+
+download 000086.JPG: start=0 total=unknown
+download 000092.JPG: start=0 total=unknowndownload 000088.JPG: start=0 total=unknowndownload 000087.JPG: start=0 total=unknown
+
+
+download 000085.JPG: start=0 total=unknowndownload 000083.JPG: start=0 total=unknown
+
+download 000080.JPG: start=0 total=unknown
+download 000079.JPG: start=0 total=unknown
+download 000082.JPG: start=0 total=unknown
+download 000078.JPG: start=0 total=unknown
+download 000076.JPG: start=0 total=unknown
+download 000075.JPG: start=0 total=unknown
+source taco: 1100/1500 images processed
+download 000077.JPG: start=0 total=unknown
+download 000074.JPG: start=0 total=unknown
+download 000072.JPG: start=0 total=unknowndownload 000070.JPG: start=0 total=unknown
+
+download 000071.JPG: start=0 total=unknown
+download 000068.JPG: start=0 total=unknowndownload 000069.JPG: start=0 total=unknown
+
+download 000066.JPG: start=0 total=unknown
+download 000065.JPG: start=0 total=unknown
+download 000073.JPG: start=0 total=unknowndownload 000062.JPG: start=0 total=unknown
+
+download 000063.JPG: start=0 total=unknown
+download 000061.JPG: start=0 total=unknown
+download 000058.JPG: start=0 total=unknown
+download 000060.JPG: start=0 total=unknown
+download 000059.JPG: start=0 total=unknown
+download 000064.JPG: start=0 total=unknown
+download 000056.JPG: start=0 total=unknown
+download 000057.JPG: start=0 total=unknown
+download 000055.JPG: start=0 total=unknown
+download 000054.JPG: start=0 total=unknown
+download 000053.JPG: start=0 total=unknowndownload 000000.JPG: start=0 total=unknown
+
+download 000051.JPG: start=0 total=unknown
+download 000050.JPG: start=0 total=unknown
+download 000049.JPG: start=0 total=unknown
+download 000048.JPG: start=0 total=unknown
+download 000046.JPG: start=0 total=unknown
+download 000047.JPG: start=0 total=unknown
+download 000042.JPG: start=0 total=unknowndownload 000041.JPG: start=0 total=unknown
+
+download 000045.JPG: start=0 total=unknowndownload 000043.JPG: start=0 total=unknown
+
+download 000039.JPG: start=0 total=unknown
+download 000040.JPG: start=0 total=unknown
+download 000038.JPG: start=0 total=unknown
+download 000036.JPG: start=0 total=unknown
+download 000037.JPG: start=0 total=unknowndownload 000033.JPG: start=0 total=unknowndownload 000035.JPG: start=0 total=unknown
+
+
+download 000032.JPG: start=0 total=unknown
+download 000031.JPG: start=0 total=unknown
+download 000034.JPG: start=0 total=unknown
+download 000028.JPG: start=0 total=unknowndownload 000027.JPG: start=0 total=unknown
+
+download 000029.JPG: start=0 total=unknown
+download 000026.JPG: start=0 total=unknown
+download 000025.JPG: start=0 total=unknown
+download 000024.JPG: start=0 total=unknown
+download 000022.JPG: start=0 total=unknown
+download 000023.JPG: start=0 total=unknowndownload 000020.JPG: start=0 total=unknown
+
+download 000019.JPG: start=0 total=unknown
+download 000017.JPG: start=0 total=unknowndownload 000018.JPG: start=0 total=unknown
+
+download 000021.JPG: start=0 total=unknown
+download 000015.JPG: start=0 total=unknown
+download 000014.JPG: start=0 total=unknown
+download 000011.JPG: start=0 total=unknowndownload 000013.JPG: start=0 total=unknown
+
+download 000010.JPG: start=0 total=unknown
+download 000009.JPG: start=0 total=unknown
+download 000008.JPG: start=0 total=unknown
+download 000006.JPG: start=0 total=unknown
+download 000007.JPG: start=0 total=unknown
+download 000005.JPG: start=0 total=unknown
+download 000003.JPG: start=0 total=unknown
+download 000002.JPG: start=0 total=unknown
+download 000001.JPG: start=0 total=unknown
+download 000000.JPG: start=0 total=unknown
+download 000004.JPG: start=0 total=unknown
+download 000002.JPG: start=0 total=unknowndownload 000003.JPG: start=0 total=unknown
+
+download 000001.JPG: start=0 total=unknown
+download 000005.JPG: start=0 total=unknown
+download 000006.JPG: start=0 total=unknown
+download 000013.JPG: start=0 total=unknown
+download 000008.JPG: start=0 total=unknown
+download 000010.JPG: start=0 total=unknown
+download 000012.JPG: start=0 total=unknowndownload 000014.JPG: start=0 total=unknown
+
+download 000011.JPG: start=0 total=unknown
+download 000015.JPG: start=0 total=unknown
+download 000017.JPG: start=0 total=unknown
+download 000016.JPG: start=0 total=unknown
+download 000018.JPG: start=0 total=unknown
+download 000019.JPG: start=0 total=unknown
+download 000020.JPG: start=0 total=unknown
+download 000021.JPG: start=0 total=unknown
+download 000022.JPG: start=0 total=unknown
+download 000023.JPG: start=0 total=unknown
+download 000029.JPG: start=0 total=unknown
+download 000025.JPG: start=0 total=unknowndownload 000030.JPG: start=0 total=unknown
+
+download 000031.JPG: start=0 total=unknown
+download 000024.JPG: start=0 total=unknown
+download 000034.JPG: start=0 total=unknowndownload 000033.JPG: start=0 total=unknown
+
+download 000035.JPG: start=0 total=unknown
+source taco: 1200/1500 images processed
+download 000038.JPG: start=0 total=unknown
+download 000039.JPG: start=0 total=unknown
+download 000043.JPG: start=0 total=unknown
+download 000036.JPG: start=0 total=unknown
+download 000042.JPG: start=0 total=unknown
+download 000037.JPG: start=0 total=unknown
+download 000044.JPG: start=0 total=unknown
+download 000045.JPG: start=0 total=unknown
+download 000049.JPG: start=0 total=unknowndownload 000047.JPG: start=0 total=unknown
+
+download 000050.JPG: start=0 total=unknown
+download 000048.JPG: start=0 total=unknowndownload 000052.JPG: start=0 total=unknown
+
+download 000054.JPG: start=0 total=unknown
+download 000055.JPG: start=0 total=unknown
+download 000057.JPG: start=0 total=unknowndownload 000053.JPG: start=0 total=unknown
+
+download 000056.JPG: start=0 total=unknown
+download 000051.JPG: start=0 total=unknown
+download 000058.JPG: start=0 total=unknown
+download 000063.JPG: start=0 total=unknown
+download 000064.JPG: start=0 total=unknown
+download 000065.JPG: start=0 total=unknown
+download 000062.JPG: start=0 total=unknown
+download 000060.JPG: start=0 total=unknown
+download 000066.JPG: start=0 total=unknown
+download 000068.JPG: start=0 total=unknown
+download 000070.JPG: start=0 total=unknowndownload 000067.JPG: start=0 total=unknown
+
+download 000071.JPG: start=0 total=unknown
+download 000069.JPG: start=0 total=unknown
+download 000072.JPG: start=0 total=unknown
+download 000076.JPG: start=0 total=unknown
+download 000077.JPG: start=0 total=unknown
+download 000075.JPG: start=0 total=unknown
+download 000073.JPG: start=0 total=unknown
+download 000078.JPG: start=0 total=unknown
+download 000079.JPG: start=0 total=unknown
+download 000080.JPG: start=0 total=unknown
+download 000083.JPG: start=0 total=unknown
+download 000082.JPG: start=0 total=unknown
+download 000081.JPG: start=0 total=unknown
+download 000084.JPG: start=0 total=unknown
+download 000085.JPG: start=0 total=unknowndownload 000086.JPG: start=0 total=unknown
+
+download 000087.JPG: start=0 total=unknown
+download 000088.JPG: start=0 total=unknown
+download 000091.JPG: start=0 total=unknowndownload 000089.JPG: start=0 total=unknowndownload 000090.JPG: start=0 total=unknown
+
+
+download 000092.JPG: start=0 total=unknown
+download 000093.JPG: start=0 total=unknown
+download 000095.JPG: start=0 total=unknown
+download 000094.JPG: start=0 total=unknown
+download 000096.JPG: start=0 total=unknown
+download 000098.JPG: start=0 total=unknowndownload 000097.JPG: start=0 total=unknown
+
+download 000102.JPG: start=0 total=unknown
+download 000100.JPG: start=0 total=unknowndownload 000103.JPG: start=0 total=unknown
+
+download 000101.JPG: start=0 total=unknown
+download 000107.JPG: start=0 total=unknown
+download 000106.JPG: start=0 total=unknown
+download 000108.JPG: start=0 total=unknown
+download 000104.JPG: start=0 total=unknown
+download 000109.JPG: start=0 total=unknown
+download 000111.JPG: start=0 total=unknown
+download 000110.JPG: start=0 total=unknown
+download 000112.JPG: start=0 total=unknown
+download 000113.JPG: start=0 total=unknown
+download 000114.JPG: start=0 total=unknown
+download 000117.JPG: start=0 total=unknown
+download 000115.JPG: start=0 total=unknown
+download 000118.JPG: start=0 total=unknown
+download 000119.JPG: start=0 total=unknown
+download 000120.JPG: start=0 total=unknown
+download 000122.JPG: start=0 total=unknowndownload 000123.JPG: start=0 total=unknown
+
+download 000124.JPG: start=0 total=unknown
+download 000125.JPG: start=0 total=unknown
+download 000127.JPG: start=0 total=unknown
+download 000126.JPG: start=0 total=unknown
+download 000121.JPG: start=0 total=unknown
+download 000129.JPG: start=0 total=unknowndownload 000128.JPG: start=0 total=unknown
+download 000131.JPG: start=0 total=unknown
+
+download 000132.JPG: start=0 total=unknowndownload 000133.JPG: start=0 total=unknown
+
+download 000134.JPG: start=0 total=unknown
+download 000136.JPG: start=0 total=unknown
+download 000137.JPG: start=0 total=unknowndownload 000135.JPG: start=0 total=unknown
+
+download 000138.JPG: start=0 total=unknown
+download 000140.JPG: start=0 total=unknowndownload 000139.JPG: start=0 total=unknown
+
+download 000000.jpg: start=0 total=unknown
+download 000141.JPG: start=0 total=unknowndownload 000001.jpg: start=0 total=unknown
+
+download 000142.JPG: start=0 total=unknown
+download 000004.jpg: start=0 total=unknowndownload 000002.jpg: start=0 total=unknown
+
+download 000003.jpg: start=0 total=unknown
+source taco: 1300/1500 images processed
+download 000006.jpg: start=0 total=unknowndownload 000005.jpg: start=0 total=unknowndownload 000009.jpg: start=0 total=unknowndownload 000007.jpg: start=0 total=unknown
+
+
+
+download 000008.jpg: start=0 total=unknown
+download 000011.jpg: start=0 total=unknown
+download 000012.jpg: start=0 total=unknowndownload 000013.jpg: start=0 total=unknowndownload 000010.jpg: start=0 total=unknown
+
+
+download 000015.jpg: start=0 total=unknown
+download 000014.jpg: start=0 total=unknown
+download 000016.jpg: start=0 total=unknown
+download 000017.jpg: start=0 total=unknown
+download 000018.jpg: start=0 total=unknown
+download 000019.jpg: start=0 total=unknown
+download 000021.jpg: start=0 total=unknown
+download 000023.jpg: start=0 total=unknown
+download 000020.jpg: start=0 total=unknown
+download 000024.jpg: start=0 total=unknown
+download 000025.jpg: start=0 total=unknown
+download 000026.jpg: start=0 total=unknown
+download 000027.jpg: start=0 total=unknown
+download 000022.jpg: start=0 total=unknown
+download 000028.jpg: start=0 total=unknown
+download 000029.jpg: start=0 total=unknown
+download 000031.jpg: start=0 total=unknown
+download 000033.jpg: start=0 total=unknowndownload 000030.jpg: start=0 total=unknown
+
+download 000032.jpg: start=0 total=unknown
+download 000034.jpg: start=0 total=unknown
+download 000035.jpg: start=0 total=unknowndownload 000037.jpg: start=0 total=unknown
+
+download 000036.jpg: start=0 total=unknown
+download 000040.jpg: start=0 total=unknown
+download 000041.jpg: start=0 total=unknown
+download 000042.jpg: start=0 total=unknown
+download 000043.jpg: start=0 total=unknown
+download 000045.jpg: start=0 total=unknown
+download 000038.jpg: start=0 total=unknown
+download 000044.jpg: start=0 total=unknown
+download 000039.jpg: start=0 total=unknown
+download 000047.jpg: start=0 total=unknowndownload 000046.jpg: start=0 total=unknown
+
+download 000049.jpg: start=0 total=unknown
+download 000050.jpg: start=0 total=unknown
+download 000053.jpg: start=0 total=unknowndownload 000052.jpg: start=0 total=unknowndownload 000048.jpg: start=0 total=unknowndownload 000051.jpg: start=0 total=unknown
+
+
+
+download 000054.jpg: start=0 total=unknown
+download 000056.jpg: start=0 total=unknowndownload 000058.jpg: start=0 total=unknown
+
+download 000057.jpg: start=0 total=unknown
+download 000055.jpg: start=0 total=unknown
+download 000059.jpg: start=0 total=unknowndownload 000060.jpg: start=0 total=unknown
+
+download 000061.jpg: start=0 total=unknown
+download 000062.jpg: start=0 total=unknown
+download 000063.jpg: start=0 total=unknowndownload 000064.jpg: start=0 total=unknown
+
+download 000065.jpg: start=0 total=unknown
+download 000067.jpg: start=0 total=unknown
+download 000066.jpg: start=0 total=unknown
+download 000070.jpg: start=0 total=unknown
+download 000069.jpg: start=0 total=unknown
+download 000068.jpg: start=0 total=unknown
+download 000073.jpg: start=0 total=unknown
+download 000071.jpg: start=0 total=unknown
+download 000072.jpg: start=0 total=unknown
+download 000075.jpg: start=0 total=unknown
+download 000076.jpg: start=0 total=unknown
+download 000077.jpg: start=0 total=unknown
+download 000074.jpg: start=0 total=unknown
+download 000078.jpg: start=0 total=unknown
+download 000079.jpg: start=0 total=unknown
+download 000080.jpg: start=0 total=unknown
+download 000081.jpg: start=0 total=unknown
+download 000082.jpg: start=0 total=unknown
+download 000085.jpg: start=0 total=unknown
+download 000083.jpg: start=0 total=unknowndownload 000086.jpg: start=0 total=unknown
+
+download 000087.jpg: start=0 total=unknown
+download 000084.jpg: start=0 total=unknown
+download 000089.jpg: start=0 total=unknown
+download 000090.jpg: start=0 total=unknowndownload 000091.jpg: start=0 total=unknown
+
+download 000088.jpg: start=0 total=unknown
+download 000093.jpg: start=0 total=unknown
+download 000094.jpg: start=0 total=unknown
+download 000092.jpg: start=0 total=unknown
+download 000095.jpg: start=0 total=unknown
+download 000098.jpg: start=0 total=unknown
+download 000099.jpg: start=0 total=unknown
+download 000096.jpg: start=0 total=unknown
+download 000000.jpg: start=0 total=unknown
+download 000001.jpg: start=0 total=unknown
+download 000002.jpg: start=0 total=unknown
+download 000097.jpg: start=0 total=unknown
+download 000003.jpg: start=0 total=unknown
+source taco: 1400/1500 images processed
+download 000004.jpg: start=0 total=unknowndownload 000005.jpg: start=0 total=unknown
+
+download 000006.jpg: start=0 total=unknown
+download 000009.jpg: start=0 total=unknown
+download 000008.jpg: start=0 total=unknown
+download 000007.jpg: start=0 total=unknown
+download 000010.jpg: start=0 total=unknown
+download 000012.jpg: start=0 total=unknown
+download 000014.jpg: start=0 total=unknowndownload 000011.jpg: start=0 total=unknown
+
+download 000015.jpg: start=0 total=unknowndownload 000013.jpg: start=0 total=unknown
+
+download 000016.jpg: start=0 total=unknown
+download 000017.jpg: start=0 total=unknown
+download 000018.jpg: start=0 total=unknown
+download 000019.jpg: start=0 total=unknown
+download 000020.jpg: start=0 total=unknown
+download 000021.jpg: start=0 total=unknown
+download 000022.jpg: start=0 total=unknown
+download 000024.jpg: start=0 total=unknown
+download 000025.jpg: start=0 total=unknown
+download 000023.jpg: start=0 total=unknown
+download 000026.jpg: start=0 total=unknown
+download 000027.jpg: start=0 total=unknown
+download 000030.jpg: start=0 total=unknown
+download 000032.jpg: start=0 total=unknown
+download 000033.jpg: start=0 total=unknown
+download 000028.jpg: start=0 total=unknown
+download 000031.jpg: start=0 total=unknowndownload 000029.jpg: start=0 total=unknown
+
+download 000035.jpg: start=0 total=unknown
+download 000034.jpg: start=0 total=unknown
+download 000036.jpg: start=0 total=unknown
+download 000037.jpg: start=0 total=unknown
+download 000038.jpg: start=0 total=unknown
+download 000039.jpg: start=0 total=unknown
+download 000040.jpg: start=0 total=unknown
+download 000041.jpg: start=0 total=unknown
+download 000042.jpg: start=0 total=unknown
+download 000044.jpg: start=0 total=unknown
+download 000043.jpg: start=0 total=unknown
+download 000045.jpg: start=0 total=unknown
+download 000048.jpg: start=0 total=unknown
+download 000049.jpg: start=0 total=unknown
+download 000046.jpg: start=0 total=unknown
+download 000047.jpg: start=0 total=unknown
+download 000051.jpg: start=0 total=unknowndownload 000050.jpg: start=0 total=unknown
+
+download 000053.jpg: start=0 total=unknown
+download 000054.jpg: start=0 total=unknown
+download 000055.jpg: start=0 total=unknown
+download 000057.jpg: start=0 total=unknowndownload 000056.jpg: start=0 total=unknowndownload 000052.jpg: start=0 total=unknown
+
+
+download 000059.jpg: start=0 total=unknowndownload 000058.jpg: start=0 total=unknowndownload 000060.jpg: start=0 total=unknown
+
+
+download 000061.jpg: start=0 total=unknown
+download 000062.jpg: start=0 total=unknowndownload 000064.jpg: start=0 total=unknown
+
+download 000063.jpg: start=0 total=unknown
+source taco: 1500/1500 images processed
+{
+  "output": "C:\\FYP\\external_datasets\\hard_case_full",
+  "sources": [
+    {
+      "source_id": "taco_official",
+      "records": 1500,
+      "by_download_status": {
+        "downloaded": 1465,
+        "failed": 35
+      },
+      "by_target_class": {
+        "Metal|Plastic|review": 29,
+        "Metal": 65,
+        "Metal|Plastic": 27,
+        "Glass": 18,
+        "Cardboard": 43,
+        "Plastic": 570,
+        "Glass|Metal|review": 3,
+        "Cardboard|Metal|Plastic": 4,
+        "Glass|Plastic": 18,
+        "Cardboard|Glass|Plastic": 2,
+        "Metal|Paper": 5,
+        "Plastic|review": 241,
+        "Paper": 31,
+        "Metal|review": 55,
+        "review": 111,
+        "Metal|Paper|review": 3,
+        "Cardboard|Plastic": 53,
+        "Paper|review": 19,
+        "Glass|Plastic|review": 20,
+        "Paper|Plastic": 25,
+        "Glass|Metal|Plastic|review": 4,
+        "Metal|Organic": 1,
+        "Organic|Plastic": 2,
+        "Metal|Paper|Plastic|review": 10,
+        "Cardboard|Plastic|review": 23,
+        "Cardboard|Organic|review": 1,
+        "Cardboard|Metal|Paper|Plastic|review": 1,
+        "Organic": 1,
+        "Paper|Plastic|review": 27,
+        "Cardboard|Metal|Plastic|review": 11,
+        "Cardboard|Metal": 2,
+        "Glass|review": 15,
+        "Cardboard|review": 20,
+        "Cardboard|Paper|review": 2,
+        "Cardboard|Glass|Plastic|review": 1,
+        "Cardboard|Paper|Plastic": 3,
+        "Cardboard|Metal|Paper|Plastic": 2,
+        "Cardboard|Paper|Plastic|review": 12,
+        "Cardboard|Metal|review": 2,
+        "Glass|Metal|Paper|Plastic|review": 1,
+        "Glass|Paper|Plastic|review": 4,
+        "Metal|Paper|Plastic": 2,
+        "Organic|Paper|Plastic|review": 1,
+        "Glass|Metal|Plastic": 2,
+        "Organic|review": 1,
+        "Cardboard|Glass|Metal|Paper|Plastic|review": 2,
+        "Glass|Paper|Plastic": 2,
+        "Glass|Paper|review": 1,
+        "Cardboard|Glass|review": 1,
+        "Glass|Metal": 1
+      }
+    }
+  ]
+}

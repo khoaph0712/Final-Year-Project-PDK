@@ -1,0 +1,9 @@
+{
+  "weights": "models\\trained\\yolov11_detector\\best.pt",
+  "data": "external_datasets\\yolo26_balanced_realworld_v2\\data.yaml",
+  "split": "test",
+  "precision": 0.529370816878187,
+  "recall": 0.4470756865529404,
+  "map50": 0.43418889084991297,
+  "map50_95": 0.19067705161617196
+}

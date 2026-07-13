@@ -1,11 +1,9 @@
 #!/usr/bin/env python
-"""Classification-first localization pipeline.
+"""2-Stage DL Evaluation Pipeline.
 
-Stage 1: run an image-level classifier on the full image.
-Stage 2: convert the classifier's Grad-CAM evidence into localization boxes.
-
-This intentionally reverses the old YOLO-first flow. YOLO labels are used only
-as ground truth for localization evaluation.
+Supports:
+1. YOLO (Localization-First): runs YOLO first to detect object proposals, then classifies each crop.
+2. Grad-CAM (Classification-First): runs classifier first, then extracts heatmaps.
 """
 
 from __future__ import annotations
@@ -327,12 +325,18 @@ def draw_visual(
 
 def write_report(out_dir: Path, summary: dict, rows: list[dict], layer_name: str, args: argparse.Namespace) -> None:
     report = out_dir / "REPORT.md"
-    box_source = "YOLO localization boxes" if args.localizer == "yolo" else "Grad-CAM localization boxes"
-    heatmap_source = "YOLO objectness map" if args.localizer == "yolo" else "Grad-CAM heatmap"
+    box_source = "YOLO + verified crop boxes" if args.localizer == "yolo" else "Grad-CAM localization boxes"
+    heatmap_source = "YOLO verified objectness map" if args.localizer == "yolo" else "Grad-CAM heatmap"
+    report_title = "Localization-First Crop-Verification Report" if args.localizer == "yolo" else "Classification-First Localization Report"
+    workflow_desc = (
+        "This run implements the 2-stage hierarchical DL workflow: YOLO localization first, followed by crop classification verification."
+        if args.localizer == "yolo"
+        else "This run implements the classification-first Grad-CAM DL workflow: Stage 1 classification, Stage 2 localization."
+    )
     lines = [
-        "# Classification-First Localization Report",
+        f"# {report_title}",
         "",
-        "This run implements the revised DL workflow: Stage 1 classification, Stage 2 localization.",
+        workflow_desc,
         "",
         "## Configuration",
         "",
@@ -383,7 +387,7 @@ def write_report(out_dir: Path, summary: dict, rows: list[dict], layer_name: str
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run classification-first Grad-CAM localization.")
+    parser = argparse.ArgumentParser(description="Run 2-stage DL pipeline evaluation (YOLO localization-first or Grad-CAM classification-first).")
     parser.add_argument("--data", type=Path, default=DEFAULT_DATA)
     parser.add_argument("--model", type=Path, default=DEFAULT_MODEL)
     parser.add_argument("--yolo-weights", type=Path, default=DEFAULT_YOLO_WEIGHTS)
@@ -454,31 +458,59 @@ def main() -> None:
             height, width = image.shape[:2]
             gt_boxes = read_yolo_boxes(label_path_for_image(image_path), width, height)
 
-            image_input = preprocess_image(image, (224, 224))
-            probs_raw = model.predict(image_input, verbose=0)[0]
-            pred_idx = int(np.argmax(probs_raw))
-            pred_conf = float(probs_raw[pred_idx])
-            pred_class = CLASSIFIER_CLASSES[pred_idx] if pred_idx < len(CLASSIFIER_CLASSES) else str(pred_idx)
-
             heatmap = np.zeros((height, width), dtype=np.float32)
             pred_boxes: list[Box] = []
             if args.localizer == "yolo":
                 if yolo_model is None:
                     raise RuntimeError("YOLO localizer was not loaded.")
-                pred_boxes = boxes_from_yolo(yolo_model, image, args.yolo_conf)
+                raw_boxes = boxes_from_yolo(yolo_model, image, args.yolo_conf)
+                pred_boxes = []
+                for box in raw_boxes:
+                    # Crop with pad of 10px
+                    ix1 = max(0, box.x1 - 10)
+                    iy1 = max(0, box.y1 - 10)
+                    ix2 = min(width, box.x2 + 10)
+                    iy2 = min(height, box.y2 + 10)
+                    if ix2 - ix1 < 16 or iy2 - iy1 < 16:
+                        continue
+                    crop = image[iy1:iy2, ix1:ix2]
+                    crop_input = preprocess_image(crop, (224, 224))
+                    crop_probs = model.predict(crop_input, verbose=0)[0]
+                    crop_idx = int(np.argmax(crop_probs))
+                    crop_class = CLASSIFIER_CLASSES[crop_idx]
+                    crop_conf = float(crop_probs[crop_idx])
+                    if crop_class != "Background":
+                        box.cls = crop_idx
+                        box.score = crop_conf
+                        pred_boxes.append(box)
                 heatmap = heatmap_from_boxes(width, height, pred_boxes)
-            elif pred_class != "Background":
-                heatmap, _ = compute_gradcam(grad_model, image_input, pred_idx)
-                pred_boxes = boxes_from_heatmap(
-                    heatmap,
-                    width,
-                    height,
-                    args.heatmap_threshold,
-                    args.min_area_ratio,
-                    args.max_boxes,
-                    pred_conf,
-                    pred_idx,
-                )
+                # Assign top prediction from verified boxes for logging
+                if pred_boxes:
+                    top_box = max(pred_boxes, key=lambda b: b.score)
+                    pred_class = CLASSIFIER_CLASSES[top_box.cls] if top_box.cls is not None else "Background"
+                    pred_conf = top_box.score
+                else:
+                    pred_class = "Background"
+                    pred_conf = 1.0
+            else:
+                image_input = preprocess_image(image, (224, 224))
+                probs_raw = model.predict(image_input, verbose=0)[0]
+                pred_idx = int(np.argmax(probs_raw))
+                pred_conf = float(probs_raw[pred_idx])
+                pred_class = CLASSIFIER_CLASSES[pred_idx] if pred_idx < len(CLASSIFIER_CLASSES) else str(pred_idx)
+
+                if pred_class != "Background":
+                    heatmap, _ = compute_gradcam(grad_model, image_input, pred_idx)
+                    pred_boxes = boxes_from_heatmap(
+                        heatmap,
+                        width,
+                        height,
+                        args.heatmap_threshold,
+                        args.min_area_ratio,
+                        args.max_boxes,
+                        pred_conf,
+                        pred_idx,
+                    )
 
             tp, fp, fn, mean_iou = match_boxes(pred_boxes, gt_boxes, args.iou_threshold)
             tp_total += tp

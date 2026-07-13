@@ -1,0 +1,15 @@
+{
+  "tag": "ca_studio_0.03",
+  "dataset": "yolo26_hardcase_clean_eval",
+  "split": "val",
+  "conf": 0.03,
+  "imgsz": 640,
+  "images": 2627,
+  "gt_boxes": 19234,
+  "tp": 10587,
+  "recall": 0.5504315275033794,
+  "small_gt": 6746,
+  "small_tp": 2123,
+  "small_recall": 0.31470501037651943,
+  "zero_detection_images": 1
+}

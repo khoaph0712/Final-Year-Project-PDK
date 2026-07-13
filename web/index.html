@@ -5,10 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="WasteWise waste scanner: YOLO26n localization plus ConvNeXt material classification, with leakage-audited evaluation numbers."
+      content="WasteWise waste scanner: YOLO26s localization plus ConvNeXt material classification, with leakage-audited evaluation numbers."
     />
     <meta name="color-scheme" content="light dark" />
     <title>WasteWise - Waste Scanner &amp; Evidence</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
@@ -47,7 +53,7 @@
               <span class="accent" id="typedWord"></span><span class="type-caret" aria-hidden="true"></span>
             </h1>
             <p>
-              YOLO26n finds every object, a ConvNeXt classifier verifies the material, and every
+              YOLO26s finds every object, a ConvNeXt classifier verifies the material, and every
               number on this site survives a leakage-audited test set.
             </p>
             <div class="actions">
@@ -80,8 +86,8 @@
 
         <div class="marquee" aria-hidden="true">
           <div class="marquee-track">
-            <span>&#9679; Plastic</span><span>&#9679; Glass</span><span>&#9679; Metal</span><span>&#9679; Paper</span><span>&#9679; Cardboard</span><span>&#9679; Organic</span><span>&#9679; Background veto</span><span>&#9679; YOLO26n localizer</span><span>&#9679; ConvNeXt verifier</span><span>&#9679; 637 handcrafted features</span>
-            <span>&#9679; Plastic</span><span>&#9679; Glass</span><span>&#9679; Metal</span><span>&#9679; Paper</span><span>&#9679; Cardboard</span><span>&#9679; Organic</span><span>&#9679; Background veto</span><span>&#9679; YOLO26n localizer</span><span>&#9679; ConvNeXt verifier</span><span>&#9679; 637 handcrafted features</span>
+            <span>&#9679; Plastic</span><span>&#9679; Glass</span><span>&#9679; Metal</span><span>&#9679; Paper</span><span>&#9679; Cardboard</span><span>&#9679; Organic</span><span>&#9679; Background veto</span><span>&#9679; YOLO26s localizer</span><span>&#9679; ConvNeXt verifier</span><span>&#9679; 637 handcrafted features</span>
+            <span>&#9679; Plastic</span><span>&#9679; Glass</span><span>&#9679; Metal</span><span>&#9679; Paper</span><span>&#9679; Cardboard</span><span>&#9679; Organic</span><span>&#9679; Background veto</span><span>&#9679; YOLO26s localizer</span><span>&#9679; ConvNeXt verifier</span><span>&#9679; 637 handcrafted features</span>
           </div>
         </div>
 
@@ -185,17 +191,17 @@
         </section>
 
         <section class="teasers">
-          <a class="teaser" href="#pipeline" data-page-link>
+          <a class="teaser reveal-on-scroll" href="#pipeline" data-page-link>
             <span class="kicker">How it works</span>
             <strong>Six steps, S1 to S6</strong>
             <p>Upload, localize, crop, verify, fuse, decide &mdash; with the full methodology diagram.</p>
           </a>
-          <a class="teaser dark" href="#evidence" data-page-link>
+          <a class="teaser dark reveal-on-scroll" href="#evidence" data-page-link>
             <span class="kicker accent-light">Evidence</span>
             <strong>93.77% &mdash; and how it was audited</strong>
             <p>Every metric is tied to a report in the repository, measured after leakage quarantine.</p>
           </a>
-          <a class="teaser" href="#limits" data-page-link>
+          <a class="teaser reveal-on-scroll" href="#limits" data-page-link>
             <span class="kicker tone-warn">Limits</span>
             <strong>What still breaks, honestly</strong>
             <p>Domain shift, tiny objects, and the conservative waste-state gate.</p>
@@ -214,27 +220,27 @@
         </p>
 
         <div class="step-stack">
-          <article class="step-card">
+          <article class="step-card reveal-on-scroll">
             <span class="step-id">S1</span>
             <div><strong>Upload image</strong><p>A JPG, PNG, or WEBP photo of waste. Saved scans stay in browser history for review and hard-case collection.</p></div>
           </article>
-          <article class="step-card">
+          <article class="step-card reveal-on-scroll">
             <span class="step-id">S2</span>
-            <div><strong>Stage 1 &mdash; YOLO26n localization</strong><p>YOLO26n proposes a box around every candidate object. 100-epoch retrain, later hard-negative fine-tuned for field small-object recall: 70.9% mAP50, 77.8% precision on clean validation.</p></div>
+            <div><strong>Stage 1 &mdash; YOLO26s localization</strong><p>YOLO26s proposes a box around every candidate object. 100-epoch retrain, promoted from YOLO26n for higher field recall: 74.8% mAP50, 78.1% precision on clean validation.</p></div>
           </article>
-          <article class="step-card">
+          <article class="step-card reveal-on-scroll">
             <span class="step-id">S3</span>
             <div><strong>Crop extraction &amp; size filter</strong><p>Each kept box is cropped with 10&nbsp;px padding; boxes smaller than 24&times;24&nbsp;px are rejected before classification.</p></div>
           </article>
-          <article class="step-card">
+          <article class="step-card reveal-on-scroll">
             <span class="step-id">S4</span>
             <div><strong>Stage 2 &mdash; crop verification</strong><p>A ConvNeXt-Tiny + 637-handcrafted-feature classifier re-checks every crop across 7 classes, including a Background veto. Fine-tuned on the detector's own crops so training matches production.</p></div>
           </article>
-          <article class="step-card">
+          <article class="step-card reveal-on-scroll">
             <span class="step-id">S5</span>
             <div><strong>Score fusion &amp; context prior</strong><p>Per-box score fuses detector and classifier confidences, then a scene-context prior adjusts the class scores.</p></div>
           </article>
-          <article class="step-card">
+          <article class="step-card reveal-on-scroll">
             <span class="step-id">S6</span>
             <div><strong>Decision gate &amp; bin routing</strong><p>Class thresholds and the waste-state gate pick the final decision. Uncertain detections route to review instead of a bin &mdash; conservative by design.</p></div>
           </article>
@@ -270,8 +276,8 @@
           </article>
           <article class="metric-card tone-info">
             <span>Detector mAP50, clean val</span>
-            <strong id="riskMetric">70.9%</strong>
-            <i>YOLO26n, hard-negative fine-tuned, quarantined split</i>
+            <strong id="riskMetric">74.8%</strong>
+            <i>YOLO26s, 100-epoch retrain, quarantined split</i>
           </article>
           <article class="metric-card tone-warning">
             <span>Eval leakage found &amp; removed</span>
@@ -310,7 +316,7 @@
               <span>Deployment truth</span>
               <strong>live model active</strong>
             </div>
-            <h3>The API serves the real classifier and YOLO26n localizer.</h3>
+            <h3>The API serves the real classifier and YOLO26s localizer.</h3>
             <p>
               The classifier is fine-tuned on the detector's own crops: accuracy on real
               detector output rose from 76.9% to 88.9% without losing clean-crop accuracy.
@@ -320,18 +326,18 @@
 
           <article class="evidence-card span-4 tone-info">
             <span class="metric-label">Detector precision</span>
-            <strong class="big-number" id="yoloPrecision">77.8%</strong>
+            <strong class="big-number" id="yoloPrecision">78.1%</strong>
             <p>Clean validation split. Tunable via confidence threshold.</p>
           </article>
           <article class="evidence-card span-4 tone-warning">
             <span class="metric-label">Detector recall</span>
-            <strong class="big-number" id="yoloRecall">62.6%</strong>
-            <p>Down slightly from 65.0% studio recall after a hard-negative fine-tune that traded it for +16 points of field small-object recall (see Limits).</p>
+            <strong class="big-number" id="yoloRecall">69.0%</strong>
+            <p>Up from 65.0% on the previous YOLO26n after promoting to a 100-epoch YOLO26s retrain: +14.3 points of field recall, +16.5 points of field small-object recall (see Limits).</p>
           </article>
           <article class="evidence-card span-4 tone-info">
             <span class="metric-label">Detector mAP50-95</span>
-            <strong class="big-number" id="yoloMap5095">50.0%</strong>
-            <p>Hard-negative mining checkpoint, promoted to the live localizer.</p>
+            <strong class="big-number" id="yoloMap5095">57.2%</strong>
+            <p>100-epoch YOLO26s checkpoint, promoted to the live localizer.</p>
           </article>
         </div>
 
@@ -370,9 +376,11 @@
         <h2 class="page-title">Measured limits, and what was done about them.</h2>
 
         <div class="limit-stack">
-          <article>
-            <span>Domain shift</span>
-            <strong>Partly fixed, partly open</strong>
+          <article class="tone-warn reveal-on-scroll">
+            <div>
+              <span>Domain shift</span>
+              <strong>Partly fixed, partly open</strong>
+            </div>
             <p>
               Fixed: the classifier was fine-tuned on the detector's own crops, lifting
               production-distribution accuracy from 76.9% to 88.9%. The detector was re-tuned
@@ -383,9 +391,11 @@
               gap is narrowing with new data, not fully closed.
             </p>
           </article>
-          <article>
-            <span>Tiny objects</span>
-            <strong>Resolution ruled out; new data confirmed as the lever</strong>
+          <article class="tone-info reveal-on-scroll">
+            <div>
+              <span>Tiny objects</span>
+              <strong>Resolution ruled out; new data confirmed as the lever</strong>
+            </div>
             <p>
               A 960px training run was evaluated: validation unchanged, unseen-batch recall
               up 3.9 points &mdash; not enough to chase. A later hard-negative mining fine-tune
@@ -395,9 +405,11 @@
               is the binding constraint.
             </p>
           </article>
-          <article>
-            <span>Waste-state decision</span>
-            <strong>Conservative by design</strong>
+          <article class="tone-success reveal-on-scroll">
+            <div>
+              <span>Waste-state decision</span>
+              <strong>Conservative by design</strong>
+            </div>
             <p>
               The waste / not-waste / review decision applies conservative rules on top of the
               verified material class; uncertain detections route to review instead of a bin.
@@ -426,7 +438,7 @@
           <article class="about-card">
             <span>Live deployment</span>
             <h3>The real model, served publicly</h3>
-            <p>The trained YOLO26n localizer and ConvNeXt classifier run behind a public API on Hugging Face Spaces.</p>
+            <p>The trained YOLO26s localizer and ConvNeXt classifier run behind a public API on Hugging Face Spaces.</p>
             <a class="btn primary" href="https://khoaphung-wastewise-ai.hf.space" target="_blank" rel="noopener">khoaphung-wastewise-ai.hf.space &nearr;</a>
           </article>
           <article class="about-card">
