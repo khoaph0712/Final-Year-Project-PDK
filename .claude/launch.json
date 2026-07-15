@@ -3,9 +3,9 @@
   "configurations": [
     {
       "name": "wastewise-web",
-      "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "4180", "--directory", "web"],
-      "port": 4180
+      "runtimeExecutable": ".venv311\\Scripts\\python.exe",
+      "runtimeArgs": ["web/server.py"],
+      "port": 4175
     }
   ]
 }

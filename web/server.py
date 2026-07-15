@@ -27,7 +27,7 @@ CLASSIFIER_PATH = ROOT / "models" / "trained" / "efficientnet_classifier" / "bes
 TUNED_CLASSIFIER_PATH = ROOT / "runs" / "dl" / "convnext_ensemble_tuned" / "best_convnext_ensemble_tuned.pth"
 TUNED_SCALER_PATH = ROOT / "runs" / "dl" / "convnext_ensemble_tuned" / "handcrafted_scaler.npz"
 YOLO_PATH = ROOT / "models" / "trained" / "yolov11_detector" / "best.pt"
-LOCALIZER_LABEL = "YOLO26s hard-case localizer"
+LOCALIZER_LABEL = "YOLO26m hard-case localizer"
 
 CLASSIFIER_CLASSES = ["plastic", "glass", "metal", "paper", "cardboard", "organic", "Background"]
 # Detector candidate-generation confidence. Lowered 0.10 -> 0.04 (F13): sweeping the deployed
@@ -50,8 +50,23 @@ CLASSIFIER_CLASSES = ["plastic", "glass", "metal", "paper", "cardboard", "organi
 # at 0.40 (unchanged): yolo26s predicts "plastic" for 84.2% of field boxes (vs yolo26n's 78%),
 # so the detector's material vote is equally or more unreliable on field images - no basis to
 # trust it more.
+#
+# 2026-07-15: promoted YOLO26s -> YOLO26m (100-epoch retrain resumed from epoch 61 after a
+# Kaggle/Colab quota chain forced a move to local GPU; same 6-class hardcase dataset). Re-swept
+# conf/gate/alpha on the new backbone (runs/audits/yolo26m_conf_gate_alpha_sweep.json, rebuilt
+# from the same deterministic taco_field_clean_v1 test set + clean_eval studio val used for the
+# yolo26s sweep). YOLO_CONF=0.04 still holds - and this time it's a clean win, not just a
+# recall/precision trade: field recall 0.709->0.781 (+7.2pp) AND field precision 0.394->0.467
+# (+7.3pp) over yolo26s at the identical operating point; small-box field recall 0.586->0.682
+# (+9.6pp), the historically hardest number to move. YOLO_GATE_CONF lowered 0.40 -> 0.30:
+# yolo26m is MORE locally-precise than yolo26s at the same gate (field precision 0.829 @
+# gate=0.30 vs yolo26s's 0.762 there), so gate=0.30 already clears the ~0.81 field-precision
+# guarantee the old gate=0.40 was raised to hit - and recovers a lot of gated recall doing it
+# (field recall 0.512 @ old gate=0.40 -> 0.631 @ new gate=0.30). Alpha cap kept at 0.40
+# (unchanged): yolo26m predicts "plastic" for 84.7% of field boxes (vs yolo26s's 84.2%,
+# statistically the same bias) - still no basis to trust the material vote more.
 YOLO_CONF = 0.04
-YOLO_GATE_CONF = 0.40
+YOLO_GATE_CONF = 0.30
 YOLO_RECOVERY_CONF = 0.10
 # Serve at the training resolution. The model was trained at imgsz=640; running it at 960
 # measurably hurts on BOTH eval domains (F9 in docs/01_final_report/FAILURES_AND_FIXES.md):
@@ -722,7 +737,8 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
             # flipped correct glass/metal crops to plastic. Cap 0.40 keeps the 92.9% material
             # classifier as the authority on confident calls; costs -0.7pp studio macro-F1.
             # Re-checked 2026-07-12 after the YOLO26s promotion: yolo26s is equally biased
-            # (84.2% field plastic-vote rate) so the cap still applies unchanged.
+            # (84.2% field plastic-vote rate) so the cap still applies unchanged. Re-checked
+            # again 2026-07-15 after YOLO26m: 84.7% field plastic-vote rate, same story.
             # ponytail: cap 0.40, revisit only with a material-reliable field detector.
             yolo_probs = np.zeros(7)
             if yolo_key in CLASSIFIER_CLASSES:

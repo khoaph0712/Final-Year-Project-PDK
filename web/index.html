@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="WasteWise waste scanner: YOLO26s localization plus ConvNeXt material classification, with leakage-audited evaluation numbers."
+      content="WasteWise waste scanner: YOLO26m localization plus ConvNeXt material classification, with leakage-audited evaluation numbers."
     />
     <meta name="color-scheme" content="light dark" />
     <title>WasteWise - Waste Scanner &amp; Evidence</title>
@@ -53,7 +53,7 @@
               <span class="accent" id="typedWord"></span><span class="type-caret" aria-hidden="true"></span>
             </h1>
             <p>
-              YOLO26s finds every object, a ConvNeXt classifier verifies the material, and every
+              YOLO26m finds every object, a ConvNeXt classifier verifies the material, and every
               number on this site survives a leakage-audited test set.
             </p>
             <div class="actions">
@@ -86,8 +86,8 @@
 
         <div class="marquee" aria-hidden="true">
           <div class="marquee-track">
-            <span>&#9679; Plastic</span><span>&#9679; Glass</span><span>&#9679; Metal</span><span>&#9679; Paper</span><span>&#9679; Cardboard</span><span>&#9679; Organic</span><span>&#9679; Background veto</span><span>&#9679; YOLO26s localizer</span><span>&#9679; ConvNeXt verifier</span><span>&#9679; 637 handcrafted features</span>
-            <span>&#9679; Plastic</span><span>&#9679; Glass</span><span>&#9679; Metal</span><span>&#9679; Paper</span><span>&#9679; Cardboard</span><span>&#9679; Organic</span><span>&#9679; Background veto</span><span>&#9679; YOLO26s localizer</span><span>&#9679; ConvNeXt verifier</span><span>&#9679; 637 handcrafted features</span>
+            <span>&#9679; Plastic</span><span>&#9679; Glass</span><span>&#9679; Metal</span><span>&#9679; Paper</span><span>&#9679; Cardboard</span><span>&#9679; Organic</span><span>&#9679; Background veto</span><span>&#9679; YOLO26m localizer</span><span>&#9679; ConvNeXt verifier</span><span>&#9679; 637 handcrafted features</span>
+            <span>&#9679; Plastic</span><span>&#9679; Glass</span><span>&#9679; Metal</span><span>&#9679; Paper</span><span>&#9679; Cardboard</span><span>&#9679; Organic</span><span>&#9679; Background veto</span><span>&#9679; YOLO26m localizer</span><span>&#9679; ConvNeXt verifier</span><span>&#9679; 637 handcrafted features</span>
           </div>
         </div>
 
@@ -226,7 +226,7 @@
           </article>
           <article class="step-card reveal-on-scroll">
             <span class="step-id">S2</span>
-            <div><strong>Stage 1 &mdash; YOLO26s localization</strong><p>YOLO26s proposes a box around every candidate object. 100-epoch retrain, promoted from YOLO26n for higher field recall: 74.8% mAP50, 78.1% precision on clean validation.</p></div>
+            <div><strong>Stage 1 &mdash; YOLO26m localization</strong><p>YOLO26m proposes a box around every candidate object. 100-epoch retrain, promoted from YOLO26s for higher field recall and precision: 74.9% mAP50, 83.4% precision on clean validation.</p></div>
           </article>
           <article class="step-card reveal-on-scroll">
             <span class="step-id">S3</span>
@@ -276,8 +276,8 @@
           </article>
           <article class="metric-card tone-info">
             <span>Detector mAP50, clean val</span>
-            <strong id="riskMetric">74.8%</strong>
-            <i>YOLO26s, 100-epoch retrain, quarantined split</i>
+            <strong id="riskMetric">74.9%</strong>
+            <i>YOLO26m, 100-epoch retrain, quarantined split</i>
           </article>
           <article class="metric-card tone-warning">
             <span>Eval leakage found &amp; removed</span>
@@ -316,7 +316,7 @@
               <span>Deployment truth</span>
               <strong>live model active</strong>
             </div>
-            <h3>The API serves the real classifier and YOLO26s localizer.</h3>
+            <h3>The API serves the real classifier and YOLO26m localizer.</h3>
             <p>
               The classifier is fine-tuned on the detector's own crops: accuracy on real
               detector output rose from 76.9% to 88.9% without losing clean-crop accuracy.
@@ -326,18 +326,18 @@
 
           <article class="evidence-card span-4 tone-info">
             <span class="metric-label">Detector precision</span>
-            <strong class="big-number" id="yoloPrecision">78.1%</strong>
-            <p>Clean validation split. Tunable via confidence threshold.</p>
+            <strong class="big-number" id="yoloPrecision">83.4%</strong>
+            <p>Clean validation split. Up from 78.1% on YOLO26s. Tunable via confidence threshold.</p>
           </article>
           <article class="evidence-card span-4 tone-warning">
             <span class="metric-label">Detector recall</span>
-            <strong class="big-number" id="yoloRecall">69.0%</strong>
-            <p>Up from 65.0% on the previous YOLO26n after promoting to a 100-epoch YOLO26s retrain: +14.3 points of field recall, +16.5 points of field small-object recall (see Limits).</p>
+            <strong class="big-number" id="yoloRecall">67.2%</strong>
+            <p>Clean-val recall dipped slightly from YOLO26s's 69.0% while promoting to a 100-epoch YOLO26m retrain, but the metric that matters more &mdash; field recall &mdash; rose 70.9% to 78.1% (+7.2 points), and field small-object recall rose 58.6% to 68.2% (+9.6 points), at the same confidence threshold (see Limits).</p>
           </article>
           <article class="evidence-card span-4 tone-info">
             <span class="metric-label">Detector mAP50-95</span>
-            <strong class="big-number" id="yoloMap5095">57.2%</strong>
-            <p>100-epoch YOLO26s checkpoint, promoted to the live localizer.</p>
+            <strong class="big-number" id="yoloMap5095">57.0%</strong>
+            <p>100-epoch YOLO26m checkpoint, promoted to the live localizer.</p>
           </article>
         </div>
 
@@ -438,7 +438,7 @@
           <article class="about-card">
             <span>Live deployment</span>
             <h3>The real model, served publicly</h3>
-            <p>The trained YOLO26s localizer and ConvNeXt classifier run behind a public API on Hugging Face Spaces.</p>
+            <p>The trained YOLO26m localizer and ConvNeXt classifier run behind a public API on Hugging Face Spaces.</p>
             <a class="btn primary" href="https://khoaphung-wastewise-ai.hf.space" target="_blank" rel="noopener">khoaphung-wastewise-ai.hf.space &nearr;</a>
           </article>
           <article class="about-card">
