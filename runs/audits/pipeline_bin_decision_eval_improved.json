@@ -1,0 +1,47 @@
+{
+  "tag": "improved",
+  "n": 1042,
+  "materialAccuracy": 0.946257197696737,
+  "binAccuracy": 0.9568138195777351,
+  "wasteStateAccuracy": 0.9606525911708254,
+  "wasteStateCounts": {
+    "waste": 1001,
+    "review": 35,
+    "not_waste": 6
+  },
+  "secondaryMaterialRecall": 0.5277777777777778,
+  "secondaryMaterialN": 36,
+  "confusion": {
+    "metal": {
+      "metal": 163,
+      "plastic": 2,
+      "glass": 2,
+      "paper": 2
+    },
+    "plastic": {
+      "metal": 4,
+      "plastic": 322,
+      "glass": 11,
+      "paper": 5,
+      "background": 3,
+      "cardboard": 1
+    },
+    "organic": {
+      "organic": 2,
+      "plastic": 2
+    },
+    "paper": {
+      "paper": 491,
+      "plastic": 7,
+      "glass": 2,
+      "metal": 4,
+      "background": 4,
+      "cardboard": 4,
+      "organic": 2
+    },
+    "cardboard": {
+      "cardboard": 8,
+      "paper": 1
+    }
+  }
+}

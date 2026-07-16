@@ -3,7 +3,7 @@
 
 When running shell commands, **always prefix with `rtk`**. This reduces context
 usage by 60-90% with zero behavior change. If rtk has no filter for a command,
-it passes through unchanged — so it is always safe to use.
+it passes through unchanged - so it is always safe to use.
 
 ## Key Commands
 ```bash
@@ -14,10 +14,10 @@ rtk git status          rtk git diff            rtk git log
 rtk ls <path>           rtk read <file>         rtk grep <pattern>
 rtk find <pattern>      rtk diff <file>
 
-# Test (90-99% savings) — shows failures only
+# Test (90-99% savings) - shows failures only
 rtk pytest tests/       rtk cargo test          rtk test <cmd>
 
-# Build & Lint (80-90% savings) — shows errors only
+# Build & Lint (80-90% savings) - shows errors only
 rtk tsc                 rtk lint                rtk cargo build
 rtk prettier --check    rtk mypy                rtk ruff check
 

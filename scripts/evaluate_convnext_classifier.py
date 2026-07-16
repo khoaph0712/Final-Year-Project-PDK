@@ -11,7 +11,6 @@ import cv2
 import numpy as np
 import torch
 import torch.nn as nn
-import torchvision.models as models
 import torchvision.transforms as transforms
 from PIL import Image
 from sklearn.metrics import accuracy_score, classification_report, f1_score
@@ -19,42 +18,12 @@ from torch.utils.data import DataLoader, Dataset
 
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.append(str(ROOT / "scripts" / "archive"))
+sys.path.append(str(ROOT / "scripts"))
 from custom_feature_extractor import extract_637_features  # noqa: E402
+from stage2_model import Stage3EnsembleClassifier  # noqa: E402
 
 
 CLASSES = ["plastic", "glass", "metal", "paper", "cardboard", "organic", "Background"]
-
-
-class ConvNeXtFeatureExtractor(nn.Module):
-    def __init__(self) -> None:
-        super().__init__()
-        self.backbone = models.convnext_tiny(weights=None)
-        self.backbone.classifier = nn.Identity()
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return torch.flatten(self.backbone(x), 1)
-
-
-class Stage3EnsembleClassifier(nn.Module):
-    def __init__(self, num_classes: int = 7) -> None:
-        super().__init__()
-        self.convnext_extractor = ConvNeXtFeatureExtractor()
-        self.classifier = nn.Sequential(
-            nn.Linear(768 + 637, 256),
-            nn.BatchNorm1d(256),
-            nn.ReLU(),
-            nn.Dropout(p=0.3),
-            nn.Linear(256, 64),
-            nn.BatchNorm1d(64),
-            nn.ReLU(),
-            nn.Dropout(p=0.2),
-            nn.Linear(64, num_classes),
-        )
-
-    def forward(self, image_tensor: torch.Tensor, handcrafted_features_tensor: torch.Tensor) -> torch.Tensor:
-        deep_features = self.convnext_extractor(image_tensor)
-        return self.classifier(torch.cat((deep_features, handcrafted_features_tensor), dim=1))
 
 
 class EvalDataset(Dataset):

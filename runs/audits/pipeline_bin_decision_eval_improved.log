@@ -1,0 +1,18 @@
+[100/1042] material_acc=0.950
+[200/1042] material_acc=0.955
+[300/1042] material_acc=0.930
+[400/1042] material_acc=0.935
+[500/1042] material_acc=0.944
+[600/1042] material_acc=0.952
+[700/1042] material_acc=0.956
+[800/1042] material_acc=0.951
+[900/1042] material_acc=0.944
+[1000/1042] material_acc=0.947
+
+[RESULT] tag=improved n=1042
+  material accuracy:        0.946
+  bin accuracy:             0.957
+  waste-state accuracy:     0.961  (all GT items are real waste)
+  waste-state distribution: {'waste': 1001, 'review': 35, 'not_waste': 6}
+  secondary-material recall: 0.528 (n=36, on 0 mixed-class images)
+[OK] C:\FYP\runs\audits\pipeline_bin_decision_eval_improved.json

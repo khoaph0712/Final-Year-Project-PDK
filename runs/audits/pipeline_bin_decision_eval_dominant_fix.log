@@ -1,0 +1,19 @@
+[100/1042] material_acc=0.880
+[200/1042] material_acc=0.915
+[300/1042] material_acc=0.897
+[400/1042] material_acc=0.910
+[500/1042] material_acc=0.924
+[600/1042] material_acc=0.933
+[700/1042] material_acc=0.937
+[800/1042] material_acc=0.935
+[900/1042] material_acc=0.931
+[1000/1042] material_acc=0.936
+
+[RESULT] tag=dominant_fix n=1042
+  material accuracy:        0.937
+  bin accuracy:             0.962
+  waste-state accuracy:     0.967  (all GT items are real waste)
+  waste-state distribution: {'waste': 1008, 'review': 28, 'not_waste': 6}
+  secondary-material recall: 0.583 (n=36 across 18 mixed-class images)
+  mixed-load flag: TP rate 0.056 (n=18), FP rate 0.017 (n=1024)
+[OK] C:\FYP\runs\audits\pipeline_bin_decision_eval_dominant_fix.json

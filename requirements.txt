@@ -1,5 +1,7 @@
 # Core training + evaluation
-ultralytics==8.3.40
+# Pinned to the version actually installed in .venv311 and deployed on the HF Space
+# (scripts/deploy_hf_space.py) so local sweeps measure the same inference code prod runs.
+ultralytics==8.4.92
 # torch 2.11 forces new ONNX exporter via onnxscript/onnx_ir which
 # conflicts with onnx 1.16.2 + ml_dtypes 0.3.2. Pin to 2.4.1 for stability.
 torch==2.4.1

@@ -1,5 +1,7 @@
 const materials = ["Plastic", "Glass", "Metal", "Paper", "Cardboard", "Organic", "Background"];
 
+// Fallback-only copy of ROUTES in web/server.py (the API response carries the
+// authoritative bin); keep the two in sync.
 const routes = {
   Plastic: "Recycling",
   Glass: "Recycling",
@@ -31,6 +33,9 @@ const HERO_DEMO_BOXES = [
   { x: 46, y: 64, w: 12, h: 25, label: "Plastic", confidence: 90 },
 ];
 
+// One sample per material class, each verified against the live pipeline (web/server.py) -
+// not just plausible-looking stock photos. fallbackResult is only shown if the real API call
+// fails; the button always tries the live model first (see performScan/apiBlob below).
 const SAMPLES = [
   {
     id: "plastic", src: "assets/sample-plastic.jpg", label: "Floating bottles",
@@ -38,6 +43,14 @@ const SAMPLES = [
       className: "Plastic", confidence: 92.4, context: "Outdoor / water", latency: 412,
       detections: HERO_DEMO_BOXES,
       scores: { Plastic: 92.4, Glass: 2.6, Metal: 1.1, Paper: 0.8, Cardboard: 0.6, Organic: 0.7, Background: 1.8 },
+    },
+  },
+  {
+    id: "glass", src: "assets/sample-glass.jpg", label: "Glass jar",
+    result: {
+      className: "Glass", confidence: 98, context: "Beach", latency: 574,
+      detections: [{ x: 8, y: 17, w: 71, h: 69, label: "Glass", confidence: 99 }],
+      scores: { Plastic: 1, Glass: 98, Metal: 0, Paper: 0, Cardboard: 0, Organic: 0, Background: 0 },
     },
   },
   {
@@ -49,43 +62,27 @@ const SAMPLES = [
     },
   },
   {
-    id: "mixed", src: "assets/sample-mixed.jpg", label: "Mixed litter",
+    id: "paper", src: "assets/sample-paper.jpg", label: "Paper flyer",
     result: {
-      className: "Plastic", confidence: 78.6, context: "Outdoor / ground", latency: 534,
-      detections: [
-        { x: 12, y: 30, w: 24, h: 34, label: "Plastic", confidence: 79 },
-        { x: 44, y: 24, w: 20, h: 30, label: "Paper", confidence: 71 },
-        { x: 68, y: 48, w: 20, h: 30, label: "Metal", confidence: 74 },
-      ],
-      scores: { Plastic: 78.6, Glass: 2.2, Metal: 6.8, Paper: 7.4, Cardboard: 2.1, Organic: 1.0, Background: 1.9 },
+      className: "Paper", confidence: 97, context: "Street", latency: 44,
+      detections: [{ x: 17, y: 17, w: 83, h: 60, label: "Paper", confidence: 99 }],
+      scores: { Plastic: 0, Glass: 0, Metal: 1, Paper: 97, Cardboard: 1, Organic: 0, Background: 1 },
     },
   },
   {
-    id: "grass", src: "assets/outdoor_grass_bottle.jpg", label: "Bottle in grass",
+    id: "cardboard", src: "assets/sample-cardboard.jpg", label: "Cardboard box",
     result: {
-      className: "Glass", confidence: 88.2, context: "Outdoor / grass", latency: 468,
-      detections: [{ x: 32, y: 38, w: 32, h: 22, label: "Glass", confidence: 88 }],
-      scores: { Plastic: 4.8, Glass: 88.2, Metal: 1.1, Paper: 0.9, Cardboard: 0.7, Organic: 1.6, Background: 2.7 },
+      className: "Cardboard", confidence: 93, context: "Indoor", latency: 44,
+      detections: [{ x: 14, y: 14, w: 69, h: 66, label: "Cardboard", confidence: 86 }],
+      scores: { Plastic: 2, Glass: 1, Metal: 1, Paper: 1, Cardboard: 93, Organic: 1, Background: 2 },
     },
   },
   {
-    id: "street", src: "assets/outdoor_street_cans.jpg", label: "Street cans",
+    id: "organic", src: "assets/sample-organic.jpg", label: "Banana",
     result: {
-      className: "Metal", confidence: 90.3, context: "Outdoor / street", latency: 501,
-      detections: [
-        { x: 22, y: 42, w: 22, h: 30, label: "Metal", confidence: 90 },
-        { x: 54, y: 46, w: 20, h: 28, label: "Metal", confidence: 86 },
-      ],
-      scores: { Plastic: 2.4, Glass: 1.2, Metal: 90.3, Paper: 1.0, Cardboard: 0.9, Organic: 0.8, Background: 3.4 },
-    },
-  },
-  {
-    id: "bins", src: "assets/indoor_recycling_bins.jpg", label: "Recycling bins",
-    result: {
-      className: "Background", confidence: 61.0, context: "Indoor / bins", latency: 443,
-      wasteState: "review", wasteStateLabel: "Review",
-      detections: [{ x: 18, y: 28, w: 60, h: 52, label: "Background", confidence: 61 }],
-      scores: { Plastic: 12.4, Glass: 4.1, Metal: 8.8, Paper: 5.2, Cardboard: 4.6, Organic: 3.9, Background: 61.0 },
+      className: "Organic", confidence: 95, context: "Street", latency: 42,
+      detections: [{ x: 24, y: 18, w: 54, h: 57, label: "Organic", confidence: 94 }],
+      scores: { Plastic: 2, Glass: 0, Metal: 1, Paper: 1, Cardboard: 0, Organic: 95, Background: 2 },
     },
   },
 ];
@@ -349,21 +346,39 @@ function renderHistory() {
 
   elements.historyList.replaceChildren(
     ...history.map((record) => {
+      // Built with DOM APIs instead of innerHTML so stored strings render as text.
       const tile = document.createElement("button");
       tile.type = "button";
       tile.className = "history-tile";
-      const thumb = record.imageSrc
-        ? `<img src="${record.imageSrc}" alt="" />`
-        : `<span class="history-tile-fallback">${record.className.slice(0, 1)}</span>`;
-      tile.innerHTML = `
-        <span class="history-tile-image">${thumb}</span>
-        <span class="history-tile-body">
-          <strong>${historyTitle(record)}</strong>
-          <small>${record.sourceLabel} &middot; ${formatHistoryTime(record.savedAt)}</small>
-          <small>${record.context} context &middot; ${record.wasteStateLabel || "Waste"} &middot; ${record.latency} ms</small>
-          <span class="badge ${record.wasteState === "review" ? "warn" : ""}">${record.wasteState === "review" ? "review" : "accepted"}</span>
-        </span>
-      `;
+
+      const image = document.createElement("span");
+      image.className = "history-tile-image";
+      if (record.imageSrc) {
+        const img = document.createElement("img");
+        img.src = record.imageSrc;
+        img.alt = "";
+        image.append(img);
+      } else {
+        const fallback = document.createElement("span");
+        fallback.className = "history-tile-fallback";
+        fallback.textContent = String(record.className || "?").slice(0, 1);
+        image.append(fallback);
+      }
+
+      const body = document.createElement("span");
+      body.className = "history-tile-body";
+      const title = document.createElement("strong");
+      title.textContent = historyTitle(record);
+      const meta = document.createElement("small");
+      meta.textContent = `${record.sourceLabel} · ${formatHistoryTime(record.savedAt)}`;
+      const detail = document.createElement("small");
+      detail.textContent = `${record.context} context · ${record.wasteStateLabel || "Waste"} · ${record.latency} ms`;
+      const badge = document.createElement("span");
+      badge.className = record.wasteState === "review" ? "badge warn" : "badge";
+      badge.textContent = record.wasteState === "review" ? "review" : "accepted";
+      body.append(title, meta, detail, badge);
+
+      tile.append(image, body);
       tile.addEventListener("click", () => restoreHistoryRecord(record));
       return tile;
     }),
@@ -929,9 +944,11 @@ function startEvidenceCounts() {
   countUp(document.querySelector("#riskMetric"), 74.8, 1, 1100, (v) => `${v.toFixed(1)}%`);
   countUp(document.querySelector("#scanMetric"), 2406, 0, 1200, (v) => Math.round(v).toLocaleString());
   countUp(document.querySelector("#domainMetric"), 39.8, 1, 1100, (v) => `${v.toFixed(1)}%`);
-  countUp(document.querySelector("#yoloPrecision"), 78.1, 1, 1100, (v) => `${v.toFixed(1)}%`);
-  countUp(document.querySelector("#yoloRecall"), 69.0, 1, 1100, (v) => `${v.toFixed(1)}%`);
-  countUp(document.querySelector("#yoloMap5095"), 57.2, 1, 1100, (v) => `${v.toFixed(1)}%`);
+  // YOLO26m clean-val numbers (runs/audits/detector_clean_val_yolo26m_final100.json).
+  // Keep in sync with the static values in index.html - these animations overwrite them.
+  countUp(document.querySelector("#yoloPrecision"), 83.4, 1, 1100, (v) => `${v.toFixed(1)}%`);
+  countUp(document.querySelector("#yoloRecall"), 67.2, 1, 1100, (v) => `${v.toFixed(1)}%`);
+  countUp(document.querySelector("#yoloMap5095"), 57.0, 1, 1100, (v) => `${v.toFixed(1)}%`);
 }
 
 /* ---------------------------------------------------------------- hero: demo loop */

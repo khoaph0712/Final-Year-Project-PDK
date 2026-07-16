@@ -1,0 +1,18 @@
+[100/1042] material_acc=0.950
+[200/1042] material_acc=0.955
+[300/1042] material_acc=0.927
+[400/1042] material_acc=0.932
+[500/1042] material_acc=0.940
+[600/1042] material_acc=0.947
+[700/1042] material_acc=0.950
+[800/1042] material_acc=0.948
+[900/1042] material_acc=0.941
+[1000/1042] material_acc=0.944
+
+[RESULT] tag=baseline n=1042
+  material accuracy:        0.944
+  bin accuracy:             0.963
+  waste-state accuracy:     0.967  (all GT items are real waste)
+  waste-state distribution: {'waste': 1008, 'review': 28, 'not_waste': 6}
+  secondary-material recall: 0.500 (n=36, on 0 mixed-class images)
+[OK] C:\FYP\runs\audits\pipeline_bin_decision_eval_baseline.json

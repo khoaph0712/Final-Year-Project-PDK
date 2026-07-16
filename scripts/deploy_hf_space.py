@@ -19,22 +19,13 @@ MODEL_FILES = [
     ROOT / "models" / "trained" / "yolov11_detector" / "best.pt",
 ]
 SUPPORT_FILES = [
-    ROOT / "scripts" / "archive" / "custom_feature_extractor.py",
+    ROOT / "scripts" / "custom_feature_extractor.py",
+    ROOT / "scripts" / "stage2_model.py",
 ]
 
 
 def run(args: list[str], cwd: Path | None = None, env: dict[str, str] | None = None) -> None:
     subprocess.run(args, cwd=str(cwd) if cwd else None, env=env, check=True)
-
-
-def clear_hf_credentials(cwd: Path) -> None:
-    subprocess.run(
-        ["git", "credential", "reject"],
-        cwd=str(cwd),
-        input="protocol=https\nhost=huggingface.co\nusername=__token__\n\n",
-        text=True,
-        check=False,
-    )
 
 
 def request_json(url: str, token: str, method: str = "GET", payload: dict | None = None) -> dict:
@@ -162,7 +153,7 @@ CMD ["python", "web/server.py", "--host", "0.0.0.0", "--port", "7860"]
 opencv-python-headless>=4.9.0
 torch==2.4.1
 torchvision==0.19.1
-ultralytics==8.4.62
+ultralytics==8.4.92
 """,
     )
     write_file(
@@ -182,7 +173,7 @@ Full web deployment for the WasteWise FYP application.
 
 - Frontend: `web/index.html`, `web/styles.css`, `web/app.js`
 - Backend: `web/server.py`
-- Models: hard-case ConvNeXt + 637-feature classifier and YOLO26n localizer
+- Models: hard-case ConvNeXt + 637-feature classifier and YOLO26m localizer
 - API: `/api/predict`
 """,
     )
@@ -205,22 +196,22 @@ Full web deployment for the WasteWise FYP application.
     run(["git", "config", "user.email", "91509922+letouch07@users.noreply.github.com"], DEPLOY_DIR)
     run(["git", "add", "."], DEPLOY_DIR)
     run(["git", "commit", "-m", "Deploy WasteWise AI full model app"], DEPLOY_DIR)
-    run(["git", "remote", "add", "origin", f"https://huggingface.co/spaces/{repo_id}"], DEPLOY_DIR)
+    # Username lives in the remote URL, so git only asks for the password; GIT_ASKPASS
+    # answers it from the HF_TOKEN env var. Unlike the previous credential.helper=store
+    # approach, the token is never written to ~/.git-credentials (which persisted the
+    # plaintext token on disk if the push crashed before cleanup).
+    run(["git", "remote", "add", "origin", f"https://__token__@huggingface.co/spaces/{repo_id}"], DEPLOY_DIR)
 
+    askpass = DEPLOY_DIR.parent / "hf_askpass.bat"
+    askpass.write_text("@echo off\necho %HF_TOKEN%\n", encoding="ascii")
     push_env = dict(os.environ)
     push_env["GIT_TERMINAL_PROMPT"] = "0"
-    run(["git", "config", "credential.helper", "store"], DEPLOY_DIR)
-    subprocess.run(
-        ["git", "credential", "approve"],
-        cwd=str(DEPLOY_DIR),
-        input=f"protocol=https\nhost=huggingface.co\nusername=__token__\npassword={token}\n\n",
-        text=True,
-        check=True,
-    )
+    push_env["GIT_ASKPASS"] = str(askpass)
+    push_env["HF_TOKEN"] = token
     try:
         run(["git", "push", "origin", "main", "--force"], DEPLOY_DIR, env=push_env)
     finally:
-        clear_hf_credentials(DEPLOY_DIR)
+        askpass.unlink(missing_ok=True)
 
     print(f"https://huggingface.co/spaces/{repo_id}")
     print(f"https://{username}-{space_name}.hf.space")

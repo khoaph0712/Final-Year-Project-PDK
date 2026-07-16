@@ -1,0 +1,49 @@
+{
+  "tag": "final",
+  "n": 1042,
+  "materialAccuracy": 0.944337811900192,
+  "binAccuracy": 0.9596928982725528,
+  "wasteStateAccuracy": 0.9673704414587332,
+  "wasteStateCounts": {
+    "waste": 1008,
+    "review": 28,
+    "not_waste": 6
+  },
+  "secondaryMaterialRecall": 0.5833333333333334,
+  "secondaryMaterialN": 36,
+  "mixedFlagFalsePositiveRate": 0.00390625,
+  "mixedFlagTruePositiveRate": 0.0,
+  "confusion": {
+    "metal": {
+      "metal": 162,
+      "plastic": 3,
+      "glass": 2,
+      "paper": 2
+    },
+    "plastic": {
+      "metal": 4,
+      "plastic": 325,
+      "glass": 9,
+      "paper": 4,
+      "background": 3,
+      "cardboard": 1
+    },
+    "organic": {
+      "organic": 2,
+      "plastic": 2
+    },
+    "paper": {
+      "paper": 488,
+      "plastic": 8,
+      "metal": 5,
+      "background": 5,
+      "cardboard": 4,
+      "organic": 3,
+      "glass": 1
+    },
+    "cardboard": {
+      "cardboard": 7,
+      "paper": 2
+    }
+  }
+}

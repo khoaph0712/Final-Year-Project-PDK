@@ -8,12 +8,13 @@ The API runs the hard-case ConvNeXt classifier and YOLO26n localizer.
 from __future__ import annotations
 
 import argparse
-import cgi
 import json
 import os
 import sys
 import threading
 import time
+from email.parser import BytesParser
+from email.policy import HTTP as EMAIL_HTTP_POLICY
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any
@@ -67,7 +68,6 @@ CLASSIFIER_CLASSES = ["plastic", "glass", "metal", "paper", "cardboard", "organi
 # statistically the same bias) - still no basis to trust the material vote more.
 YOLO_CONF = 0.04
 YOLO_GATE_CONF = 0.30
-YOLO_RECOVERY_CONF = 0.10
 # Serve at the training resolution. The model was trained at imgsz=640; running it at 960
 # measurably hurts on BOTH eval domains (F9 in docs/01_final_report/FAILURES_AND_FIXES.md):
 # clean test mAP50 0.474@640 vs 0.409@960, recall 0.456 vs 0.429; realworld_v2 test mAP50
@@ -82,7 +82,10 @@ WASTE_GATE_CONF = 0.55
 WASTE_REVIEW_CONF = 0.50
 SCENE_REVIEW_CONF = 0.55
 WEAK_REVIEW_MATERIAL_CONF = 0.35
+MAX_UPLOAD_BYTES = 15 * 1024 * 1024
+DOMINANT_OVERRIDE_MARGIN = 20
 
+# web/app.js keeps a fallback-only copy of this table; keep the two in sync.
 ROUTES = {
     "plastic": "Recycling",
     "glass": "Recycling",
@@ -102,6 +105,11 @@ WASTE_STATE_LABELS = {
 _models: dict[str, Any] | None = None
 _model_preload_started = False
 _models_lock = threading.Lock()
+# Ultralytics YOLO.predict() mutates internal predictor state on the shared model object and
+# is not safe to call concurrently from multiple threads (ThreadingHTTPServer gives each
+# request its own thread). Serializing at the request level costs only queueing delay -
+# inference already runs ~1s/image - in exchange for not risking crossed/corrupted results.
+_inference_lock = threading.Lock()
 
 
 def title_class(value: str) -> str:
@@ -164,47 +172,6 @@ def top_k_classes(probs: Any, k: int = SCENE_TOP_K) -> list[dict[str, Any]]:
     ]
 
 
-def choose_detection_label(
-    crop_key: str,
-    crop_conf: float,
-    yolo_key: str | None,
-    yolo_score: float,
-    scene_top_keys: set[str],
-    scene_probs: Any,
-) -> tuple[str, str]:
-    if crop_key == "Background" and yolo_key:
-        return yolo_key, "yolo-background-crop"
-
-    if crop_conf >= 0.72:
-        return crop_key, "crop-classifier"
-
-    if yolo_key and yolo_score >= 0.45:
-        return yolo_key, "yolo-localizer"
-
-    if yolo_key and yolo_key in scene_top_keys and crop_conf < 0.68:
-        return yolo_key, "scene-guided-yolo"
-
-    if crop_key in scene_top_keys or crop_conf >= 0.50:
-        return crop_key, "scene-guided-crop"
-
-    if yolo_key:
-        return yolo_key, "low-conf-yolo"
-
-    scene_best = max(scene_top_keys, key=lambda key: float(scene_probs[class_index(key)]))
-    return scene_best, "scene-fallback"
-
-
-def detection_confidence(label_key: str, crop_probs: Any, yolo_key: str | None, yolo_score: float, scene_probs: Any) -> float:
-    label_idx = class_index(label_key)
-    crop_label_conf = float(crop_probs[label_idx])
-    scene_label_conf = float(scene_probs[label_idx])
-    yolo_label_conf = yolo_score if yolo_key == label_key else 0.0
-
-    if yolo_label_conf:
-        return max(crop_label_conf, min(0.95, 0.55 * yolo_label_conf + 0.30 * crop_label_conf + 0.15 * scene_label_conf))
-    return max(crop_label_conf, min(0.90, 0.70 * crop_label_conf + 0.30 * scene_label_conf))
-
-
 def estimate_detection_waste_state(
     label_key: str,
     label_conf: float,
@@ -213,8 +180,17 @@ def estimate_detection_waste_state(
     yolo_key: str | None,
     yolo_score: float,
     scene_is_empty: bool,
+    class_threshold: float,
 ) -> tuple[str, str]:
-    """Conservative waste-state gate until a trained state model exists."""
+    """Conservative waste-state gate until a trained state model exists.
+
+    Single per-detection decision point, tiers checked in order (first match wins).
+    class_threshold folds in what used to be a separate post-hoc "class-specific
+    threshold rejection" pass in predict_image - that second pass only ever fired on
+    the strong-localizer-agreement tier below (its bar was always lower than
+    WASTE_GATE_CONF, so it could never demote the joint-confidence tier), so merging
+    it here removes a redundant, confusingly-scoped gate rather than changing behavior.
+    """
     if scene_is_empty:
         return "not_waste", "empty or near-uniform scene"
 
@@ -223,6 +199,16 @@ def estimate_detection_waste_state(
             return "not_waste", "background-dominant crop"
         return "review", "background or unknown object"
 
+    if label_conf < class_threshold:
+        return "review", f"low confidence ({label_conf * 100:.1f}% < {class_threshold * 100:.0f}%)"
+
+    # ponytail: tried removing this gate outright (A/B tested, see chat 2026-07-16). Bin/waste-
+    # state accuracy went UP on runs/audits/pipeline_bin_decision_eval_no_gate.json (0.963->0.974,
+    # 0.967->0.980) but it's an artifact: this eval set is 100% real waste, zero true negatives,
+    # so a gate that ever says "review" can only look like a loss here - it gets no credit for
+    # catching a false "waste" call on a background/empty scene, because no such image exists in
+    # the set. The gate is the site's documented "conservative by design" safety net for exactly
+    # that case. Kept.
     if label_conf >= WASTE_GATE_CONF and yolo_score >= YOLO_GATE_CONF:
         return "waste", "localized material candidate"
 
@@ -245,8 +231,15 @@ def choose_final_decision(
         return "not_waste", "empty or near-uniform scene"
 
     if detections:
-        if any(item["wasteState"] == "waste" for item in detections):
-            return "waste", "at least one localized object is gated as waste"
+        any_waste = any(item["wasteState"] == "waste" for item in detections)
+        strong_waste = any(
+            item["wasteState"] == "waste" and item["confidence"] >= int(WASTE_REVIEW_CONF * 100)
+            for item in detections
+        )
+        if any_waste and not strong_waste:
+            return "review", "localized objects exist, but material confidence is below review threshold"
+        if strong_waste:
+            return "waste", "at least one localized object is gated as waste with reliable confidence"
         if all(item["wasteState"] == "not_waste" for item in detections):
             return "not_waste", "localized objects look non-disposable"
         return "review", "objects found but disposal state is uncertain"
@@ -259,44 +252,12 @@ def choose_final_decision(
 def load_tuned_classifier() -> dict[str, Any]:
     import numpy as np
     import torch
-    import torch.nn as nn
-    import torchvision.models as models
 
-    feature_dir = ROOT / "scripts" / "archive"
-    if str(feature_dir) not in sys.path:
-        sys.path.append(str(feature_dir))
+    scripts_dir = ROOT / "scripts"
+    if str(scripts_dir) not in sys.path:
+        sys.path.append(str(scripts_dir))
     from custom_feature_extractor import extract_637_features
-
-    class ConvNeXtFeatureExtractor(nn.Module):
-        def __init__(self) -> None:
-            super().__init__()
-            self.backbone = models.convnext_tiny(weights=None)
-            self.backbone.classifier = nn.Identity()
-
-        def forward(self, x: Any) -> Any:
-            features = self.backbone(x)
-            return torch.flatten(features, 1)
-
-    class Stage3EnsembleClassifier(nn.Module):
-        def __init__(self, num_classes: int = 7, dropout_rate: float = 0.3) -> None:
-            super().__init__()
-            self.convnext_extractor = ConvNeXtFeatureExtractor()
-            self.classifier = nn.Sequential(
-                nn.Linear(768 + 637, 256),
-                nn.BatchNorm1d(256),
-                nn.ReLU(),
-                nn.Dropout(p=dropout_rate),
-                nn.Linear(256, 64),
-                nn.BatchNorm1d(64),
-                nn.ReLU(),
-                nn.Dropout(p=0.2),
-                nn.Linear(64, num_classes),
-            )
-
-        def forward(self, image_tensor: Any, handcrafted_features_tensor: Any) -> Any:
-            deep_features = self.convnext_extractor(image_tensor)
-            fused_features = torch.cat((deep_features, handcrafted_features_tensor), dim=1)
-            return self.classifier(fused_features)
+    from stage2_model import Stage3EnsembleClassifier
 
     if not TUNED_CLASSIFIER_PATH.exists():
         raise FileNotFoundError(f"Tuned classifier not found: {TUNED_CLASSIFIER_PATH}")
@@ -590,10 +551,12 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
     empty_cues = scene_empty_cues(image)
     context = infer_context(image)
 
-    # 1. Adaptive Scene Engine & YOLO localizer run first
-    adaptive_cnn_conf = WASTE_REVIEW_CONF  # Default 0.50
-    adaptive_mode = "STANDARD"
-
+    # Removed 2026-07-16 (audit): a "recovery" re-predict at conf=0.05 when the primary pass
+    # found zero boxes was provably a no-op after F13 lowered YOLO_CONF to 0.04 (a stricter
+    # threshold on the same image can only return a subset of nothing), and the adaptive
+    # per-mode CNN thresholds it set were shadowed by CLASS_THRESHOLDS covering every
+    # material class. If a real recovery pass is wanted, it must run BELOW YOLO_CONF and be
+    # re-measured against runs/audits/pipeline_bin_decision_eval_*.json first.
     yolo_result = localizer.predict(
         image,
         conf=YOLO_CONF,
@@ -602,30 +565,8 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
         max_det=YOLO_MAX_DETECTIONS,
         verbose=False,
     )[0]
-    yolo_conf_used = YOLO_CONF
 
     boxes = list(yolo_result.boxes[:YOLO_MAX_DETECTIONS])
-
-    # Scenario 1: Extreme Small Object / Low Recall recovery sensitivity sweep
-    if len(boxes) == 0:
-        yolo_result = localizer.predict(
-            image,
-            conf=0.05,
-            iou=YOLO_IOU,
-            imgsz=YOLO_IMG_SIZE,
-            max_det=YOLO_MAX_DETECTIONS,
-            verbose=False,
-        )[0]
-        yolo_conf_used = 0.05
-        boxes = list(yolo_result.boxes[:YOLO_MAX_DETECTIONS])
-        if len(boxes) > 0:
-            adaptive_cnn_conf = 0.15
-            adaptive_mode = "SMALL_OBJECT_RECOVERY"
-
-    # Scenario 2: Dense Clutter & Overlap Mitigation
-    elif len(boxes) >= 8:
-        adaptive_cnn_conf = 0.20
-        adaptive_mode = "DENSE_CLUTTER_MITIGATION"
 
     # Sort YOLO proposals by confidence and size
     boxes.sort(
@@ -696,6 +637,7 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
     detections = []
     material_counts: dict[str, int] = {}
     material_weights: dict[str, float] = {}
+    material_seen_weights: dict[str, float] = {}
 
     CONTEXT_PRIORS = {
         "Beach":    [0.35, 0.25, 0.20, 0.05, 0.05, 0.10],
@@ -753,6 +695,11 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
             combined_probs = alpha * yolo_probs + (1.0 - alpha) * crop_probs
 
             # Apply Multi-Modal Bayesian Context Fusion
+            # ponytail: tried damping this prior toward uniform (infer_context is an HSV
+            # color heuristic with no ground truth to fit CONTEXT_PRIORS against) - measured
+            # -0.5 to -0.6pp material/bin/waste-state accuracy on
+            # runs/audits/pipeline_bin_decision_eval_*.json with no offsetting gain, so kept
+            # the raw prior. Revisit only with an eval set that labels true scene context.
             prior = CONTEXT_PRIORS.get(context, CONTEXT_PRIORS["default"])
             cv_probs = combined_probs[:6]
             bg_prob = combined_probs[6]
@@ -784,6 +731,7 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
                 label_source = "scene-fast"
                 label_conf = scene_pred_conf
 
+        current_threshold = CLASS_THRESHOLDS.get(label_key, WASTE_REVIEW_CONF)
         waste_state, waste_reason = estimate_detection_waste_state(
             label_key,
             label_conf,
@@ -792,23 +740,16 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
             yolo_key,
             yolo_score,
             bool(empty_cues["isEmpty"]),
+            current_threshold,
         )
-
-        # Apply Class-Specific Threshold Rejection
-        current_threshold = CLASS_THRESHOLDS.get(label_key, adaptive_cnn_conf)
-        if label_key == "Background":
-            if waste_state == "waste":
-                waste_state = "review"
-                waste_reason = "background-dominant crop"
-        elif label_conf < current_threshold:
-            waste_state = "review"
-            waste_reason = f"low confidence ({label_conf*100:.1f}% < {current_threshold*100:.0f}%)"
 
         area_weight = max(1.0, (x2 - x1) * (y2 - y1)) * max(0.04, yolo_score)
         label_title = title_class(label_key)
         if waste_state == "waste":
             material_counts[label_title] = material_counts.get(label_title, 0) + 1
             material_weights[label_title] = material_weights.get(label_title, 0.0) + area_weight * max(0.10, label_conf)
+        if label_key != "Background":
+            material_seen_weights[label_title] = material_seen_weights.get(label_title, 0.0) + area_weight * max(0.10, label_conf)
 
         detections.append(
             {
@@ -835,7 +776,7 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
 
     if detections:
         detections.sort(key=lambda item: (item["confidence"], item["w"] * item["h"]), reverse=True)
-        decision_source = f"YOLO {YOLO_IMG_SIZE}px ({adaptive_mode}) -> top {MAX_CROP_VERIFICATIONS} crop verify -> bottom-up aggregation"
+        decision_source = f"YOLO {YOLO_IMG_SIZE}px -> top {MAX_CROP_VERIFICATIONS} crop verify -> bottom-up aggregation"
     else:
         decision_source = "scene classifier fallback; no boxes found"
 
@@ -858,7 +799,21 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
         scene_pred_conf,
         bool(empty_cues["isEmpty"]),
     )
+    # Headline material: the waste-gated vote (detected_materials) wins by default - a blanket
+    # switch to "single most confident detection" measured -0.7pp material accuracy overall
+    # (runs/audits/pipeline_bin_decision_eval_dominant_fix.json). But sample-can.jpg shows a
+    # real failure mode: a correct 80%-confident box can lose to several wrong-but-gated boxes
+    # at lower confidence just because their YOLO box score cleared the gate. Only override
+    # when a non-gated detection beats the gated pick's own confidence by a wide margin - cheap
+    # enough to not fire on ordinary noise, wide enough to catch a clear miss like this one.
     dominant_material = detected_materials[0]["className"] if detected_materials else title_class(scene_pred_key)
+    if detections:
+        non_background_detections = [item for item in detections if item["label"] != "Background"]
+        if non_background_detections:
+            best_detection = max(non_background_detections, key=lambda item: (item["confidence"], item["w"] * item["h"]))
+            current_conf = max((item["confidence"] for item in detections if item["label"] == dominant_material), default=0)
+            if best_detection["label"] != dominant_material and best_detection["confidence"] >= current_conf + DOMINANT_OVERRIDE_MARGIN:
+                dominant_material = best_detection["label"]
     dominant_key = dominant_material if dominant_material == "Background" else dominant_material.lower()
     possible_confidence = round(scene_pred_conf * 100)
     possible_source = "scene classifier"
@@ -871,20 +826,45 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
         possible_confidence = int(candidate_detection["confidence"])
         possible_source = candidate_detection.get("labelSource", "localized detection")
 
+    # strong_waste_detections is used below only for the two scene-vs-localization sanity
+    # checks (choose_final_decision already applies the equivalent per-detection-confidence
+    # tier for the plain "any box says waste" case).
     strong_waste_detections = [
         item
         for item in detections
         if item["wasteState"] == "waste" and int(item["confidence"]) >= int(WASTE_REVIEW_CONF * 100)
     ]
-    if final_state == "waste" and not strong_waste_detections:
-        final_state = "review"
-        final_reason = "localized objects exist, but material confidence is below review threshold"
     if final_state != "not_waste" and scene_pred_key == "Background" and not strong_waste_detections:
         final_state = "review"
         final_reason = "scene classifier sees background or unknown object; manual review required"
     if final_state != "not_waste" and scene_pred_conf < SCENE_REVIEW_CONF and not strong_waste_detections:
         final_state = "review"
         final_reason = "low classifier confidence; possible material is not reliable enough"
+
+    # Mixed-load bin hint: a real secondary object is often physically smaller in frame than
+    # the dominant one, so an area-weighted share test (tried: >=15% of total scene weight)
+    # almost never fires - measured 0/18 true positives on the mixed-class eval images,
+    # because e.g. a small organic scrap next to a big metal can is ~8% of scene weight even
+    # though it's clearly present. Presence uses the same per-detection confidence bar as
+    # strong_waste_detections above (WASTE_REVIEW_CONF) instead: any reliably-labeled,
+    # non-Background detection counts toward its bin, regardless of how much of the frame
+    # it occupies. Purely informational - never loosens the waste gate itself.
+    bins_present: set[str] = set()
+    for item in detections:
+        if item["label"] == "Background" or item["confidence"] < int(WASTE_REVIEW_CONF * 100):
+            continue
+        bin_name = ROUTES.get(item["label"].lower(), "Review")
+        if bin_name != "Review":
+            bins_present.add(bin_name)
+    mixed_bins = sorted(bins_present)
+    # Informational only, deliberately not overriding final_bin: forcing a "Mixed - X + Y"
+    # bin string on this signal was tried and measured net-negative (runs/audits/
+    # pipeline_bin_decision_eval_final.json vs _final2.json) - it barely improves true-positive
+    # catch rate on genuinely mixed frames (1/18) while misrouting several single-material
+    # frames whose secondary "material" is just detector/classifier noise. Surface it as
+    # metadata (mixedLoadDetected, materialsPresent below) so the UI can hint at it without
+    # the core bin decision inheriting that noise.
+    mixed_load_detected = len(mixed_bins) > 1
 
     final_bin = ROUTES.get(dominant_key, "Review") if final_state == "waste" else ("Do not bin" if final_state == "not_waste" else "Review")
     possible_class_name = dominant_material
@@ -919,14 +899,12 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
             "classifierType": models["classifierType"],
             "localizer": str(YOLO_PATH.relative_to(ROOT)),
             "localizerType": LOCALIZER_LABEL,
-            "yoloConf": yolo_conf_used,
+            "yoloConf": YOLO_CONF,
             "yoloIou": YOLO_IOU,
             "yoloImageSize": YOLO_IMG_SIZE,
             "maxDetections": YOLO_MAX_DETECTIONS,
             "maxCropVerifications": MAX_CROP_VERIFICATIONS,
             "decisionSource": decision_source,
-            "adaptiveMode": adaptive_mode,
-            "adaptiveCnnConf": adaptive_cnn_conf,
             "proposedBoxes": proposed_box_count,
             "sizeFilteredBoxes": size_filtered_count,
             "keptBoxes": len(crop_records),
@@ -938,6 +916,8 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
             "emptySceneCues": empty_cues,
             "detectedObjectCount": len(detections),
             "detectedMaterials": detected_materials,
+            "mixedLoadDetected": mixed_load_detected,
+            "materialsPresent": sorted(material_seen_weights, key=lambda k: material_seen_weights[k], reverse=True),
         },
     }
 
@@ -947,9 +927,19 @@ class WasteWiseHandler(SimpleHTTPRequestHandler):
         super().__init__(*args, directory=str(WEB_DIR), **kwargs)
 
     def end_headers(self) -> None:
+        # Deliberately open CORS: this is a public demo API and the Vercel mirror /
+        # any static rehost of the frontend must be able to call it cross-origin.
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        # No Cache-Control previously meant browsers could apply heuristic freshness to
+        # static files (index.html/app.js/assets) and skip revalidation for a while after a
+        # deploy - a returning visitor could keep running old JS against new HTML (exactly
+        # what happened testing the sample picker: fresh index.html + stale cached app.js
+        # silently no-op'd on sample ids the old SAMPLES array didn't have). no-cache forces
+        # a conditional GET (If-Modified-Since) every time - still gets 304s for unchanged
+        # files, but a real edit is never missed.
+        self.send_header("Cache-Control", "no-cache")
         super().end_headers()
 
     def do_OPTIONS(self) -> None:
@@ -969,7 +959,6 @@ class WasteWiseHandler(SimpleHTTPRequestHandler):
                     "localizerType": LOCALIZER_LABEL,
                     "yoloConf": YOLO_CONF,
                     "yoloGateConf": YOLO_GATE_CONF,
-                    "recoveryYoloConf": YOLO_RECOVERY_CONF,
                     "yoloIou": YOLO_IOU,
                     "yoloImageSize": YOLO_IMG_SIZE,
                     "maxDetections": YOLO_MAX_DETECTIONS,
@@ -989,24 +978,44 @@ class WasteWiseHandler(SimpleHTTPRequestHandler):
             self.send_error(404, "Unknown endpoint")
             return
 
+        content_length = int(self.headers.get("Content-Length", 0) or 0)
+        if content_length > MAX_UPLOAD_BYTES:
+            self.write_json({"error": f"Upload too large (max {MAX_UPLOAD_BYTES // (1024 * 1024)}MB)."}, status=413)
+            return
+
         try:
-            form = cgi.FieldStorage(
-                fp=self.rfile,
-                headers=self.headers,
-                environ={
-                    "REQUEST_METHOD": "POST",
-                    "CONTENT_TYPE": self.headers.get("Content-Type", ""),
-                },
-            )
-            if "image" not in form:
-                raise ValueError("Missing multipart field: image")
-            item = form["image"]
-            image_bytes = item.file.read()
+            image_bytes = self.read_multipart_image(content_length)
             if not image_bytes:
                 raise ValueError("Empty image upload.")
-            self.write_json(predict_image(image_bytes))
+            if len(image_bytes) > MAX_UPLOAD_BYTES:
+                raise ValueError(f"Upload too large (max {MAX_UPLOAD_BYTES // (1024 * 1024)}MB).")
+            with _inference_lock:
+                result = predict_image(image_bytes)
+            self.write_json(result)
+        except ValueError as exc:
+            self.write_json({"error": str(exc)}, status=400)
         except Exception as exc:  # noqa: BLE001
-            self.write_json({"error": str(exc)}, status=500)
+            print(f"[ERROR] /api/predict failed: {exc!r}", file=sys.stderr)
+            self.write_json({"error": "Internal error while processing the image."}, status=500)
+
+    def read_multipart_image(self, content_length: int) -> bytes:
+        """Extract the 'image' part from a multipart/form-data body.
+
+        Stdlib email parser instead of the cgi module (deprecated, removed in
+        Python 3.13): prefix the raw body with the request's Content-Type header
+        so BytesParser sees a well-formed MIME message.
+        """
+        content_type = self.headers.get("Content-Type", "")
+        if "multipart/form-data" not in content_type.lower():
+            raise ValueError("Expected multipart/form-data upload.")
+        body = self.rfile.read(content_length)
+        message = BytesParser(policy=EMAIL_HTTP_POLICY).parsebytes(
+            f"Content-Type: {content_type}\r\nMIME-Version: 1.0\r\n\r\n".encode("ascii", "ignore") + body
+        )
+        for part in message.iter_parts():
+            if part.get_param("name", header="content-disposition") == "image":
+                return part.get_payload(decode=True) or b""
+        raise ValueError("Missing multipart field: image")
 
     def write_json(self, payload: dict[str, Any], status: int = 200) -> None:
         data = json.dumps(payload).encode("utf-8")

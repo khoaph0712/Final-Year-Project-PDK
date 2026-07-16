@@ -11,7 +11,7 @@ README survives a leakage-audited evaluation set.
 
 ```mermaid
 flowchart LR
-    A["Input image"] --> B["Stage 1: YOLO26n localization"]
+    A["Input image"] --> B["Stage 1: YOLO26m localization"]
     B --> C["Detected object crops"]
     C --> D["Stage 2: ConvNeXt + 637-feature crop classifier"]
     D --> E["Verified material class, waste state, bin route"]
@@ -30,16 +30,22 @@ this with perceptual-hash auditing, quarantined the leaked eval images, and
 report only the corrected numbers. Audit trail: `runs/audits/`, failure log:
 `docs/01_final_report/FAILURES_AND_FIXES.md`.
 
-### Stage 1 - Detector (YOLO26n, 6 classes, 100-epoch retrain)
+### Stage 1 - Detector (YOLO26m, 6 classes, 100-epoch retrain)
+
+The deployed detector was promoted YOLO26n -> YOLO26s -> YOLO26m on the same
+6-class hard-case dataset, re-sweeping conf/gate/alpha at each step
+(`runs/audits/yolo26m_conf_gate_alpha_sweep.json`). Numbers below:
+`runs/audits/detector_clean_val_yolo26m_final100.json`.
 
 | Eval | Precision | Recall | mAP50 | mAP50-95 |
 |---|---:|---:|---:|---:|
-| Clean validation (quarantined) | 0.777 | 0.650 | 0.721 | 0.542 |
-| Clean test (unseen TACO capture batches) | 0.590 | 0.456 | 0.474 | 0.348 |
+| Clean validation (quarantined) | 0.834 | 0.672 | 0.749 | 0.570 |
+| Clean test (unseen TACO capture batches) | 0.605 | 0.479 | 0.482 | 0.366 |
 
 The val-to-test gap is honest domain-shift evidence on unseen capture sessions.
-A 960px fine-tune was evaluated and ruled out (val a wash, +3.9pp test recall):
-resolution is not the binding constraint; training-data diversity is.
+A 960px fine-tune was evaluated on the earlier YOLO26n backbone and ruled out
+(val a wash, +3.9pp test recall): resolution is not the binding constraint;
+training-data diversity is.
 
 ### Stage 2 - Crop classifier (ConvNeXt-Tiny + 637 handcrafted features)
 
@@ -98,7 +104,7 @@ pip install -r requirements.txt
 
 | Purpose | Script |
 |---|---|
-| Detector training (100-epoch, 640px) | `scripts/train_hardcase_long.py` |
+| Detector training (YOLO26 hard-case dataset) | `scripts/train_yolo26_hardcase.py` (+ `scripts/resume_yolo26m_local.py`) |
 | Detector 960px fine-tune experiment | `scripts/train_hardcase_960.py` |
 | Leakage / bias / label-noise audit | `scripts/audit_model_risks.py` |
 | Build quarantined clean eval splits | `scripts/build_clean_eval_splits.py` |

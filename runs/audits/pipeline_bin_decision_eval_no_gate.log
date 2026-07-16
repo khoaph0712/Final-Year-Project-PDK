@@ -1,0 +1,19 @@
+[100/1042] material_acc=0.930
+[200/1042] material_acc=0.945
+[300/1042] material_acc=0.917
+[400/1042] material_acc=0.925
+[500/1042] material_acc=0.936
+[600/1042] material_acc=0.943
+[700/1042] material_acc=0.949
+[800/1042] material_acc=0.945
+[900/1042] material_acc=0.941
+[1000/1042] material_acc=0.945
+
+[RESULT] tag=no_gate n=1042
+  material accuracy:        0.945
+  bin accuracy:             0.974
+  waste-state accuracy:     0.980  (all GT items are real waste)
+  waste-state distribution: {'waste': 1021, 'review': 15, 'not_waste': 6}
+  secondary-material recall: 0.583 (n=36 across 18 mixed-class images)
+  mixed-load flag: TP rate 0.056 (n=18), FP rate 0.017 (n=1024)
+[OK] C:\FYP\runs\audits\pipeline_bin_decision_eval_no_gate.json
