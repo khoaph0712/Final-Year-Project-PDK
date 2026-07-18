@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="WasteWise waste scanner: YOLO26m localization plus ConvNeXt material classification, with leakage-audited evaluation numbers."
+      content="WasteWise Final Year Project presentation: dataset, EDA, two-stage YOLO26m + ConvNeXt modeling, leakage-audited results, and a live demo."
     />
     <meta name="color-scheme" content="light dark" />
-    <title>WasteWise - Waste Scanner &amp; Evidence</title>
+    <title>WasteWise - FYP Presentation</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
     <link
@@ -20,21 +20,20 @@
   <body>
     <div class="page-shell">
       <header class="topbar">
-        <a class="brand" href="#scan" data-page-link>
+        <a class="brand" href="#home" data-page-link>
           <span class="brand-mark" aria-hidden="true">W</span>
           <span class="brand-text">
             <strong>WasteWise</strong>
-            <small>Waste scanner</small>
+            <small>FYP presentation</small>
           </span>
         </a>
 
         <nav class="nav" aria-label="Primary navigation">
-          <a href="#scan" data-page-link>Scan</a>
-          <a href="#pipeline" data-page-link>How it works</a>
-          <a href="#evidence" data-page-link>Evidence</a>
-          <a href="#history" data-page-link>History</a>
-          <a href="#limits" data-page-link>Limits</a>
-          <a href="#about" data-page-link>About</a>
+          <a href="#home" data-page-link>Home</a>
+          <a href="#data" data-page-link>Data Collection</a>
+          <a href="#eda" data-page-link>EDA</a>
+          <a href="#modeling" data-page-link>Modeling</a>
+          <a href="#demo" data-page-link>Demo</a>
         </nav>
 
         <span class="run-state" id="modelStatus" data-state="pending">
@@ -43,22 +42,40 @@
         </span>
       </header>
 
-      <!-- ============================================================ PAGE: SCAN -->
-      <main class="page" data-page="scan" id="page-scan">
+      <nav class="flow-rail" aria-label="Presentation flow">
+        <a href="#s1" title="1. Introduction"><span></span></a>
+        <a href="#s2" title="2. Dataset Overview"><span></span></a>
+        <a href="#s3" title="3. Image Preprocessing"><span></span></a>
+        <a href="#s4" title="4. Exploratory Data Analysis"><span></span></a>
+        <a href="#s5" title="5. Model Pipeline"><span></span></a>
+        <a href="#s6" title="6. Model Training"><span></span></a>
+        <a href="#s7" title="7. Evaluation Metrics"><span></span></a>
+        <a href="#s8" title="8. Experimental Results"><span></span></a>
+        <a href="#s9" title="9. Model Comparison"><span></span></a>
+        <a href="#s10" title="10. Discussion"><span></span></a>
+        <a href="#s11" title="11. Conclusion &amp; Future Work"><span></span></a>
+        <a href="#s12" title="12. Live Demo"><span></span></a>
+      </nav>
+
+      <!-- ============================================================ PAGE: HOME -->
+      <main class="page" data-page="home" id="page-home">
+        <section class="pres-section" id="s1">
         <section class="hero" aria-labelledby="hero-title">
           <div class="hero-copy">
-            <p class="kicker">Two-stage detection pipeline</p>
+            <p class="kicker"><span class="flow-num">01 / 12</span> Introduction</p>
             <h1 id="hero-title">
               Scan waste.<br />
               <span class="accent" id="typedWord"></span><span class="type-caret" aria-hidden="true"></span>
             </h1>
             <p>
-              YOLO26m finds every object, a ConvNeXt classifier verifies the material, and every
-              number on this site survives a leakage-audited test set.
+              WasteWise is a Final Year Project on automated waste understanding: a two-stage
+              deep-learning pipeline &mdash; YOLO26m finds every object, a ConvNeXt classifier
+              verifies the material &mdash; backed by a classical machine-learning branch for
+              explainable evidence. Every number on this site survives a leakage-audited test set.
             </p>
             <div class="actions">
-              <a class="btn primary" href="#scan-live">Run a scan</a>
-              <a class="btn secondary" href="#pipeline" data-page-link>How it works</a>
+              <a class="btn primary" href="#s2">Start the presentation</a>
+              <a class="btn secondary" href="#demo" data-page-link>Skip to live demo</a>
             </div>
             <div class="hero-counters">
               <div><strong id="heroAcc">93.77%</strong><span>clean-test accuracy</span></div>
@@ -91,15 +108,806 @@
           </div>
         </div>
 
-        <section class="scan-section" id="scan-live" aria-labelledby="scan-title">
-          <div class="section-heading">
-            <h2 id="scan-title">Live scanner</h2>
-            <p>
-              Upload a photo or pick a sample. The scan follows the exact pipeline order &mdash;
-              localize, crop, verify, fuse &amp; route.
-            </p>
+        <div class="section-heading">
+          <h2>The problem, the goal, the system</h2>
+          <p>
+            Manual waste sorting is slow and error-prone, and recycling streams are easily
+            contaminated. WasteWise localizes each waste object in a photo, verifies its material,
+            and routes it to the correct bin &mdash; with an honest, audited account of what works
+            and what does not.
+          </p>
+        </div>
+
+        <div class="teasers">
+          <div class="teaser reveal-on-scroll">
+            <span class="kicker">Objective 1</span>
+            <strong>Detect &amp; classify waste in real photos</strong>
+            <p>Localize every object with YOLO26m, then verify the material of each crop across 7 classes with a dedicated classifier.</p>
+          </div>
+          <div class="teaser dark reveal-on-scroll">
+            <span class="kicker accent-light">Objective 2</span>
+            <strong>Evaluate honestly</strong>
+            <p>Audit the evaluation sets with perceptual hashing, quarantine leaked images, and report only clean-test numbers.</p>
+          </div>
+          <div class="teaser reveal-on-scroll">
+            <span class="kicker tone-warn">Objective 3</span>
+            <strong>Explainable evidence</strong>
+            <p>Keep a classical ML branch on 637 handcrafted features beside the deep pipeline, so every decision has an interpretable baseline.</p>
+          </div>
+        </div>
+
+        <div class="fig-grid">
+          <figure class="fig span-full reveal-on-scroll">
+            <img src="assets/figures/wf_overall.png" alt="Overall WasteWise system architecture diagram" loading="lazy" />
+            <figcaption><strong>Fig 1.1 &mdash; Overall system architecture.</strong>
+              The end-to-end system: a web frontend (Vercel) sends the photo to a Hugging Face Space
+              backend, where the two-stage pipeline &mdash; YOLO26m localization followed by ConvNeXt
+              material verification &mdash; produces per-object materials, confidences, and a bin route.
+            </figcaption>
+          </figure>
+          <figure class="fig reveal-on-scroll">
+            <img src="assets/figures/wf_use_case.png" alt="Use case diagram" loading="lazy" />
+            <figcaption><strong>Fig 1.2 &mdash; Use-case diagram.</strong>
+              The user uploads or picks a sample photo, runs a scan, reviews per-object results and
+              bin routes, and can revisit saved scans from browser history.
+            </figcaption>
+          </figure>
+          <figure class="fig reveal-on-scroll">
+            <img src="assets/figures/wf_gui.png" alt="GUI design diagram" loading="lazy" />
+            <figcaption><strong>Fig 1.3 &mdash; Interface design.</strong>
+              The scanner screen layout: image stage with detection overlays on the left, the
+              classification result, confidence meter, and per-class scores on the right.
+            </figcaption>
+          </figure>
+        </div>
+
+        <div class="section-heading">
+          <h2>Presentation flow</h2>
+          <p>Twelve stops, in report order. Use the arrow keys or the Next button to move through them.</p>
+        </div>
+        <ol class="toc-grid">
+          <li><a href="#s1"><span>01</span>Introduction</a></li>
+          <li><a href="#s2"><span>02</span>Dataset Overview</a></li>
+          <li><a href="#s3"><span>03</span>Image Preprocessing</a></li>
+          <li><a href="#s4"><span>04</span>Exploratory Data Analysis</a></li>
+          <li><a href="#s5"><span>05</span>Model Pipeline</a></li>
+          <li><a href="#s6"><span>06</span>Model Training</a></li>
+          <li><a href="#s7"><span>07</span>Evaluation Metrics</a></li>
+          <li><a href="#s8"><span>08</span>Experimental Results</a></li>
+          <li><a href="#s9"><span>09</span>Model Comparison</a></li>
+          <li><a href="#s10"><span>10</span>Discussion</a></li>
+          <li><a href="#s11"><span>11</span>Conclusion &amp; Future Work</a></li>
+          <li><a href="#s12"><span>12</span>Live Demo</a></li>
+        </ol>
+
+        <div class="flow-footer">
+          <span></span>
+          <span class="flow-pos">01 / 12</span>
+          <a class="btn primary" href="#s2">Next: Dataset Overview &rarr;</a>
+        </div>
+        </section>
+      </main>
+
+      <!-- ============================================================ PAGE: DATA -->
+      <main class="page" data-page="data" id="page-data" hidden>
+        <section class="pres-section" id="s2">
+          <p class="kicker"><span class="flow-num">02 / 12</span> Dataset Overview</p>
+          <h2 class="page-title">Six public sources, merged into one detection dataset.</h2>
+          <p class="page-intro">
+            No single public dataset covers waste detection well: TACO has real litter photos but
+            sparse labels, TrashNet has clean studio crops but no boxes, WaDaBa focuses on plastic
+            subtypes, and GINI frames garbage-vs-clean scenes. The project merges them &mdash; plus
+            Roboflow garbage-classification sources and the PlastOPol field dataset &mdash; into one
+            YOLO-format dataset with 7 material classes. After tuning, the working dataset holds
+            <strong>31,379 images and 67,385 boxes</strong> (24,668 / 3,298 / 3,413 train/valid/test).
+          </p>
+
+          <div class="fig-grid">
+            <figure class="fig span-full reveal-on-scroll">
+              <img src="assets/figures/eda_cross_dataset_comparison.png" alt="Cross-dataset comparison chart" loading="lazy" />
+              <figcaption><strong>Fig 2.1 &mdash; Cross-dataset comparison.</strong>
+                Class coverage and image counts across the candidate source datasets. No single
+                source covers all 7 target materials in both studio and field conditions &mdash;
+                the direct motivation for merging.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/eda_taco_class_distribution.png" alt="TACO class distribution" loading="lazy" />
+              <figcaption><strong>Fig 2.2 &mdash; TACO source distribution.</strong>
+                TACO contributes real-world litter photos in context (streets, grass, water) with a
+                long-tailed class distribution dominated by plastic.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/eda_trashnet_class_distribution.png" alt="TrashNet class distribution" loading="lazy" />
+              <figcaption><strong>Fig 2.3 &mdash; TrashNet source distribution.</strong>
+                TrashNet supplies clean, single-object studio photos with even class coverage &mdash;
+                useful volume for the classifier, but visually far from field conditions.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/eda_gini_class_distribution.png" alt="GINI class distribution" loading="lazy" />
+              <figcaption><strong>Fig 2.4 &mdash; GINI source distribution.</strong>
+                GINI is a binary garbage/clean scene dataset; its positive class adds messy,
+                cluttered garbage scenes the other sources lack.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/eda_wadaba_class_distribution.png" alt="WaDaBa class distribution" loading="lazy" />
+              <figcaption><strong>Fig 2.5 &mdash; WaDaBa source distribution.</strong>
+                WaDaBa contributes labelled plastic packaging by polymer subtype (PET, HDPE, PP&hellip;),
+                folded into the single Plastic class here.
+              </figcaption>
+            </figure>
+            <figure class="fig span-full reveal-on-scroll">
+              <img src="assets/figures/eda_wadaba_sample_grid.png" alt="WaDaBa sample image grid" loading="lazy" />
+              <figcaption><strong>Fig 2.6 &mdash; WaDaBa sample grid.</strong>
+                Representative WaDaBa samples: single objects, controlled background, consistent
+                lighting. Studio-style sources like this are easy to classify but create the
+                domain gap measured later in the EDA and Discussion sections.
+              </figcaption>
+            </figure>
+            <figure class="fig span-full reveal-on-scroll">
+              <img src="assets/figures/wf_er_diagram.png" alt="Entity-relationship diagram of the dataset" loading="lazy" />
+              <figcaption><strong>Fig 2.7 &mdash; Data model.</strong>
+                Entity-relationship view of the merged dataset: each source image maps to one or
+                more labelled boxes; each box carries a material class; scans and history records
+                reference the same class vocabulary at inference time.
+              </figcaption>
+            </figure>
           </div>
 
+          <div class="flow-footer">
+            <a class="btn secondary" href="#s1">&larr; Introduction</a>
+            <span class="flow-pos">02 / 12</span>
+            <a class="btn primary" href="#s3">Next: Image Preprocessing &rarr;</a>
+          </div>
+        </section>
+
+        <section class="pres-section" id="s3">
+          <p class="kicker"><span class="flow-num">03 / 12</span> Image Preprocessing</p>
+          <h2 class="page-title">From six raw sources to one clean, balanced dataset.</h2>
+          <p class="page-intro">
+            Merging is not enough &mdash; the raw union is imbalanced, contains invalid and tiny
+            boxes, and duplicates the same photos across sources. The preprocessing pass removes
+            invalid label rows and exact duplicates, drops degenerate boxes, re-splits
+            train/valid/test by dominant class, and caps per-class counts so no material dominates.
+            At inference time the same discipline applies: each detected box is cropped with 10&nbsp;px
+            padding, boxes under 24&times;24&nbsp;px are rejected, and each crop is summarized into
+            637 handcrafted features (8 spatial + 9 FFT + 44 color + 576 HOG) for the ML branch.
+          </p>
+
+          <div class="fig-grid">
+            <figure class="fig span-full reveal-on-scroll">
+              <img src="assets/figures/wf_dfd.png" alt="Data flow diagram of preprocessing" loading="lazy" />
+              <figcaption><strong>Fig 3.1 &mdash; Preprocessing data flow.</strong>
+                The path from raw source archives to training-ready data: format conversion to YOLO
+                labels, class mapping to the 7-material vocabulary, dedup and validity filtering,
+                dominant-class re-splitting, and per-class balancing caps.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/eda_balanced_class_distribution.png" alt="Balanced class distribution after preprocessing" loading="lazy" />
+              <figcaption><strong>Fig 3.2 &mdash; Class balance after preprocessing.</strong>
+                Per-class box counts after balancing: the six materials sit near parity
+                (roughly 7,100&ndash;9,000 train boxes each), with the smaller catch-all
+                &ldquo;other&rdquo; class kept for background pressure.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/train_yolo26m_labels.jpg" alt="Label statistics of the final detector dataset" loading="lazy" />
+              <figcaption><strong>Fig 3.3 &mdash; Final detector label statistics.</strong>
+                Ultralytics label summary for the deployed detector's training set: class
+                frequencies, box placement, and box size distributions. Most boxes are small and
+                centered &mdash; a preview of the small-object challenge analyzed in the EDA.
+              </figcaption>
+            </figure>
+          </div>
+
+          <div class="flow-footer">
+            <a class="btn secondary" href="#s2">&larr; Dataset Overview</a>
+            <span class="flow-pos">03 / 12</span>
+            <a class="btn primary" href="#s4">Next: Exploratory Data Analysis &rarr;</a>
+          </div>
+        </section>
+      </main>
+
+      <!-- ============================================================ PAGE: EDA -->
+      <main class="page" data-page="eda" id="page-eda" hidden>
+        <section class="pres-section" id="s4">
+          <p class="kicker"><span class="flow-num">04 / 12</span> Exploratory Data Analysis</p>
+          <h2 class="page-title">What the data actually looks like &mdash; including its bugs.</h2>
+          <p class="page-intro">
+            EDA on the merged dataset answered three questions: is the class balance usable, how
+            small are the objects, and &mdash; most importantly &mdash; can the test set be trusted?
+            The third question found a real evaluation bug: perceptual hashing showed
+            <strong>2,406 test images (43%)</strong> of an earlier classifier evaluation set also
+            appeared in training, inflating its accuracy from an honest 91.77% to 94.30%. All
+            headline numbers on this site are measured after that leakage was quarantined.
+          </p>
+
+          <div class="fig-grid">
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/eda_class_balance.png" alt="Class balance chart" loading="lazy" />
+              <figcaption><strong>Fig 4.1 &mdash; Class balance across splits.</strong>
+                Train/valid/test box counts per class in the tuned dataset. The six materials are
+                near-balanced by design; &ldquo;other&rdquo; stays intentionally smaller.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/eda_box_area_hist.png" alt="Box area histogram" loading="lazy" />
+              <figcaption><strong>Fig 4.2 &mdash; Box area distribution.</strong>
+                Bounding-box areas are heavily right-skewed: the bulk of objects occupy a small
+                fraction of the frame. Detection difficulty concentrates in this small-object mass.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/eda_small_box_ratio.png" alt="Small box ratio chart" loading="lazy" />
+              <figcaption><strong>Fig 4.3 &mdash; Small-box ratio per class.</strong>
+                Share of boxes below the small-object threshold, per class. Litter-in-context
+                sources push several classes past 50% small boxes &mdash; this is why field
+                small-object recall became the project's central metric.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/eda_source_composition.png" alt="Source composition per class" loading="lazy" />
+              <figcaption><strong>Fig 4.4 &mdash; Which source feeds which class.</strong>
+                Per-class composition by source dataset. Some classes are dominated by studio
+                sources, others by field sources &mdash; so class identity and acquisition domain
+                are partly entangled in the merged data.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/ml_domain_importance.png" alt="Feature domain importance chart" loading="lazy" />
+              <figcaption><strong>Fig 4.5 &mdash; Feature-domain importance (ML branch).</strong>
+                Importance of the 637 handcrafted features grouped by domain (spatial, FFT, color,
+                HOG) under the tree-ensemble baseline. Color and HOG dominate &mdash; classical
+                evidence that material identity is mostly texture and color, not global shape.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/wf_leakage_audit.png" alt="Leakage audit workflow diagram" loading="lazy" />
+              <figcaption><strong>Fig 4.6 &mdash; Leakage audit workflow.</strong>
+                The audit pipeline: perceptual-hash every train and test image, cluster near
+                duplicates across splits, quarantine leaked test images, and re-measure every
+                metric on the clean set.
+              </figcaption>
+            </figure>
+            <figure class="fig span-full reveal-on-scroll">
+              <img src="assets/figures/audit_near_dup_spotcheck.jpg" alt="Near-duplicate spot check examples" loading="lazy" />
+              <figcaption><strong>Fig 4.7 &mdash; Near-duplicate spot check.</strong>
+                Actual leaked pairs caught by the audit: the same photo ingested through different
+                sources, sometimes recompressed or resized, landing in both train and test. This is
+                what silently inflates accuracy when datasets are merged naively.
+              </figcaption>
+            </figure>
+          </div>
+
+          <div class="flow-footer">
+            <a class="btn secondary" href="#s3">&larr; Image Preprocessing</a>
+            <span class="flow-pos">04 / 12</span>
+            <a class="btn primary" href="#s5">Next: Model Pipeline &rarr;</a>
+          </div>
+        </section>
+      </main>
+
+      <!-- ============================================================ PAGE: MODELING -->
+      <main class="page" data-page="modeling" id="page-modeling" hidden>
+        <section class="pres-section" id="s5">
+          <p class="kicker"><span class="flow-num">05 / 12</span> Model Pipeline</p>
+          <h2 class="page-title">Localize first, classify second.</h2>
+          <p class="page-intro">
+            Stage 1 finds objects &mdash; what YOLO is good at. Stage 2 verifies the material of
+            each crop &mdash; what a dedicated classifier is good at &mdash; and filters false
+            alarms with a Background veto class.
+          </p>
+
+          <div class="step-stack">
+            <article class="step-card reveal-on-scroll">
+              <span class="step-id">S1</span>
+              <div><strong>Upload image</strong><p>A JPG, PNG, or WEBP photo of waste. Saved scans stay in browser history for review and hard-case collection.</p></div>
+            </article>
+            <article class="step-card reveal-on-scroll">
+              <span class="step-id">S2</span>
+              <div><strong>Stage 1 &mdash; YOLO26m localization</strong><p>YOLO26m proposes a box around every candidate object. 100-epoch retrain, promoted from YOLO26s for higher field recall and precision: 74.9% mAP50, 83.4% precision on clean validation.</p></div>
+            </article>
+            <article class="step-card reveal-on-scroll">
+              <span class="step-id">S3</span>
+              <div><strong>Crop extraction &amp; size filter</strong><p>Each kept box is cropped with 10&nbsp;px padding; boxes smaller than 24&times;24&nbsp;px are rejected before classification.</p></div>
+            </article>
+            <article class="step-card reveal-on-scroll">
+              <span class="step-id">S4</span>
+              <div><strong>Stage 2 &mdash; crop verification</strong><p>A ConvNeXt-Tiny + 637-handcrafted-feature classifier re-checks every crop across 7 classes, including a Background veto. Fine-tuned on the detector's own crops so training matches production.</p></div>
+            </article>
+            <article class="step-card reveal-on-scroll">
+              <span class="step-id">S5</span>
+              <div><strong>Score fusion, context prior &amp; bin routing</strong><p>Per-box score fuses detector and classifier confidences, a scene-context prior adjusts the class scores, and the dominant material is routed to its bin by a direct material&rarr;bin lookup.</p></div>
+            </article>
+          </div>
+
+          <div class="fig-grid">
+            <figure class="fig span-full reveal-on-scroll">
+              <img src="assets/workflow_pipeline.svg" alt="Two-stage localization-first pipeline workflow diagram" loading="lazy" />
+              <figcaption><strong>Fig 5.1 &mdash; Two-stage pipeline, S1&ndash;S5.</strong>
+                The production flow exactly as served: upload, YOLO26m localization, crop
+                extraction with size filtering, ConvNeXt verification, then score fusion and bin
+                routing.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/wf_dl_pipeline.png" alt="Deep learning pipeline diagram" loading="lazy" />
+              <figcaption><strong>Fig 5.2 &mdash; Deep-learning branch.</strong>
+                The DL data path: detector crops feed the ConvNeXt-Tiny backbone; its embedding is
+                concatenated with the 637 handcrafted features before the final material head.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/wf_ml_pipeline.png" alt="Classical ML pipeline diagram" loading="lazy" />
+              <figcaption><strong>Fig 5.3 &mdash; Classical ML branch.</strong>
+                The explainable path: the same crops are summarized into 637 handcrafted features
+                (spatial, FFT, color, HOG) and classified by tree ensembles &mdash; kept as
+                interpretable evidence beside the deep model.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/wf_sequence.png" alt="Sequence diagram of a scan" loading="lazy" />
+              <figcaption><strong>Fig 5.4 &mdash; Scan sequence.</strong>
+                Interaction sequence for one scan: browser &rarr; API &rarr; detector &rarr;
+                classifier &rarr; fused response, with the frontend rendering boxes and scores as
+                they return.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/wf_deployment_uml.png" alt="Deployment diagram" loading="lazy" />
+              <figcaption><strong>Fig 5.5 &mdash; Deployment topology.</strong>
+                Static frontend on Vercel; model server on a Hugging Face Space carrying the
+                YOLO26m and ConvNeXt checkpoints. When the API is offline the page says so instead
+                of pretending.
+              </figcaption>
+            </figure>
+          </div>
+
+          <div class="flow-footer">
+            <a class="btn secondary" href="#s4">&larr; Exploratory Data Analysis</a>
+            <span class="flow-pos">05 / 12</span>
+            <a class="btn primary" href="#s6">Next: Model Training &rarr;</a>
+          </div>
+        </section>
+
+        <section class="pres-section" id="s6">
+          <p class="kicker"><span class="flow-num">06 / 12</span> Model Training</p>
+          <h2 class="page-title">Training curves and confusion matrices.</h2>
+          <p class="page-intro">
+            The deployed detector is a 100-epoch YOLO26m retrain, promoted from YOLO26s after it
+            won on field recall. The deployed classifier is ConvNeXt-Tiny + 637 features,
+            fine-tuned on the detector's own crops so training matches production. The comparison
+            models below (EfficientNetB0, ResNet50, MobileNetV2, tiny CNN) were trained on the same
+            data to justify the final choice.
+          </p>
+
+          <div class="fig-grid">
+            <figure class="fig span-full reveal-on-scroll">
+              <img src="assets/figures/train_yolo26m_curves.png" alt="YOLO26m training curves" loading="lazy" />
+              <figcaption><strong>Fig 6.1 &mdash; Deployed detector training curves (YOLO26m, 100 epochs).</strong>
+                Box, classification, and DFL losses fall smoothly on train and validation while
+                precision, recall, mAP50, and mAP50-95 climb &mdash; no divergence between train and
+                val curves, i.e. no visible overfitting at 100 epochs.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/train_yolo26s_curves.png" alt="YOLO26s training curves" loading="lazy" />
+              <figcaption><strong>Fig 6.2 &mdash; Predecessor detector (YOLO26s).</strong>
+                The earlier YOLO26s run that YOLO26m replaced. Its curves plateau lower; the
+                promotion decision came from matched-operating-point comparison, not curves alone.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/cm_yolo26s_normalized.png" alt="Detector confusion matrix, normalized" loading="lazy" />
+              <figcaption><strong>Fig 6.3 &mdash; Detector confusion matrix (normalized).</strong>
+                Per-class detection confusion on validation. The strong diagonal shows materials
+                are rarely confused with each other; the main error mode is background &mdash;
+                missed objects and false alarms &mdash; not cross-material confusion.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/train_efficientnet_tuned.png" alt="EfficientNetB0 tuned training plots" loading="lazy" />
+              <figcaption><strong>Fig 6.4 &mdash; Classifier training (tuned EfficientNetB0 era).</strong>
+                Accuracy and loss curves for the tuned EfficientNetB0 classifier that preceded the
+                ConvNeXt model &mdash; the run whose test set the leakage audit later corrected
+                from 94.30% to 91.77%.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/cm_efficientnetb0.png" alt="EfficientNetB0 confusion matrix" loading="lazy" />
+              <figcaption><strong>Fig 6.5 &mdash; EfficientNetB0 confusion matrix.</strong>
+                Crop-level confusion for the EfficientNetB0 classifier. Most mass sits on the
+                diagonal; residual confusion concentrates in visually similar pairs like
+                paper&ndash;cardboard.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/train_resnet50.png" alt="ResNet50 training plots" loading="lazy" />
+              <figcaption><strong>Fig 6.6 &mdash; Comparison model: ResNet50.</strong>
+                ResNet50 converges to 89.8% test accuracy but needs 23.9M parameters and 161.5&nbsp;MB
+                &mdash; the accuracy-per-megabyte argument against it appears in Model Comparison.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/train_mobilenetv2.png" alt="MobileNetV2 training plots" loading="lazy" />
+              <figcaption><strong>Fig 6.7 &mdash; Comparison model: MobileNetV2.</strong>
+                MobileNetV2 is the smallest deep comparator (2.4M parameters) but plateaus at 85.4%
+                test accuracy &mdash; its thin feature layers under-represent the texture detail that
+                separates glass from plastic.
+              </figcaption>
+            </figure>
+            <figure class="fig span-full reveal-on-scroll">
+              <img src="assets/figures/cm_grid_comparison.png" alt="Confusion matrix grid for comparison models" loading="lazy" />
+              <figcaption><strong>Fig 6.8 &mdash; Confusion matrices, side by side.</strong>
+                MobileNetV2, ResNet50, and EfficientNetB0 on the same test split. The diagonal
+                sharpens left to right &mdash; the visual version of the accuracy ranking in the
+                comparison table.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/cm_extra_trees.png" alt="ExtraTrees confusion matrix" loading="lazy" />
+              <figcaption><strong>Fig 6.9 &mdash; Classical baseline confusion (ExtraTrees).</strong>
+                The best classical model on 637 handcrafted features. A clearly weaker diagonal
+                than any deep model &mdash; but every split of every tree is inspectable.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/train_tinycnn_loss.png" alt="Tiny CNN training loss" loading="lazy" />
+              <figcaption><strong>Fig 6.10 &mdash; Tiny CNN baseline loss.</strong>
+                A compact end-to-end CNN trained from scratch as the floor of the deep family:
+                it reaches only 48.1% accuracy &mdash; transfer learning, not depth alone, is what
+                makes the deep models work here.
+              </figcaption>
+            </figure>
+          </div>
+
+          <div class="flow-footer">
+            <a class="btn secondary" href="#s5">&larr; Model Pipeline</a>
+            <span class="flow-pos">06 / 12</span>
+            <a class="btn primary" href="#s7">Next: Evaluation Metrics &rarr;</a>
+          </div>
+        </section>
+
+        <section class="pres-section" id="s7">
+          <p class="kicker"><span class="flow-num">07 / 12</span> Evaluation Metrics</p>
+          <h2 class="page-title">Every number below is tied to a report in the repository.</h2>
+          <p class="page-intro">
+            Classification is scored with accuracy and macro-F1 on the quarantined clean test set;
+            detection with precision, recall, mAP50, and mAP50-95 on the clean validation split.
+            The evaluation sets were audited with perceptual hashing before any of these numbers
+            were measured.
+          </p>
+
+          <section class="metrics" aria-label="Key verified metrics">
+            <article class="metric-card tone-success">
+              <span>Classifier accuracy, clean test</span>
+              <strong id="correctMetric">93.77%</strong>
+              <i>ConvNeXt + 637-feature classifier, 2,151 quarantined-test images</i>
+            </article>
+            <article class="metric-card tone-info">
+              <span>Detector mAP50, clean val</span>
+              <strong id="riskMetric">74.9%</strong>
+              <i>YOLO26m, 100-epoch retrain, quarantined split</i>
+            </article>
+            <article class="metric-card tone-warning">
+              <span>Eval leakage found &amp; removed</span>
+              <strong id="scanMetric">2,406</strong>
+              <i>43% of the old classifier test set</i>
+            </article>
+            <article class="metric-card tone-danger">
+              <span>Cross-domain accuracy</span>
+              <strong id="domainMetric">39.8%</strong>
+              <i>Studio-trained features on real-world images</i>
+            </article>
+          </section>
+
+          <div class="evidence-grid">
+            <article class="evidence-card span-4 tone-info">
+              <span class="metric-label">Detector precision</span>
+              <strong class="big-number" id="yoloPrecision">83.4%</strong>
+              <p>Clean validation split. Up from 78.1% on YOLO26s. Tunable via confidence threshold.</p>
+            </article>
+            <article class="evidence-card span-4 tone-warning">
+              <span class="metric-label">Detector recall</span>
+              <strong class="big-number" id="yoloRecall">67.2%</strong>
+              <p>Clean-val recall dipped slightly from YOLO26s's 69.0% while promoting to the 100-epoch YOLO26m retrain, but field recall &mdash; the metric that matters more &mdash; rose 70.9% to 78.1% at the same confidence threshold.</p>
+            </article>
+            <article class="evidence-card span-4 tone-info">
+              <span class="metric-label">Detector mAP50-95</span>
+              <strong class="big-number" id="yoloMap5095">57.0%</strong>
+              <p>100-epoch YOLO26m checkpoint, promoted to the live localizer.</p>
+            </article>
+          </div>
+
+          <div class="fig-grid">
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/metric_boxpr_curve.png" alt="Precision-recall curve" loading="lazy" />
+              <figcaption><strong>Fig 7.1 &mdash; Precision&ndash;recall curve.</strong>
+                Per-class and mean PR curves for the detector. The area under each curve is that
+                class's AP; the confidence threshold picks the live operating point along it.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/metric_boxf1_curve.png" alt="F1-confidence curve" loading="lazy" />
+              <figcaption><strong>Fig 7.2 &mdash; F1&ndash;confidence curve.</strong>
+                F1 as a function of the confidence threshold. The deployed threshold sits near the
+                curve's peak &mdash; lowered deliberately for the field domain, trading a little
+                precision for the recall the use case needs.
+              </figcaption>
+            </figure>
+          </div>
+
+          <div class="flow-footer">
+            <a class="btn secondary" href="#s6">&larr; Model Training</a>
+            <span class="flow-pos">07 / 12</span>
+            <a class="btn primary" href="#s8">Next: Experimental Results &rarr;</a>
+          </div>
+        </section>
+
+        <section class="pres-section" id="s8">
+          <p class="kicker"><span class="flow-num">08 / 12</span> Experimental Results</p>
+          <h2 class="page-title">What the experiments actually changed.</h2>
+          <p class="page-intro">
+            The headline experiments: fine-tuning the classifier on the detector's own crops lifted
+            production-distribution accuracy from <strong>76.9% to 88.9%</strong> without losing
+            clean-crop accuracy (92.9% &rarr; 93.77%). Promoting YOLO26s to a 100-epoch YOLO26m
+            retrain lifted field recall from <strong>70.9% to 78.1%</strong> and field small-object
+            recall from <strong>58.6% to 68.2%</strong> at the same threshold. Hard-negative mining
+            on new field data (PlastOPol) lifted held-out small-object recall from
+            <strong>38.6% to 54.7%</strong> &mdash; new data, not architecture, was the lever.
+          </p>
+
+          <div class="fig-grid">
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/result_pipeline_grass_bottle.png" alt="Pipeline result: bottle on grass" loading="lazy" />
+              <figcaption><strong>Fig 8.1 &mdash; Field scene: bottle on grass.</strong>
+                Full pipeline output on an outdoor field photo: the detector localizes the bottle,
+                the classifier verifies Plastic, and the fused score routes it to Recycling.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/result_pipeline_street_cans.png" alt="Pipeline result: street cans" loading="lazy" />
+              <figcaption><strong>Fig 8.2 &mdash; Field scene: cans on the street.</strong>
+                Multiple small metal objects in one frame &mdash; the small-object regime the
+                dataset EDA flagged. Each can is localized and verified independently.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/result_pipeline_kitchen.png" alt="Pipeline result: cluttered kitchen" loading="lazy" />
+              <figcaption><strong>Fig 8.3 &mdash; Cluttered indoor scene.</strong>
+                A messy kitchen frame: overlapping objects, mixed materials, hard lighting. The
+                Background veto suppresses non-waste regions the detector proposes.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/result_gradcam_1.jpg" alt="Grad-CAM heatmap example 1" loading="lazy" />
+              <figcaption><strong>Fig 8.4 &mdash; Grad-CAM: where the classifier looks.</strong>
+                Class-activation heatmap over a verified crop: the hot region sits on the object's
+                material surface, not the background &mdash; evidence the classifier learned
+                material texture rather than scene context.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/result_gradcam_2.jpg" alt="Grad-CAM heatmap example 2" loading="lazy" />
+              <figcaption><strong>Fig 8.5 &mdash; Grad-CAM: plastic under field lighting.</strong>
+                The same visualization on a field-domain plastic item: activation follows the
+                specular highlights and label texture that distinguish plastic from glass.
+              </figcaption>
+            </figure>
+          </div>
+
+          <div class="flow-footer">
+            <a class="btn secondary" href="#s7">&larr; Evaluation Metrics</a>
+            <span class="flow-pos">08 / 12</span>
+            <a class="btn primary" href="#s9">Next: Model Comparison &rarr;</a>
+          </div>
+        </section>
+
+        <section class="pres-section" id="s9">
+          <p class="kicker"><span class="flow-num">09 / 12</span> Model Comparison</p>
+          <h2 class="page-title">Classical vs deep, and deep vs deep.</h2>
+          <p class="page-intro">
+            Two comparisons justify the final design. Classical vs deep: the best tree ensemble on
+            637 handcrafted features reaches 73.8% on the balanced benchmark &mdash; genuinely
+            useful, fully explainable, but ~20 points behind the deployed deep classifier.
+            Deep vs deep: EfficientNetB0 beat ResNet50 by 4.5 points at a fifth of the size, and
+            was later replaced by the ConvNeXt-Tiny + features model that survives the leakage
+            audit at 93.77%.
+          </p>
+
+          <div class="evidence-grid">
+            <article class="evidence-card span-7 reveal-on-scroll">
+              <div class="panel-heading">
+                <span>Deep architecture shoot-out</span>
+                <strong>same data, same split</strong>
+              </div>
+              <h3>EfficientNetB0: 94.3% at 29&nbsp;MB vs ResNet50's 89.8% at 161&nbsp;MB.</h3>
+              <p>
+                MobileNetV2 85.4% (20&nbsp;MB, 2.4M params) &middot; ResNet50 89.8% (161.5&nbsp;MB,
+                23.9M params) &middot; EfficientNetB0 94.3% (29.2&nbsp;MB, 4.2M params). Compound
+                scaling wins the accuracy-per-megabyte race. These figures predate the leakage
+                audit &mdash; the audited successor is the deployed ConvNeXt at 93.77% on the
+                clean test set.
+              </p>
+            </article>
+            <article class="evidence-card span-5 dark reveal-on-scroll">
+              <div class="panel-heading">
+                <span>Classical ML baseline</span>
+                <strong>explainable evidence</strong>
+              </div>
+              <h3>73.8% &mdash; ExtraTrees on 637 handcrafted features.</h3>
+              <p>
+                8 spatial + 9 FFT + 44 color + 576 HOG features per crop. Kept for comparison and
+                explainability evidence beside the deep pipeline &mdash; and it is the branch that
+                exposed the domain-shift problem (39.8% cross-domain).
+              </p>
+            </article>
+          </div>
+
+          <div class="fig-grid">
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/cmp_ml_vs_dl.png" alt="ML vs DL comparison chart" loading="lazy" />
+              <figcaption><strong>Fig 9.1 &mdash; Classical ML vs deep baseline.</strong>
+                On the same crop benchmark, tree ensembles (ExtraTrees 63.1%, RF 63.2%) clearly beat
+                linear models and the from-scratch tiny CNN (48.1%) &mdash; but all classical
+                models trail the transfer-learned deep classifiers.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/cmp_classical_models.png" alt="Classical model comparison chart" loading="lazy" />
+              <figcaption><strong>Fig 9.2 &mdash; Classical model family, ranked.</strong>
+                Accuracy and macro-F1 for six classical models on the balanced 6-class benchmark.
+                Tree ensembles lead; margin- and linear-based models trail on the 637-feature
+                vector.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/cmp_pca_dimensionality.png" alt="PCA dimensionality chart" loading="lazy" />
+              <figcaption><strong>Fig 9.3 &mdash; PCA of the feature space.</strong>
+                Explained variance vs component count for the 637-feature vector: a few dozen
+                components carry most variance, but the long tail still contributes accuracy &mdash;
+                aggressive reduction costs performance.
+              </figcaption>
+            </figure>
+            <figure class="fig reveal-on-scroll">
+              <img src="assets/figures/cmp_pca_model_sweep.png" alt="PCA model sweep accuracy chart" loading="lazy" />
+              <figcaption><strong>Fig 9.4 &mdash; Accuracy vs PCA dimension, per model.</strong>
+                Sweeping PCA dimensionality across classical models: accuracy saturates near the
+                full feature vector for tree ensembles, confirming the 637 features are not
+                redundant enough to compress for free.
+              </figcaption>
+            </figure>
+          </div>
+
+          <div class="flow-footer">
+            <a class="btn secondary" href="#s8">&larr; Experimental Results</a>
+            <span class="flow-pos">09 / 12</span>
+            <a class="btn primary" href="#s10">Next: Discussion &rarr;</a>
+          </div>
+        </section>
+
+        <section class="pres-section" id="s10">
+          <p class="kicker tone-warn"><span class="flow-num">10 / 12</span> Discussion</p>
+          <h2 class="page-title">Measured limits, and what was done about them.</h2>
+
+          <div class="limit-stack">
+            <article class="tone-warn reveal-on-scroll">
+              <div>
+                <span>Domain shift</span>
+                <strong>Partly fixed, partly open</strong>
+              </div>
+              <p>
+                Fixed: the classifier was fine-tuned on the detector's own crops, lifting
+                production-distribution accuracy from 76.9% to 88.9%. The detector was re-tuned
+                for the field domain too: lowering the confidence threshold and hard-negative
+                mining on new field data (PlastOPol) lifted held-out field small-object recall
+                from 38.6% to 54.7%, at a small cost to studio mAP50 (72.1% &rarr; 70.9%). Open:
+                on fully unseen capture sessions the detector still drops to 0.444 mAP50; the
+                gap is narrowing with new data, not fully closed.
+              </p>
+            </article>
+            <article class="tone-info reveal-on-scroll">
+              <div>
+                <span>Tiny objects</span>
+                <strong>Resolution ruled out; new data confirmed as the lever</strong>
+              </div>
+              <p>
+                A 960px training run was evaluated: validation unchanged, unseen-batch recall
+                up 3.9 points &mdash; not enough to chase. A later hard-negative mining fine-tune
+                on new field data confirmed the real lever: small-object recall on that held-out
+                domain rose 38.6% to 54.7% from new data alone, no resolution or architecture
+                change. Small objects remain the main source of misses; training-data diversity
+                is the binding constraint.
+              </p>
+            </article>
+            <article class="tone-success reveal-on-scroll">
+              <div>
+                <span>Material-first routing</span>
+                <strong>No disposability judgment</strong>
+              </div>
+              <p>
+                The app reports what an object is made of and routes that material to its bin. It
+                does not judge whether the item should actually be thrown away &mdash; that
+                waste-state decision was removed because there was no dataset to train it reliably.
+              </p>
+            </article>
+          </div>
+
+          <div class="method-note">
+            <p><strong>Method note</strong> &mdash; metrics on this site come from the leakage-audited evaluation sets. The audit scripts, quarantine manifest, and reports live in the project repository.</p>
+          </div>
+
+          <div class="flow-footer">
+            <a class="btn secondary" href="#s9">&larr; Model Comparison</a>
+            <span class="flow-pos">10 / 12</span>
+            <a class="btn primary" href="#s11">Next: Conclusion &rarr;</a>
+          </div>
+        </section>
+
+        <section class="pres-section" id="s11">
+          <p class="kicker"><span class="flow-num">11 / 12</span> Conclusion &amp; Future Work</p>
+          <h2 class="page-title">A working, honestly-measured waste scanner.</h2>
+          <p class="page-intro">
+            The project delivers a deployed two-stage pipeline &mdash; 93.77% clean-test material
+            accuracy, 74.9% detector mAP50 &mdash; and, just as importantly, a worked example of
+            finding and fixing one's own evaluation bug. The classical branch keeps every headline
+            claim explainable; the audit trail keeps it honest.
+          </p>
+
+          <div class="about-grid">
+            <article class="about-card">
+              <span>Conclusions</span>
+              <h3>What the project established</h3>
+              <div class="artifact-list">
+                <div class="artifact-row"><span>Localize-first beats classify-only</span><strong>two-stage design</strong></div>
+                <div class="artifact-row"><span>Train on production crops</span><strong>76.9% &rarr; 88.9%</strong></div>
+                <div class="artifact-row"><span>Audit before you brag</span><strong>2,406 leaks removed</strong></div>
+                <div class="artifact-row"><span>Data beats resolution for small objects</span><strong>38.6% &rarr; 54.7%</strong></div>
+              </div>
+            </article>
+            <article class="about-card">
+              <span>Future work</span>
+              <h3>Where it goes next</h3>
+              <div class="artifact-list">
+                <div class="artifact-row"><span>More field-domain data</span><strong>close the 0.444 mAP50 gap</strong></div>
+                <div class="artifact-row"><span>Waste-state judgment</span><strong>needs a new dataset</strong></div>
+                <div class="artifact-row"><span>On-device inference</span><strong>TFLite &lt;10&nbsp;MB path</strong></div>
+                <div class="artifact-row"><span>Open-set rejection</span><strong>unknown-material veto</strong></div>
+              </div>
+            </article>
+          </div>
+
+          <div class="about-stats">
+            <div><strong>2</strong><span>pipeline stages</span></div>
+            <div><strong>7</strong><span>material classes</span></div>
+            <div><strong>637</strong><span>handcrafted features</span></div>
+            <div><strong>80,993</strong><span>detector training boxes</span></div>
+          </div>
+
+          <div class="flow-footer">
+            <a class="btn secondary" href="#s10">&larr; Discussion</a>
+            <span class="flow-pos">11 / 12</span>
+            <a class="btn primary" href="#s12">Next: Live Demo &rarr;</a>
+          </div>
+        </section>
+      </main>
+
+      <!-- ============================================================ PAGE: DEMO -->
+      <main class="page" data-page="demo" id="page-demo" hidden>
+        <section class="pres-section" id="s12">
+        <p class="kicker"><span class="flow-num">12 / 12</span> Live Demo</p>
+        <h2 class="page-title">The real model, served publicly.</h2>
+        <p class="page-intro">
+          This is not a mock-up: the trained YOLO26m localizer and ConvNeXt classifier run on a
+          Hugging Face Space backend, served through this page. Upload a photo or pick a sample
+          &mdash; the scan follows the exact pipeline order: localize, crop, verify, fuse &amp; route.
+        </p>
+
+        <section class="scan-section" id="scan-live" aria-labelledby="scan-title">
           <ol class="stage-pills" id="stagePills" aria-label="Detection workflow, steps S1 to S5">
             <li data-stage="0"><span class="pill-id">S1</span>Upload</li>
             <li data-stage="1"><span class="pill-id">S2</span>Localize</li>
@@ -188,173 +996,10 @@
           </div>
         </section>
 
-        <section class="teasers">
-          <a class="teaser reveal-on-scroll" href="#pipeline" data-page-link>
-            <span class="kicker">How it works</span>
-            <strong>Five steps, S1 to S5</strong>
-            <p>Upload, localize, crop, verify, fuse &amp; route &mdash; with the full methodology diagram.</p>
-          </a>
-          <a class="teaser dark reveal-on-scroll" href="#evidence" data-page-link>
-            <span class="kicker accent-light">Evidence</span>
-            <strong>93.77% &mdash; and how it was audited</strong>
-            <p>Every metric is tied to a report in the repository, measured after leakage quarantine.</p>
-          </a>
-          <a class="teaser reveal-on-scroll" href="#limits" data-page-link>
-            <span class="kicker tone-warn">Limits</span>
-            <strong>What still breaks, honestly</strong>
-            <p>Domain shift, tiny objects, and low confidence on unfamiliar materials.</p>
-          </a>
-        </section>
-      </main>
-
-      <!-- ============================================================ PAGE: PIPELINE -->
-      <main class="page" data-page="pipeline" id="page-pipeline" hidden>
-        <p class="kicker">Methodology</p>
-        <h2 class="page-title">Localize first, classify second.</h2>
-        <p class="page-intro">
-          Stage 1 finds objects &mdash; what YOLO is good at. Stage 2 verifies the material of
-          each crop &mdash; what a dedicated classifier is good at &mdash; and filters false
-          alarms.
-        </p>
-
-        <div class="step-stack">
-          <article class="step-card reveal-on-scroll">
-            <span class="step-id">S1</span>
-            <div><strong>Upload image</strong><p>A JPG, PNG, or WEBP photo of waste. Saved scans stay in browser history for review and hard-case collection.</p></div>
-          </article>
-          <article class="step-card reveal-on-scroll">
-            <span class="step-id">S2</span>
-            <div><strong>Stage 1 &mdash; YOLO26m localization</strong><p>YOLO26m proposes a box around every candidate object. 100-epoch retrain, promoted from YOLO26s for higher field recall and precision: 74.9% mAP50, 83.4% precision on clean validation.</p></div>
-          </article>
-          <article class="step-card reveal-on-scroll">
-            <span class="step-id">S3</span>
-            <div><strong>Crop extraction &amp; size filter</strong><p>Each kept box is cropped with 10&nbsp;px padding; boxes smaller than 24&times;24&nbsp;px are rejected before classification.</p></div>
-          </article>
-          <article class="step-card reveal-on-scroll">
-            <span class="step-id">S4</span>
-            <div><strong>Stage 2 &mdash; crop verification</strong><p>A ConvNeXt-Tiny + 637-handcrafted-feature classifier re-checks every crop across 7 classes, including a Background veto. Fine-tuned on the detector's own crops so training matches production.</p></div>
-          </article>
-          <article class="step-card reveal-on-scroll">
-            <span class="step-id">S5</span>
-            <div><strong>Score fusion, context prior &amp; bin routing</strong><p>Per-box score fuses detector and classifier confidences, a scene-context prior adjusts the class scores, and the dominant material is routed to its bin by a direct material&rarr;bin lookup.</p></div>
-          </article>
+        <div class="section-heading">
+          <h2>Recent scans</h2>
+          <p>Restore a saved scan to bring back the image, result, confidence, route, and boxes. History lives in your browser.</p>
         </div>
-
-        <div class="diagram-card">
-          <div class="panel-heading">
-            <span>Methodology workflow diagram</span>
-            <strong>S1 &rarr; S5</strong>
-          </div>
-          <img src="assets/workflow_pipeline.svg" alt="Two-stage localization-first pipeline workflow diagram" loading="lazy" />
-        </div>
-
-        <div class="page-cta">
-          <a class="btn primary" href="#scan" data-page-link>Try the scanner</a>
-        </div>
-      </main>
-
-      <!-- ============================================================ PAGE: EVIDENCE -->
-      <main class="page" data-page="evidence" id="page-evidence" hidden>
-        <p class="kicker">Audited results</p>
-        <h2 class="page-title">Every number below is tied to a report in the repository.</h2>
-        <p class="page-intro">
-          The evaluation sets were audited with perceptual hashing; duplicated eval images were
-          quarantined before these metrics were measured.
-        </p>
-
-        <section class="metrics" aria-label="Key verified metrics">
-          <article class="metric-card tone-success">
-            <span>Classifier accuracy, clean test</span>
-            <strong id="correctMetric">93.77%</strong>
-            <i>ConvNeXt + 637-feature classifier, 2,151 quarantined-test images</i>
-          </article>
-          <article class="metric-card tone-info">
-            <span>Detector mAP50, clean val</span>
-            <strong id="riskMetric">74.9%</strong>
-            <i>YOLO26m, 100-epoch retrain, quarantined split</i>
-          </article>
-          <article class="metric-card tone-warning">
-            <span>Eval leakage found &amp; removed</span>
-            <strong id="scanMetric">2,406</strong>
-            <i>43% of the old classifier test set</i>
-          </article>
-          <article class="metric-card tone-danger">
-            <span>Cross-domain accuracy</span>
-            <strong id="domainMetric">39.8%</strong>
-            <i>Studio-trained features on real-world images</i>
-          </article>
-        </section>
-
-        <div class="evidence-grid">
-          <article class="evidence-card span-7 reveal-on-scroll">
-            <div class="panel-heading">
-              <span>Evaluation audit</span>
-              <strong>completed 2026-07-02</strong>
-            </div>
-            <h3>We found our own evaluation bug and corrected the numbers.</h3>
-            <p>
-              The merged classifier dataset ingests the same photos through different sources.
-              Perceptual hashing found 2,406 leaked test images (43%) in an earlier EfficientNetB0
-              classifier's evaluation set, correcting its accuracy from an inflated 94.30% to an
-              honest 91.77%. The same audit method, applied to the deployed ConvNeXt's dataset,
-              found a smaller leak and is the basis for the 93.77% figure above.
-            </p>
-            <div class="artifact-row">
-              <span>runs/audits/MODEL_RISK_AUDIT.md</span>
-              <strong>audit trail</strong>
-            </div>
-          </article>
-
-          <article class="evidence-card span-5 dark reveal-on-scroll">
-            <div class="panel-heading">
-              <span>Deployment truth</span>
-              <strong>live model active</strong>
-            </div>
-            <h3>The API serves the real classifier and YOLO26m localizer.</h3>
-            <p>
-              The classifier is fine-tuned on the detector's own crops: accuracy on real
-              detector output rose from 76.9% to 88.9% without losing clean-crop accuracy.
-              When the API is offline the page says so instead of pretending.
-            </p>
-          </article>
-
-          <article class="evidence-card span-4 tone-info">
-            <span class="metric-label">Detector precision</span>
-            <strong class="big-number" id="yoloPrecision">83.4%</strong>
-            <p>Clean validation split. Up from 78.1% on YOLO26s. Tunable via confidence threshold.</p>
-          </article>
-          <article class="evidence-card span-4 tone-warning">
-            <span class="metric-label">Detector recall</span>
-            <strong class="big-number" id="yoloRecall">67.2%</strong>
-            <p>Clean-val recall dipped slightly from YOLO26s's 69.0% while promoting to a 100-epoch YOLO26m retrain, but the metric that matters more &mdash; field recall &mdash; rose 70.9% to 78.1% (+7.2 points), and field small-object recall rose 58.6% to 68.2% (+9.6 points), at the same confidence threshold (see Limits).</p>
-          </article>
-          <article class="evidence-card span-4 tone-info">
-            <span class="metric-label">Detector mAP50-95</span>
-            <strong class="big-number" id="yoloMap5095">57.0%</strong>
-            <p>100-epoch YOLO26m checkpoint, promoted to the live localizer.</p>
-          </article>
-        </div>
-
-        <article class="evidence-card baseline-card">
-          <div class="panel-heading">
-            <span>Classical ML baseline</span>
-            <strong>explainable evidence</strong>
-          </div>
-          <div class="baseline-row">
-            <strong>73.8%</strong>
-            <p>ExtraTrees on 637 handcrafted features per crop (8 spatial, 9 FFT, 44 color, 576 HOG). Kept for comparison and explainability evidence beside the deep pipeline.</p>
-          </div>
-        </article>
-      </main>
-
-      <!-- ============================================================ PAGE: HISTORY -->
-      <main class="page" data-page="history" id="page-history" hidden>
-        <p class="kicker">Saved scans</p>
-        <h2 class="page-title">Recent scans</h2>
-        <p class="page-intro">
-          Restore a saved scan to bring back the image, result, confidence, route, and boxes.
-          History lives in your browser.
-        </p>
 
         <div class="history-toolbar">
           <span class="badge" id="historyCount">0 saved</span>
@@ -362,97 +1007,30 @@
         </div>
 
         <div class="history-grid" id="historyList"></div>
-      </main>
 
-      <!-- ============================================================ PAGE: LIMITS -->
-      <main class="page" data-page="limits" id="page-limits" hidden>
-        <p class="kicker tone-warn">Honesty section</p>
-        <h2 class="page-title">Measured limits, and what was done about them.</h2>
-
-        <div class="limit-stack">
-          <article class="tone-warn reveal-on-scroll">
-            <div>
-              <span>Domain shift</span>
-              <strong>Partly fixed, partly open</strong>
-            </div>
-            <p>
-              Fixed: the classifier was fine-tuned on the detector's own crops, lifting
-              production-distribution accuracy from 76.9% to 88.9%. The detector was re-tuned
-              for the field domain too: lowering the confidence threshold and hard-negative
-              mining on new field data (PlastOPol) lifted held-out field small-object recall
-              from 38.6% to 54.7%, at a small cost to studio mAP50 (72.1% &rarr; 70.9%). Open:
-              on fully unseen capture sessions the detector still drops to 0.444 mAP50; the
-              gap is narrowing with new data, not fully closed.
-            </p>
-          </article>
-          <article class="tone-info reveal-on-scroll">
-            <div>
-              <span>Tiny objects</span>
-              <strong>Resolution ruled out; new data confirmed as the lever</strong>
-            </div>
-            <p>
-              A 960px training run was evaluated: validation unchanged, unseen-batch recall
-              up 3.9 points &mdash; not enough to chase. A later hard-negative mining fine-tune
-              on new field data confirmed the real lever: small-object recall on that held-out
-              domain rose 38.6% to 54.7% from new data alone, no resolution or architecture
-              change. Small objects remain the main source of misses; training-data diversity
-              is the binding constraint.
-            </p>
-          </article>
-          <article class="tone-success reveal-on-scroll">
-            <div>
-              <span>Material-first routing</span>
-              <strong>No disposability judgment</strong>
-            </div>
-            <p>
-              The app reports what an object is made of and routes that material to its bin. It
-              does not judge whether the item should actually be thrown away &mdash; that
-              waste-state decision was removed because there was no dataset to train it reliably.
-            </p>
-          </article>
+        <div class="fig-grid">
+          <figure class="fig reveal-on-scroll">
+            <img src="assets/figures/app_screenshot_1.png" alt="Screenshot of the deployed scanner" loading="lazy" />
+            <figcaption><strong>Fig 12.1 &mdash; Deployed scanner in action.</strong>
+              The production frontend on a real scan: detection boxes over the photo, verified
+              material, fused confidence, and the bin route.
+            </figcaption>
+          </figure>
+          <figure class="fig reveal-on-scroll">
+            <img src="assets/figures/app_screenshot_2.png" alt="Screenshot of scan results detail" loading="lazy" />
+            <figcaption><strong>Fig 12.2 &mdash; Per-class score breakdown.</strong>
+              The score panel after a scan: all 7 class probabilities including the Background
+              veto, plus latency and scene context.
+            </figcaption>
+          </figure>
         </div>
 
-        <div class="method-note">
-          <p><strong>Method note</strong> &mdash; metrics on this site come from the leakage-audited evaluation sets. The audit scripts, quarantine manifest, and reports live in the project repository.</p>
-          <a class="btn primary" href="#evidence" data-page-link>See the evidence</a>
+        <div class="flow-footer">
+          <a class="btn secondary" href="#s11">&larr; Conclusion &amp; Future Work</a>
+          <span class="flow-pos">12 / 12</span>
+          <a class="btn primary" href="#s1">Restart presentation</a>
         </div>
-      </main>
-
-      <!-- ============================================================ PAGE: ABOUT -->
-      <main class="page" data-page="about" id="page-about" hidden>
-        <p class="kicker">Final Year Project</p>
-        <h2 class="page-title">WasteWise: waste detection and classification.</h2>
-        <p class="page-intro">
-          A Final Year Project for automated waste understanding. A two-stage deep-learning
-          pipeline detects and classifies waste in real photos, backed by a classical
-          machine-learning branch for explainable evidence. Every headline metric survives a
-          leakage-audited evaluation set.
-        </p>
-
-        <div class="about-grid">
-          <article class="about-card">
-            <span>Live deployment</span>
-            <h3>The real model, served publicly</h3>
-            <p>The trained YOLO26m localizer and ConvNeXt classifier run on a Hugging Face Space backend, served through this site.</p>
-            <a class="btn primary" href="#scan" data-page-link>Try the scanner</a>
-          </article>
-          <article class="about-card">
-            <span>Repository evidence</span>
-            <h3>Where each claim lives</h3>
-            <div class="artifact-list">
-              <div class="artifact-row"><span>runs/audits/</span><strong>leakage audit trail</strong></div>
-              <div class="artifact-row"><span>docs/01_final_report/FAILURES_AND_FIXES.md</span><strong>failure log</strong></div>
-              <div class="artifact-row"><span>models/trained/</span><strong>promoted checkpoints</strong></div>
-            </div>
-          </article>
-        </div>
-
-        <div class="about-stats">
-          <div><strong>2</strong><span>pipeline stages</span></div>
-          <div><strong>7</strong><span>material classes</span></div>
-          <div><strong>637</strong><span>handcrafted features</span></div>
-          <div><strong>80,993</strong><span>detector training boxes</span></div>
-        </div>
+        </section>
       </main>
 
       <footer class="footer">
@@ -461,11 +1039,18 @@
           <p>Final Year Project &middot; leakage-audited numbers only</p>
         </div>
         <div class="footer-links">
-          <a href="#evidence" data-page-link>Evidence</a>
-          <a href="#limits" data-page-link>Limits</a>
-          <a href="#about" data-page-link>About</a>
+          <a href="#modeling" data-page-link>Modeling</a>
+          <a href="#eda" data-page-link>EDA</a>
+          <a href="#demo" data-page-link>Demo</a>
         </div>
       </footer>
+    </div>
+
+    <div class="lightbox" id="lightbox" hidden>
+      <figure>
+        <img id="lightboxImg" alt="" />
+        <figcaption id="lightboxCaption"></figcaption>
+      </figure>
     </div>
 
     <div class="toast" id="toast" role="status" aria-live="polite">Updated</div>

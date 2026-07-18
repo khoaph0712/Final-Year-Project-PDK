@@ -22,7 +22,24 @@ const classColors = {
   Background: "#6b7280",
 };
 
-const PAGES = ["scan", "pipeline", "evidence", "history", "limits", "about"];
+const PAGES = ["home", "data", "eda", "modeling", "demo"];
+
+// Presentation flow: section id -> page. Order matters (arrow-key navigation).
+const FLOW = [
+  ["s1", "home"],
+  ["s2", "data"],
+  ["s3", "data"],
+  ["s4", "eda"],
+  ["s5", "modeling"],
+  ["s6", "modeling"],
+  ["s7", "modeling"],
+  ["s8", "modeling"],
+  ["s9", "modeling"],
+  ["s10", "modeling"],
+  ["s11", "modeling"],
+  ["s12", "demo"],
+];
+const FLOW_PAGE = Object.fromEntries(FLOW);
 const WORDS = ["Localize.", "Verify.", "Fuse.", "Route it right."];
 
 const HERO_DEMO_BOXES = [
@@ -222,20 +239,93 @@ function activatePage(page) {
     const target = a.getAttribute("href").replace("#", "");
     a.classList.toggle("active", target === page);
   });
-  if (page === "evidence") startEvidenceCounts();
+  if (page === "modeling") startEvidenceCounts();
+}
+
+let currentFlowIndex = 0;
+
+function updateFlowRail() {
+  document.querySelectorAll(".flow-rail a").forEach((dot, i) => {
+    dot.classList.toggle("active", i === currentFlowIndex);
+  });
+}
+
+function goToSection(sectionId) {
+  const page = FLOW_PAGE[sectionId];
+  if (!page) return false;
+  activatePage(page);
+  currentFlowIndex = FLOW.findIndex(([id]) => id === sectionId);
+  updateFlowRail();
+  const el = document.getElementById(sectionId);
+  const isFirstOnPage = FLOW.find(([, p]) => p === page)[0] === sectionId;
+  if (isFirstOnPage) {
+    window.scrollTo({ top: 0 });
+  } else if (el) {
+    requestAnimationFrame(() => el.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" }));
+  }
+  return true;
 }
 
 function handleHashChange() {
   const hash = (window.location.hash || "").replace("#", "");
   if (hash === "scan-live") {
-    activatePage("scan");
+    activatePage("demo");
     const el = document.getElementById("scan-live");
     if (el) requestAnimationFrame(() => el.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" }));
     return;
   }
-  const page = PAGES.includes(hash) ? hash : "scan";
+  if (goToSection(hash)) return;
+  const page = PAGES.includes(hash) ? hash : "home";
   activatePage(page);
+  const first = FLOW.find(([, p]) => p === page);
+  if (first) {
+    currentFlowIndex = FLOW.indexOf(first);
+    updateFlowRail();
+  }
   window.scrollTo({ top: 0 });
+}
+
+/* ------------------------------------------------- presentation controls */
+
+window.addEventListener("keydown", (event) => {
+  if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return;
+  const tag = (event.target && event.target.tagName) || "";
+  if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+  const lightboxEl = document.getElementById("lightbox");
+  if (lightboxEl && !lightboxEl.hidden) {
+    if (event.key === "Escape" || event.key === "ArrowLeft" || event.key === "ArrowRight") closeLightbox();
+    return;
+  }
+  if (event.key === "ArrowRight" && currentFlowIndex < FLOW.length - 1) {
+    window.location.hash = FLOW[currentFlowIndex + 1][0];
+  } else if (event.key === "ArrowLeft" && currentFlowIndex > 0) {
+    window.location.hash = FLOW[currentFlowIndex - 1][0];
+  }
+});
+
+/* ---------------------------------------------------------------- lightbox */
+
+const lightbox = document.getElementById("lightbox");
+const lightboxImg = document.getElementById("lightboxImg");
+const lightboxCaption = document.getElementById("lightboxCaption");
+
+function closeLightbox() {
+  lightbox.hidden = true;
+  document.body.classList.remove("no-scroll");
+}
+
+if (lightbox) {
+  document.querySelectorAll("figure.fig img").forEach((img) => {
+    img.addEventListener("click", () => {
+      lightboxImg.src = img.src;
+      lightboxImg.alt = img.alt;
+      const caption = img.closest("figure").querySelector("figcaption");
+      lightboxCaption.innerHTML = caption ? caption.innerHTML : "";
+      lightbox.hidden = false;
+      document.body.classList.add("no-scroll");
+    });
+  });
+  lightbox.addEventListener("click", closeLightbox);
 }
 
 window.addEventListener("hashchange", handleHashChange);
@@ -326,7 +416,7 @@ function renderHistory() {
     empty.innerHTML = `
       <strong>No saved scans yet</strong>
       <span>Run a scan on the scanner page &mdash; every result is saved here automatically.</span>
-      <a class="btn primary" href="#scan" data-page-link>Go to scanner</a>
+      <a class="btn primary" href="#demo" data-page-link>Go to scanner</a>
     `;
     elements.historyList.replaceChildren(empty);
     return;

@@ -1030,3 +1030,195 @@ section { scroll-margin-top: 80px; }
   .evidence-card.span-5 { grid-column: span 5; }
   .evidence-card.span-4 { grid-column: span 4; }
 }
+
+/* ---------------------------------------------------------------- presentation */
+
+.flow-rail {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--line);
+}
+
+.flow-rail a {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+}
+
+.flow-rail a span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--line-strong);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.flow-rail a:hover span { background: var(--ink-3); transform: scale(1.25); }
+.flow-rail a.active span { background: var(--accent); transform: scale(1.45); }
+
+.flow-num {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  margin-right: 8px;
+  border: 1px solid var(--accent-soft-border);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.pres-section { padding-bottom: 24px; }
+.pres-section + .pres-section { border-top: 1px solid var(--line); padding-top: 40px; margin-top: 16px; }
+
+.flow-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 36px;
+  padding-top: 20px;
+  border-top: 1px dashed var(--line-strong);
+}
+
+.flow-pos {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+/* figures */
+
+.fig-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+  margin: 26px 0;
+}
+
+.fig {
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.fig img {
+  width: 100%;
+  display: block;
+  background: #fff;
+  cursor: zoom-in;
+  object-fit: contain;
+  max-height: 460px;
+}
+
+.fig figcaption {
+  padding: 14px 16px;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--ink-2);
+  border-top: 1px solid var(--line);
+  background: var(--surface-2);
+}
+
+.fig figcaption strong { color: var(--ink); }
+
+@media (min-width: 860px) {
+  .fig-grid { grid-template-columns: 1fr 1fr; }
+  .fig-grid .span-full { grid-column: 1 / -1; }
+  .fig-grid .span-full img { max-height: 640px; }
+}
+
+/* table of contents (home) */
+
+.toc-grid {
+  list-style: none;
+  padding: 0;
+  margin: 20px 0 8px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+}
+
+.toc-grid a {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--ink);
+  text-decoration: none;
+  font-weight: 600;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.toc-grid a:hover { border-color: var(--accent); transform: translateX(3px); }
+
+.toc-grid a span {
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  color: var(--accent);
+}
+
+@media (min-width: 700px) { .toc-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 1020px) { .toc-grid { grid-template-columns: 1fr 1fr 1fr; } }
+
+/* lightbox */
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 4vh 4vw;
+  background: rgb(10 10 9 / 0.86);
+  cursor: zoom-out;
+}
+
+.lightbox figure {
+  margin: 0;
+  max-width: min(1200px, 92vw);
+  max-height: 92vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.lightbox img {
+  max-width: 100%;
+  max-height: 78vh;
+  object-fit: contain;
+  border-radius: var(--radius-sm);
+  background: #fff;
+}
+
+.lightbox figcaption {
+  margin-top: 12px;
+  color: #e7e5e4;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.lightbox figcaption strong { color: #ffffff; }
+
+body.no-scroll { overflow: hidden; }
+
+@media (max-width: 640px) {
+  .flow-footer { flex-wrap: wrap; }
+  .flow-pos { order: -1; width: 100%; text-align: center; }
+}
