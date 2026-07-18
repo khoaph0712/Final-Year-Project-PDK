@@ -9,6 +9,8 @@ import urllib.request
 import stat
 from pathlib import Path
 
+from huggingface_hub import HfApi
+
 
 ROOT = Path(__file__).resolve().parents[1]
 DEPLOY_DIR = Path(r"C:\tmp\wastewise-hf-space")
@@ -97,7 +99,7 @@ def main() -> int:
             # Free-tier accounts can't provision a NEW docker Space, but pushing to an
             # EXISTING one (already created, already has its hardware tier set) doesn't
             # need this create call - only creation is paywalled. Assume it exists and
-            # let the git push below fail loudly if it actually doesn't.
+            # let the upload_folder call below fail loudly if it actually doesn't.
             print(f"Skipping create (402 Payment Required - assuming {repo_id} already exists)")
         else:
             print(body, file=sys.stderr)
@@ -191,13 +193,17 @@ Full web deployment for the WasteWise FYP application.
     # handles auth, large-file (LFS) upload and the commit in one call, and skips unchanged
     # files (so the ~100 MB of model weights are not re-sent when only code changed). Requires
     # the token to have WRITE permission on the Space.
-    from huggingface_hub import HfApi
-
+    #
+    # delete_patterns="*" restores the mirror semantics of the old `git push --force`: any
+    # remote file no longer present in DEPLOY_DIR (e.g. a retired script or renamed model
+    # checkpoint) is deleted from the Space instead of lingering forever. `.gitattributes` is
+    # exempt from deletion by the library itself.
     HfApi(token=token).upload_folder(
         folder_path=str(DEPLOY_DIR),
         repo_id=repo_id,
         repo_type="space",
         commit_message="Deploy WasteWise AI full model app",
+        delete_patterns="*",
     )
 
     print(f"https://huggingface.co/spaces/{repo_id}")
