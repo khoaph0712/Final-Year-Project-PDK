@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 import os
 import shutil
-import subprocess
 import sys
 import urllib.error
 import urllib.request
@@ -22,10 +21,6 @@ SUPPORT_FILES = [
     ROOT / "scripts" / "custom_feature_extractor.py",
     ROOT / "scripts" / "stage2_model.py",
 ]
-
-
-def run(args: list[str], cwd: Path | None = None, env: dict[str, str] | None = None) -> None:
-    subprocess.run(args, cwd=str(cwd) if cwd else None, env=env, check=True)
 
 
 def request_json(url: str, token: str, method: str = "GET", payload: dict | None = None) -> dict:
@@ -189,29 +184,21 @@ Full web deployment for the WasteWise FYP application.
 """,
     )
 
-    run(["git", "init"], DEPLOY_DIR)
-    run(["git", "checkout", "-B", "main"], DEPLOY_DIR)
-    run(["git", "lfs", "install", "--local"], DEPLOY_DIR)
-    run(["git", "config", "user.name", "Khoa Phung"], DEPLOY_DIR)
-    run(["git", "config", "user.email", "91509922+letouch07@users.noreply.github.com"], DEPLOY_DIR)
-    run(["git", "add", "."], DEPLOY_DIR)
-    run(["git", "commit", "-m", "Deploy WasteWise AI full model app"], DEPLOY_DIR)
-    # Username lives in the remote URL, so git only asks for the password; GIT_ASKPASS
-    # answers it from the HF_TOKEN env var. Unlike the previous credential.helper=store
-    # approach, the token is never written to ~/.git-credentials (which persisted the
-    # plaintext token on disk if the push crashed before cleanup).
-    run(["git", "remote", "add", "origin", f"https://__token__@huggingface.co/spaces/{repo_id}"], DEPLOY_DIR)
+    # Upload via the Hub HTTP API (token auth), not a git push. The previous git-over-HTTPS
+    # path fed HF_TOKEN to git through a .bat GIT_ASKPASS shim, which is fragile on Windows:
+    # git couldn't reliably invoke the .bat, so the push authenticated with no token and HF
+    # rejected it ("Password authentication in git is no longer supported"). upload_folder
+    # handles auth, large-file (LFS) upload and the commit in one call, and skips unchanged
+    # files (so the ~100 MB of model weights are not re-sent when only code changed). Requires
+    # the token to have WRITE permission on the Space.
+    from huggingface_hub import HfApi
 
-    askpass = DEPLOY_DIR.parent / "hf_askpass.bat"
-    askpass.write_text("@echo off\necho %HF_TOKEN%\n", encoding="ascii")
-    push_env = dict(os.environ)
-    push_env["GIT_TERMINAL_PROMPT"] = "0"
-    push_env["GIT_ASKPASS"] = str(askpass)
-    push_env["HF_TOKEN"] = token
-    try:
-        run(["git", "push", "origin", "main", "--force"], DEPLOY_DIR, env=push_env)
-    finally:
-        askpass.unlink(missing_ok=True)
+    HfApi(token=token).upload_folder(
+        folder_path=str(DEPLOY_DIR),
+        repo_id=repo_id,
+        repo_type="space",
+        commit_message="Deploy WasteWise AI full model app",
+    )
 
     print(f"https://huggingface.co/spaces/{repo_id}")
     print(f"https://{username}-{space_name}.hf.space")
