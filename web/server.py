@@ -78,10 +78,9 @@ YOLO_MAX_DETECTIONS = int(os.environ.get("WASTEWISE_YOLO_MAX_DETECTIONS", "80"))
 MAX_CROP_VERIFICATIONS = int(os.environ.get("WASTEWISE_MAX_CROP_VERIFICATIONS", str(YOLO_MAX_DETECTIONS)))
 SCENE_TOP_K = 3
 CROP_PAD_PX = 10
-WASTE_GATE_CONF = 0.55
-WASTE_REVIEW_CONF = 0.50
-SCENE_REVIEW_CONF = 0.55
-WEAK_REVIEW_MATERIAL_CONF = 0.35
+# Per-detection confidence bar for counting a box as a reliable material vote (headline
+# material and the mixed-load bin hint). Not a waste decision - just noise rejection.
+MIN_RELIABLE_CONF = 0.50
 MAX_UPLOAD_BYTES = 15 * 1024 * 1024
 DOMINANT_OVERRIDE_MARGIN = 20
 
@@ -94,12 +93,6 @@ ROUTES = {
     "cardboard": "Recycling",
     "organic": "Compost",
     "Background": "Review",
-}
-
-WASTE_STATE_LABELS = {
-    "waste": "Waste",
-    "not_waste": "Not waste",
-    "review": "Review",
 }
 
 _models: dict[str, Any] | None = None
@@ -170,83 +163,6 @@ def top_k_classes(probs: Any, k: int = SCENE_TOP_K) -> list[dict[str, Any]]:
         }
         for index, class_name, confidence in ranked[:k]
     ]
-
-
-def estimate_detection_waste_state(
-    label_key: str,
-    label_conf: float,
-    crop_key: str,
-    crop_conf: float,
-    yolo_key: str | None,
-    yolo_score: float,
-    scene_is_empty: bool,
-    class_threshold: float,
-) -> tuple[str, str]:
-    """Conservative waste-state gate until a trained state model exists.
-
-    Single per-detection decision point, tiers checked in order (first match wins).
-    class_threshold folds in what used to be a separate post-hoc "class-specific
-    threshold rejection" pass in predict_image - that second pass only ever fired on
-    the strong-localizer-agreement tier below (its bar was always lower than
-    WASTE_GATE_CONF, so it could never demote the joint-confidence tier), so merging
-    it here removes a redundant, confusingly-scoped gate rather than changing behavior.
-    """
-    if scene_is_empty:
-        return "not_waste", "empty or near-uniform scene"
-
-    if label_key == "Background":
-        if crop_conf >= 0.70 and not yolo_key:
-            return "not_waste", "background-dominant crop"
-        return "review", "background or unknown object"
-
-    if label_conf < class_threshold:
-        return "review", f"low confidence ({label_conf * 100:.1f}% < {class_threshold * 100:.0f}%)"
-
-    # ponytail: tried removing this gate outright (A/B tested, see chat 2026-07-16). Bin/waste-
-    # state accuracy went UP on runs/audits/pipeline_bin_decision_eval_no_gate.json (0.963->0.974,
-    # 0.967->0.980) but it's an artifact: this eval set is 100% real waste, zero true negatives,
-    # so a gate that ever says "review" can only look like a loss here - it gets no credit for
-    # catching a false "waste" call on a background/empty scene, because no such image exists in
-    # the set. The gate is the site's documented "conservative by design" safety net for exactly
-    # that case. Kept.
-    if label_conf >= WASTE_GATE_CONF and yolo_score >= YOLO_GATE_CONF:
-        return "waste", "localized material candidate"
-
-    if yolo_key == label_key and yolo_score >= 0.45:
-        return "waste", "strong localizer agreement"
-
-    if crop_key == "Background" or label_conf < WASTE_REVIEW_CONF:
-        return "review", "weak waste-state evidence"
-
-    return "review", "material known, disposal state unknown"
-
-
-def choose_final_decision(
-    detections: list[dict[str, Any]],
-    scene_pred_key: str,
-    scene_pred_conf: float,
-    scene_is_empty: bool,
-) -> tuple[str, str]:
-    if scene_is_empty:
-        return "not_waste", "empty or near-uniform scene"
-
-    if detections:
-        any_waste = any(item["wasteState"] == "waste" for item in detections)
-        strong_waste = any(
-            item["wasteState"] == "waste" and item["confidence"] >= int(WASTE_REVIEW_CONF * 100)
-            for item in detections
-        )
-        if any_waste and not strong_waste:
-            return "review", "localized objects exist, but material confidence is below review threshold"
-        if strong_waste:
-            return "waste", "at least one localized object is gated as waste with reliable confidence"
-        if all(item["wasteState"] == "not_waste" for item in detections):
-            return "not_waste", "localized objects look non-disposable"
-        return "review", "objects found but disposal state is uncertain"
-
-    if scene_pred_key == "Background" and scene_pred_conf >= 0.70:
-        return "not_waste", "no trash-like object localized"
-    return "review", "no object localized with enough evidence"
 
 
 def load_tuned_classifier() -> dict[str, Any]:
@@ -637,7 +553,6 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
     detections = []
     material_counts: dict[str, int] = {}
     material_weights: dict[str, float] = {}
-    material_seen_weights: dict[str, float] = {}
 
     CONTEXT_PRIORS = {
         "Beach":    [0.35, 0.25, 0.20, 0.05, 0.05, 0.10],
@@ -645,15 +560,6 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
         "Indoor":   [0.20, 0.10, 0.15, 0.30, 0.20, 0.05],
         "Street":   [0.30, 0.15, 0.15, 0.20, 0.10, 0.10],
         "default":  [1/6,  1/6,  1/6,  1/6,  1/6,  1/6]
-    }
-
-    CLASS_THRESHOLDS = {
-        "plastic": 0.25,
-        "glass": 0.30,
-        "metal": 0.18,
-        "paper": 0.20,
-        "cardboard": 0.18,
-        "organic": 0.22
     }
 
     for box_index, record in enumerate(crop_records):
@@ -731,25 +637,15 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
                 label_source = "scene-fast"
                 label_conf = scene_pred_conf
 
-        current_threshold = CLASS_THRESHOLDS.get(label_key, WASTE_REVIEW_CONF)
-        waste_state, waste_reason = estimate_detection_waste_state(
-            label_key,
-            label_conf,
-            crop_key,
-            crop_conf,
-            yolo_key,
-            yolo_score,
-            bool(empty_cues["isEmpty"]),
-            current_threshold,
-        )
-
+        # Every non-Background box is a material vote, weighted by frame area x confidence.
+        # No waste gate any more: the headline material and bin route come straight from
+        # these votes (S6 waste-state decision removed 2026-07-18 - never had the data to
+        # train it as a real decision layer).
         area_weight = max(1.0, (x2 - x1) * (y2 - y1)) * max(0.04, yolo_score)
         label_title = title_class(label_key)
-        if waste_state == "waste":
+        if label_key != "Background":
             material_counts[label_title] = material_counts.get(label_title, 0) + 1
             material_weights[label_title] = material_weights.get(label_title, 0.0) + area_weight * max(0.10, label_conf)
-        if label_key != "Background":
-            material_seen_weights[label_title] = material_seen_weights.get(label_title, 0.0) + area_weight * max(0.10, label_conf)
 
         detections.append(
             {
@@ -767,10 +663,6 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
                 "alpha": None if alpha is None else round(float(alpha), 2),
                 "verified": should_verify_crop,
                 "labelSource": label_source,
-                "wasteState": waste_state,
-                "wasteStateLabel": WASTE_STATE_LABELS[waste_state],
-                "wasteReason": waste_reason,
-                "needsReview": waste_state == "review",
             }
         )
 
@@ -793,19 +685,13 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
         }
         for class_name in sorted(material_counts, key=lambda key: material_weights.get(key, 0.0), reverse=True)
     ]
-    final_state, final_reason = choose_final_decision(
-        detections,
-        scene_pred_key,
-        scene_pred_conf,
-        bool(empty_cues["isEmpty"]),
-    )
-    # Headline material: the waste-gated vote (detected_materials) wins by default - a blanket
-    # switch to "single most confident detection" measured -0.7pp material accuracy overall
-    # (runs/audits/pipeline_bin_decision_eval_dominant_fix.json). But sample-can.jpg shows a
-    # real failure mode: a correct 80%-confident box can lose to several wrong-but-gated boxes
-    # at lower confidence just because their YOLO box score cleared the gate. Only override
-    # when a non-gated detection beats the gated pick's own confidence by a wide margin - cheap
-    # enough to not fire on ordinary noise, wide enough to catch a clear miss like this one.
+    # Headline material: the area x confidence material vote (detected_materials) wins by
+    # default - a blanket switch to "single most confident detection" measured -0.7pp material
+    # accuracy overall (runs/audits/pipeline_bin_decision_eval_dominant_fix.json). But
+    # sample-can.jpg shows a real failure mode: a correct 80%-confident box can lose to several
+    # wrong boxes at lower confidence just because their area adds up. Only override when a
+    # single detection beats the vote winner's own confidence by a wide margin - cheap enough
+    # to not fire on ordinary noise, wide enough to catch a clear miss like this one.
     dominant_material = detected_materials[0]["className"] if detected_materials else title_class(scene_pred_key)
     if detections:
         non_background_detections = [item for item in detections if item["label"] != "Background"]
@@ -826,32 +712,16 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
         possible_confidence = int(candidate_detection["confidence"])
         possible_source = candidate_detection.get("labelSource", "localized detection")
 
-    # strong_waste_detections is used below only for the two scene-vs-localization sanity
-    # checks (choose_final_decision already applies the equivalent per-detection-confidence
-    # tier for the plain "any box says waste" case).
-    strong_waste_detections = [
-        item
-        for item in detections
-        if item["wasteState"] == "waste" and int(item["confidence"]) >= int(WASTE_REVIEW_CONF * 100)
-    ]
-    if final_state != "not_waste" and scene_pred_key == "Background" and not strong_waste_detections:
-        final_state = "review"
-        final_reason = "scene classifier sees background or unknown object; manual review required"
-    if final_state != "not_waste" and scene_pred_conf < SCENE_REVIEW_CONF and not strong_waste_detections:
-        final_state = "review"
-        final_reason = "low classifier confidence; possible material is not reliable enough"
-
     # Mixed-load bin hint: a real secondary object is often physically smaller in frame than
     # the dominant one, so an area-weighted share test (tried: >=15% of total scene weight)
     # almost never fires - measured 0/18 true positives on the mixed-class eval images,
     # because e.g. a small organic scrap next to a big metal can is ~8% of scene weight even
-    # though it's clearly present. Presence uses the same per-detection confidence bar as
-    # strong_waste_detections above (WASTE_REVIEW_CONF) instead: any reliably-labeled,
-    # non-Background detection counts toward its bin, regardless of how much of the frame
-    # it occupies. Purely informational - never loosens the waste gate itself.
+    # though it's clearly present. Presence uses a flat per-detection confidence bar
+    # (MIN_RELIABLE_CONF) instead: any reliably-labeled, non-Background detection counts toward
+    # its bin, regardless of how much of the frame it occupies. Purely informational.
     bins_present: set[str] = set()
     for item in detections:
-        if item["label"] == "Background" or item["confidence"] < int(WASTE_REVIEW_CONF * 100):
+        if item["label"] == "Background" or item["confidence"] < int(MIN_RELIABLE_CONF * 100):
             continue
         bin_name = ROUTES.get(item["label"].lower(), "Review")
         if bin_name != "Review":
@@ -866,14 +736,12 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
     # the core bin decision inheriting that noise.
     mixed_load_detected = len(mixed_bins) > 1
 
-    final_bin = ROUTES.get(dominant_key, "Review") if final_state == "waste" else ("Do not bin" if final_state == "not_waste" else "Review")
+    # Bin route is a plain material -> bin lookup now. "Review" is only the routing default
+    # for an unknown/no-object material, not a waste verdict.
+    final_bin = ROUTES.get(dominant_key, "Review")
     possible_class_name = dominant_material
-    if final_state == "review" and possible_confidence < int(WEAK_REVIEW_MATERIAL_CONF * 100):
-        possible_class_name = "Unclear"
-        possible_source = "weak localizer/classifier evidence"
 
     latency_ms = int(round((time.perf_counter() - started) * 1000))
-    needs_review = final_state == "review" or any(item["needsReview"] for item in detections)
 
     return {
         "className": dominant_material,
@@ -883,10 +751,6 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
         "latency": latency_ms,
         "mode": f"Localization-First ({models['classifierLabel']} + {LOCALIZER_LABEL})",
         "bin": final_bin,
-        "wasteState": final_state,
-        "wasteStateLabel": WASTE_STATE_LABELS[final_state],
-        "wasteDecision": final_reason,
-        "needsReview": needs_review,
         "possibleMaterial": {
             "className": possible_class_name,
             "confidence": possible_confidence,
@@ -917,7 +781,7 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
             "detectedObjectCount": len(detections),
             "detectedMaterials": detected_materials,
             "mixedLoadDetected": mixed_load_detected,
-            "materialsPresent": sorted(material_seen_weights, key=lambda k: material_seen_weights[k], reverse=True),
+            "materialsPresent": sorted(material_weights, key=lambda k: material_weights[k], reverse=True),
         },
     }
 
@@ -964,10 +828,7 @@ class WasteWiseHandler(SimpleHTTPRequestHandler):
                     "maxDetections": YOLO_MAX_DETECTIONS,
                     "maxCropVerifications": MAX_CROP_VERIFICATIONS,
                     "sceneTopK": SCENE_TOP_K,
-                    "wasteGateConf": WASTE_GATE_CONF,
-                    "wasteReviewConf": WASTE_REVIEW_CONF,
-                    "sceneReviewConf": SCENE_REVIEW_CONF,
-                    "weakReviewMaterialConf": WEAK_REVIEW_MATERIAL_CONF,
+                    "minReliableConf": MIN_RELIABLE_CONF,
                 }
             )
             return

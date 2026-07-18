@@ -1,0 +1,57 @@
+<mxGraphModel adaptiveColors="auto">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+    <mxCell id="title" value="WasteWise — Sequence Diagram: Scan Request" style="text;html=1;fontStyle=1;fontSize=16;align=left;" vertex="1" parent="1">
+      <mxGeometry x="40" y="-60" width="600" height="30" as="geometry"/>
+    </mxCell>
+    <mxCell id="lBrowser" value="Browser" style="shape=umlLifeline;perimeter=lifelinePerimeter;size=16;html=1;whiteSpace=wrap;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="40" y="0" width="160" height="460" as="geometry"/>
+    </mxCell>
+    <mxCell id="lVercel" value="Vercel Frontend" style="shape=umlLifeline;perimeter=lifelinePerimeter;size=16;html=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+      <mxGeometry x="260" y="0" width="160" height="460" as="geometry"/>
+    </mxCell>
+    <mxCell id="lServer" value="HF Space server.py" style="shape=umlLifeline;perimeter=lifelinePerimeter;size=16;html=1;whiteSpace=wrap;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+      <mxGeometry x="480" y="0" width="160" height="460" as="geometry"/>
+    </mxCell>
+    <mxCell id="lYolo" value="YOLO26m Detector" style="shape=umlLifeline;perimeter=lifelinePerimeter;size=16;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+      <mxGeometry x="700" y="0" width="160" height="460" as="geometry"/>
+    </mxCell>
+    <mxCell id="lStage2" value="Stage2EnsembleClassifier" style="shape=umlLifeline;perimeter=lifelinePerimeter;size=16;html=1;whiteSpace=wrap;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+      <mxGeometry x="920" y="0" width="160" height="460" as="geometry"/>
+    </mxCell>
+    <mxCell id="lFusion" value="aggregate → dominant material" style="shape=umlLifeline;perimeter=lifelinePerimeter;size=16;html=1;whiteSpace=wrap;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+      <mxGeometry x="1140" y="0" width="160" height="460" as="geometry"/>
+    </mxCell>
+    <mxCell id="m1" value="POST /api/predict (image)" edge="1" parent="1" source="lBrowser" target="lVercel" style="html=1;endArrow=block;endFill=1;fontSize=10;endSize=6;startSize=6;exitX=1;exitY=0.130;exitDx=0;exitDy=0;entryX=0;entryY=0.130;entryDx=0;entryDy=0;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="m2" value="proxy /api/* (rewrite)" edge="1" parent="1" source="lVercel" target="lServer" style="html=1;endArrow=block;endFill=1;fontSize=10;endSize=6;startSize=6;exitX=1;exitY=0.217;exitDx=0;exitDy=0;entryX=0;entryY=0.217;entryDx=0;entryDy=0;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="m3" value="predict(conf=0.04, imgsz=640)" edge="1" parent="1" source="lServer" target="lYolo" style="html=1;endArrow=block;endFill=1;fontSize=10;endSize=6;startSize=6;exitX=1;exitY=0.304;exitDx=0;exitDy=0;entryX=0;entryY=0.304;entryDx=0;entryDy=0;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="m4" value="boxes + scores" edge="1" parent="1" source="lYolo" target="lServer" style="html=1;endArrow=block;endFill=1;fontSize=10;dashed=1;endSize=6;startSize=6;exitX=0;exitY=0.391;exitDx=0;exitDy=0;entryX=1;entryY=0.391;entryDx=0;entryDy=0;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="m5" value="classify_bgr_tuned_batch(crops)" edge="1" parent="1" source="lServer" target="lStage2" style="html=1;endArrow=block;endFill=1;fontSize=10;endSize=6;startSize=6;exitX=1;exitY=0.478;exitDx=0;exitDy=0;entryX=0;entryY=0.478;entryDx=0;entryDy=0;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="m6" value="material probabilities" edge="1" parent="1" source="lStage2" target="lServer" style="html=1;endArrow=block;endFill=1;fontSize=10;dashed=1;endSize=6;startSize=6;exitX=0;exitY=0.565;exitDx=0;exitDy=0;entryX=1;entryY=0.565;entryDx=0;entryDy=0;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="m7" value="aggregate boxes (area × conf)" edge="1" parent="1" source="lServer" target="lFusion" style="html=1;endArrow=block;endFill=1;fontSize=10;endSize=6;startSize=6;exitX=1;exitY=0.652;exitDx=0;exitDy=0;entryX=0;entryY=0.652;entryDx=0;entryDy=0;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="m8" value="dominant material + bin route" edge="1" parent="1" source="lFusion" target="lServer" style="html=1;endArrow=block;endFill=1;fontSize=10;dashed=1;endSize=6;startSize=6;exitX=0;exitY=0.739;exitDx=0;exitDy=0;entryX=1;entryY=0.739;entryDx=0;entryDy=0;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="m9" value="JSON response" edge="1" parent="1" source="lServer" target="lVercel" style="html=1;endArrow=block;endFill=1;fontSize=10;dashed=1;endSize=6;startSize=6;exitX=0;exitY=0.826;exitDx=0;exitDy=0;entryX=1;entryY=0.826;entryDx=0;entryDy=0;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="m10" value="render boxes + save history (localStorage)" edge="1" parent="1" source="lVercel" target="lBrowser" style="html=1;endArrow=block;endFill=1;fontSize=10;dashed=1;endSize=6;startSize=6;exitX=0;exitY=0.913;exitDx=0;exitDy=0;entryX=1;entryY=0.913;entryDx=0;entryDy=0;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+  </root>
+</mxGraphModel>

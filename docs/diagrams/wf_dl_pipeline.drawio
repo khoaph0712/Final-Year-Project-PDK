@@ -1,0 +1,60 @@
+<mxGraphModel adaptiveColors="auto">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+    <mxCell id="title" value="WasteWise — Current DL Pipeline (S6 gate removed 2026-07-18)" style="text;html=1;fontStyle=1;fontSize=16;align=left;" vertex="1" parent="1">
+      <mxGeometry x="40" y="-60" width="700" height="30" as="geometry"/>
+    </mxCell>
+    <mxCell id="inp" value="Input image (upload)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="40" y="40" width="150" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="s1" value="Stage 1: YOLO26m localization" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+      <mxGeometry x="230" y="40" width="190" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="crop" value="Crop each detected box" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="460" y="40" width="150" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="s2" value="Stage 2: ConvNeXt-Tiny + 637-feature classifier" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+      <mxGeometry x="650" y="40" width="210" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="fusion" value="Alpha-blend fusion (≤0.40) + scene context prior" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+      <mxGeometry x="900" y="40" width="190" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="agg" value="Aggregate boxes → dominant material" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+      <mxGeometry x="1130" y="40" width="190" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="route" value="Bin route (material → Recycling / Compost / Review)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+      <mxGeometry x="1360" y="45" width="210" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="ev1" value="Clean val: P0.834 R0.672 mAP50 0.749 mAP50-95 0.570 → Clean test: P0.605 R0.479 mAP50 0.482" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;align=left;" vertex="1" parent="1">
+      <mxGeometry x="230" y="200" width="220" height="90" as="geometry"/>
+    </mxCell>
+    <mxCell id="ev2" value="Clean GT-crop: 93.77% → Detector's own crops (production): 88.88%" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;fontSize=11;align=left;" vertex="1" parent="1">
+      <mxGeometry x="650" y="200" width="210" height="90" as="geometry"/>
+    </mxCell>
+    <mxCell id="e1" edge="1" parent="1" source="inp" target="s1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e2" edge="1" parent="1" source="s1" target="crop" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e3" edge="1" parent="1" source="crop" target="s2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e4" edge="1" parent="1" source="s2" target="fusion" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e5" edge="1" parent="1" source="fusion" target="agg" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e6" edge="1" parent="1" source="agg" target="route" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e10" value="measured" edge="1" parent="1" source="s1" target="ev1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;dashed=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e11" value="measured" edge="1" parent="1" source="s2" target="ev2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;dashed=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+  </root>
+</mxGraphModel>

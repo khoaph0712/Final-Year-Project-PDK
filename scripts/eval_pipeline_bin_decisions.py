@@ -1,14 +1,13 @@
 #!/usr/bin/env python
-"""Full-pipeline (server.predict_image) eval: material/bin/waste-state accuracy.
+"""Full-pipeline (server.predict_image) eval: material and bin-routing accuracy.
 
 Ground truth: external_datasets/rf_garbage_cls/test (Roboflow "garbage-classification-3",
 YOLO-format bboxes, 6 classes BIODEGRADABLE/CARDBOARD/GLASS/METAL/PAPER/PLASTIC). Not used
-in training our detector or classifier, so it's an independent check on the fusion/gate/
-routing logic in web/server.py rather than the detector's own conf/gate sweep set.
+in training our detector or classifier, so it's an independent check on the fusion and
+material->bin routing logic in web/server.py rather than the detector's own conf/gate sweep set.
 
-Every image in this dataset contains real waste items, so the correct wasteState is always
-"waste" - this measures how much the decision gate is throwing to "review"/"not_waste" on
-real positives (a cost the detector-only sweeps can't see).
+The S6 waste-state decision was removed 2026-07-18 (no dataset to train it), so this no longer
+measures waste-state accuracy - just whether the dominant material and its bin route are right.
 """
 
 from __future__ import annotations
@@ -45,11 +44,9 @@ def main() -> None:
     n_total = 0
     material_correct = 0
     bin_correct = 0
-    waste_state_correct = 0
     secondary_hits = 0
     secondary_total = 0
     confusion: dict[str, dict[str, int]] = {}
-    waste_state_counts: dict[str, int] = {}
     mixed_flagged_on_single_gt = 0
     mixed_flagged_on_mixed_gt = 0
     n_single_gt = 0
@@ -76,14 +73,11 @@ def main() -> None:
 
         confusion.setdefault(gt_dominant, {})
         confusion[gt_dominant][pred_material] = confusion[gt_dominant].get(pred_material, 0) + 1
-        waste_state_counts[result["wasteState"]] = waste_state_counts.get(result["wasteState"], 0) + 1
 
         if pred_material == gt_dominant:
             material_correct += 1
         if pred_bin == gt_bin:
             bin_correct += 1
-        if result["wasteState"] == "waste":
-            waste_state_correct += 1
 
         mixed_flagged = bool(result["model"].get("mixedLoadDetected"))
         if len(gt_distinct) > 1:
@@ -108,8 +102,6 @@ def main() -> None:
         "n": n_total,
         "materialAccuracy": material_correct / n_total,
         "binAccuracy": bin_correct / n_total,
-        "wasteStateAccuracy": waste_state_correct / n_total,
-        "wasteStateCounts": waste_state_counts,
         "secondaryMaterialRecall": (secondary_hits / secondary_total) if secondary_total else None,
         "secondaryMaterialN": secondary_total,
         "mixedFlagFalsePositiveRate": (mixed_flagged_on_single_gt / n_single_gt) if n_single_gt else None,
@@ -124,8 +116,6 @@ def main() -> None:
     print(f"\n[RESULT] tag={TAG} n={n_total}")
     print(f"  material accuracy:        {report['materialAccuracy']:.3f}")
     print(f"  bin accuracy:             {report['binAccuracy']:.3f}")
-    print(f"  waste-state accuracy:     {report['wasteStateAccuracy']:.3f}  (all GT items are real waste)")
-    print(f"  waste-state distribution: {waste_state_counts}")
     if secondary_total:
         print(f"  secondary-material recall: {report['secondaryMaterialRecall']:.3f} (n={secondary_total} across {n_mixed_gt} mixed-class images)")
     print(f"  mixed-load flag: TP rate {report['mixedFlagTruePositiveRate']:.3f} (n={n_mixed_gt}), FP rate {report['mixedFlagFalsePositiveRate']:.3f} (n={n_single_gt})")

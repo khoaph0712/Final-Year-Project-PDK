@@ -10,13 +10,13 @@ The recommended local server runs the real local model pipeline:
   name is historical; the checkpoint is the promoted YOLO26m detector).
 - Crop verification: every YOLO box is classified again and fused with the YOLO
   material vote (alpha-capped) and a scene context prior.
-- Waste-state gate: detected material is not automatically routed. Each object is marked `waste`, `not_waste`, or `review`; only `waste` enters a bin route.
+- Bin routing: detections are aggregated (area x confidence) into a dominant material, which is routed to its bin by a direct material->bin lookup. (The earlier S6 waste-state gate that marked each object `waste`/`not_waste`/`review` was removed 2026-07-18 - there was no dataset to train it as a real decision, and it added complexity for no measured gain.)
 - Localization settings: `conf=0.04` (candidate generation), objectness gate `0.30`,
   `imgsz=640`, `max_det=80`. The constants at the top of `web/server.py` are the
   source of truth - each carries the audit trail for why it holds its value.
 - Result display: `/api/predict` returns a top-level `topPredictions` array for the top three material classes, and the page renders those beside all seven class score bars and detection boxes.
 
-The API now prefers the tuned PyTorch classifier when both the `.pth` model and scaler are present. The older Keras classifier path remains only as a fallback. The current waste-state gate is conservative rule logic because the repository does not yet include a trained state model. For a stronger final system, train a separate state head/dataset for `waste`, `not_waste`, and `review`.
+The API now prefers the tuned PyTorch classifier when both the `.pth` model and scaler are present. The older Keras classifier path remains only as a fallback. The app reports the material and its bin route; it does not judge whether an item should actually be discarded. A trained waste-state decision (`waste` / `not_waste` / `review`) was scoped but removed 2026-07-18 for lack of a dataset to train it - a future system could add a dedicated state head if that data is collected.
 
 ## Run Locally
 

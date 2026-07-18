@@ -108,7 +108,6 @@ const elements = {
   resultConfidence: document.querySelector("#resultConfidence"),
   resultTopLabel: document.querySelector("#resultTopLabel"),
   binRoute: document.querySelector("#binRoute"),
-  wasteStateValue: document.querySelector("#wasteStateValue"),
   scoreList: document.querySelector("#scoreList"),
   scoreSummary: document.querySelector("#scoreSummary"),
   topPredictionList: document.querySelector("#topPredictionList"),
@@ -151,8 +150,6 @@ function makeResult(partial) {
     possibleMaterial: partial.possibleMaterial || null,
     scores: withStrongestScore(partial.className, partial.confidence, partial.scores || emptyScores()),
     topPredictions: partial.topPredictions || null,
-    wasteState: partial.wasteState || "waste",
-    wasteStateLabel: partial.wasteStateLabel || "Waste",
     ...partial,
   };
 }
@@ -281,9 +278,6 @@ function addHistoryRecord(result, sourceLabel, imageSrc) {
     context: result.context,
     latency: result.latency,
     mode: result.mode,
-    wasteState: result.wasteState,
-    wasteStateLabel: result.wasteStateLabel,
-    needsReview: Boolean(result.needsReview),
     possibleMaterial: result.possibleMaterial,
     detections: result.detections,
     scores: result.scores,
@@ -313,18 +307,12 @@ function restoreHistoryRecord(record) {
     historyImageSrc: record.imageSrc,
     skipHistory: true,
   });
-  updateStagePills(6, false);
+  updateStagePills(5, false);
   window.location.hash = "scan";
   showToast("History scan restored");
 }
 
 function historyTitle(record) {
-  if (record.wasteState === "review") {
-    const possible = record.possibleMaterial?.className
-      ? `${record.possibleMaterial.className} ${record.possibleMaterial.confidence}%`
-      : `${record.className} ${record.confidence}%`;
-    return `Review - possible ${possible}`;
-  }
   return `${record.className} - ${record.bin} - ${record.confidence}%`;
 }
 
@@ -372,10 +360,10 @@ function renderHistory() {
       const meta = document.createElement("small");
       meta.textContent = `${record.sourceLabel} · ${formatHistoryTime(record.savedAt)}`;
       const detail = document.createElement("small");
-      detail.textContent = `${record.context} context · ${record.wasteStateLabel || "Waste"} · ${record.latency} ms`;
+      detail.textContent = `${record.context} context · ${record.latency} ms`;
       const badge = document.createElement("span");
-      badge.className = record.wasteState === "review" ? "badge warn" : "badge";
-      badge.textContent = record.wasteState === "review" ? "review" : "accepted";
+      badge.className = "badge";
+      badge.textContent = record.bin;
       body.append(title, meta, detail, badge);
 
       tile.append(image, body);
@@ -394,31 +382,20 @@ function renderBoxes(result) {
 
   result.detections.forEach((box) => {
     const boxConfidence = box.confidence ?? result.confidence;
-    const isWeakReview =
-      (box.wasteState === "review" || result.wasteState === "review" || box.needsReview) &&
-      boxConfidence < REVIEW_BOX_DISPLAY_MIN;
-    if (isWeakReview) return;
+    const labelClass = box.label || result.className;
+    // Drop very-low-confidence boxes so the overlay isn't noisy.
+    if (boxConfidence < REVIEW_BOX_DISPLAY_MIN && labelClass === "Background") return;
 
     const node = document.createElement("div");
     const label = document.createElement("span");
-    const labelClass = box.label || result.className;
-    const isReviewBox = box.wasteState === "review" || result.wasteState === "review" || box.needsReview;
-    const displayClass = isReviewBox ? "Review" : labelClass;
-    const color = isReviewBox ? classColors.Background : classColors[labelClass] || classColors.Background;
+    const color = classColors[labelClass] || classColors.Background;
     node.className = "detection-box";
-    node.dataset.state = box.wasteState || result.wasteState || "waste";
     node.style.setProperty("--box-color", color);
     node.style.left = `${box.x}%`;
     node.style.top = `${box.y}%`;
     node.style.width = `${box.w}%`;
     node.style.height = `${box.h}%`;
-    if (box.wasteState === "not_waste") {
-      label.textContent = `Not waste ${boxConfidence}%`;
-    } else if (isReviewBox) {
-      label.textContent = `Review ${boxConfidence}%`;
-    } else {
-      label.textContent = `${labelClass} ${boxConfidence}%`;
-    }
+    label.textContent = `${labelClass} ${boxConfidence}%`;
     node.append(label);
     elements.boxLayer.append(node);
   });
@@ -509,7 +486,7 @@ function renderScores(scores, topPredictions = null) {
 
 function updateStagePills(stageIdx, isScanning) {
   elements.stagePills.forEach((li, i) => {
-    const done = stageIdx > i || stageIdx === 6;
+    const done = stageIdx > i || stageIdx === 5;
     const active = stageIdx === i && isScanning;
     li.dataset.state = done ? "done" : active ? "active" : "pending";
   });
@@ -517,10 +494,6 @@ function updateStagePills(stageIdx, isScanning) {
 
 function renderResult(rawResult, sourceLabel, options = {}) {
   const result = makeResult(rawResult);
-  const isNotWaste = result.wasteState === "not_waste";
-  const isReview =
-    !isNotWaste &&
-    (result.wasteState === "review" || (!result.model && result.confidence < 60));
   const possibleMaterial = result.possibleMaterial || {
     className: result.className,
     confidence: result.confidence,
@@ -529,24 +502,20 @@ function renderResult(rawResult, sourceLabel, options = {}) {
   const possibleText = possibleMaterial?.className
     ? `${possibleMaterial.className} ${possibleMaterial.confidence}%`
     : "--";
-  const displayClass = isReview ? "Review" : isNotWaste ? "Not waste" : result.className;
-  const displayConfidence = isReview ? possibleMaterial.confidence : result.confidence;
+  const displayConfidence = result.confidence;
   const confidenceTone = displayConfidence >= 85 ? "high" : displayConfidence >= 60 ? "medium" : "low";
 
-  elements.resultColumn.dataset.resultState = isNotWaste ? "not-waste" : isReview ? "review" : "waste";
+  elements.resultColumn.dataset.resultState = "waste";
   elements.resultColumn.dataset.confidenceTone = confidenceTone;
-  elements.resultTopLabel.textContent = isReview || isNotWaste ? "Decision" : "Top material";
-  elements.confidenceLabel.textContent = isReview ? "Possible confidence" : "Confidence";
-  elements.resultClass.textContent = displayClass;
+  elements.resultTopLabel.textContent = "Top material";
+  elements.confidenceLabel.textContent = "Confidence";
+  elements.resultClass.textContent = result.className;
   elements.resultConfidence.textContent = `${displayConfidence}%`;
   elements.confidenceMeter.style.width = `${displayConfidence}%`;
   elements.binRoute.classList.remove("is-idle");
-  elements.binRoute.classList.toggle("needs-review", isReview);
-  elements.binRoute.classList.toggle("not-waste", isNotWaste);
-  elements.binRoute.querySelector("span").textContent = isNotWaste ? "Decision" : "Bin route";
-  elements.binRoute.querySelector("strong").textContent = isReview ? `Review (${result.bin})` : result.bin;
-  elements.possibleMaterialValue.textContent = isReview || isNotWaste ? possibleText : "Confirmed";
-  elements.wasteStateValue.textContent = result.wasteStateLabel;
+  elements.binRoute.querySelector("span").textContent = "Bin route";
+  elements.binRoute.querySelector("strong").textContent = result.bin;
+  elements.possibleMaterialValue.textContent = possibleText;
   elements.contextValue.textContent = result.context;
   elements.latencyValue.textContent = `${result.latency} ms`;
 
@@ -610,10 +579,9 @@ function performScan({ src, sourceLabel, apiBlob, apiFileName, fallbackResult, h
     updateStagePills(2, true);
     scheduleStage(() => updateStagePills(3, true), 300);
     scheduleStage(() => updateStagePills(4, true), 600);
-    scheduleStage(() => updateStagePills(5, true), 900);
     scheduleStage(() => {
       scanning = false;
-      updateStagePills(6, false);
+      updateStagePills(5, false);
       setLoading(false);
       renderResult(result, sourceLabel, { imageSrc: src, historyImageSrc });
     }, 1200);
@@ -980,7 +948,7 @@ function startHeroDemoLoop() {
   };
 
   if (reduceMotion) {
-    status.textContent = "DECISION READY";
+    status.textContent = "RESULT READY";
     sweep.hidden = true;
     renderDemoBoxes(HERO_DEMO_BOXES.length);
     resultBox.dataset.done = "1";
@@ -1010,7 +978,7 @@ function startHeroDemoLoop() {
           seq(reveal, 320);
         } else {
           seq(() => {
-            status.textContent = "DECISION READY";
+            status.textContent = "RESULT READY";
             resultBox.dataset.done = "1";
             resultBox.querySelector("strong").textContent = "Plastic → Recycling · 92.4%";
             seq(run, 3200);

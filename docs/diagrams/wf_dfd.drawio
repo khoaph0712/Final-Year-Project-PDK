@@ -1,0 +1,66 @@
+<mxGraphModel adaptiveColors="auto">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+    <mxCell id="title" value="WasteWise — Data Flow Diagram (Level 1)" style="text;html=1;fontStyle=1;fontSize=16;align=left;" vertex="1" parent="1">
+      <mxGeometry x="40" y="-60" width="600" height="30" as="geometry"/>
+    </mxCell>
+    <mxCell id="user" value="User&#10;(external entity)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+      <mxGeometry x="40" y="180" width="160" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="p1" value="1.0&#10;Localize Objects (YOLO26m)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+      <mxGeometry x="280" y="60" width="200" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="p2" value="2.0&#10;Classify Crops (ConvNeXt + 637 features)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+      <mxGeometry x="560" y="60" width="220" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="p3" value="3.0&#10;Fuse &amp; Aggregate to Dominant Material" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+      <mxGeometry x="860" y="180" width="200" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="p4" value="4.0&#10;Route to Bin" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+      <mxGeometry x="1140" y="180" width="180" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="d1" value="D1: Model Weights" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+      <mxGeometry x="280" y="360" width="200" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="d2" value="D2: Training Datasets (offline)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+      <mxGeometry x="40" y="360" width="200" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="d3" value="D3: Scan History (browser localStorage)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+      <mxGeometry x="860" y="320" width="220" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="d4" value="D4: Audit Manifests (leakage quarantine)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;strokeWidth=2;" vertex="1" parent="1">
+      <mxGeometry x="40" y="460" width="220" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="e1" value="photo" edge="1" parent="1" source="user" target="p1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e2" value="candidate boxes / crops" edge="1" parent="1" source="p1" target="p2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e3" value="material probabilities" edge="1" parent="1" source="p2" target="p3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e4" value="dominant material" edge="1" parent="1" source="p3" target="p4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e5" value="bin route + confidence" edge="1" parent="1" source="p4" target="user" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e6" value="detector weights" edge="1" parent="1" source="d1" target="p1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e7" value="classifier weights" edge="1" parent="1" source="d1" target="p2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e8" value="training (offline)" edge="1" parent="1" source="d2" target="d1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;dashed=1;fontSize=10;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e9" value="clean split definition" edge="1" parent="1" source="d4" target="d2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;dashed=1;fontSize=10;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e10" value="scan record" edge="1" parent="1" source="p3" target="d3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;fontSize=10;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+  </root>
+</mxGraphModel>

@@ -14,7 +14,7 @@ flowchart LR
     A["Input image"] --> B["Stage 1: YOLO26m localization"]
     B --> C["Detected object crops"]
     C --> D["Stage 2: ConvNeXt + 637-feature crop classifier"]
-    D --> E["Verified material class, waste state, bin route"]
+    D --> E["Verified material class, dominant material, bin route"]
 ```
 
 Stage 1 finds objects (what YOLO is good at); Stage 2 verifies the material of

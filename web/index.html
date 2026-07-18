@@ -78,7 +78,7 @@
               <div class="box-layer" id="heroDemoBoxes" aria-hidden="true"></div>
             </div>
             <div class="hero-demo-result" id="heroDemoResult">
-              <span>Decision</span>
+              <span>Result</span>
               <strong>Analyzing&hellip;</strong>
             </div>
           </div>
@@ -96,17 +96,16 @@
             <h2 id="scan-title">Live scanner</h2>
             <p>
               Upload a photo or pick a sample. The scan follows the exact pipeline order &mdash;
-              localize, crop, verify, fuse, decide.
+              localize, crop, verify, fuse &amp; route.
             </p>
           </div>
 
-          <ol class="stage-pills" id="stagePills" aria-label="Detection workflow, steps S1 to S6">
+          <ol class="stage-pills" id="stagePills" aria-label="Detection workflow, steps S1 to S5">
             <li data-stage="0"><span class="pill-id">S1</span>Upload</li>
             <li data-stage="1"><span class="pill-id">S2</span>Localize</li>
             <li data-stage="2"><span class="pill-id">S3</span>Crop</li>
             <li data-stage="3"><span class="pill-id">S4</span>Verify</li>
             <li data-stage="4"><span class="pill-id">S5</span>Fuse</li>
-            <li data-stage="5"><span class="pill-id">S6</span>Decide</li>
           </ol>
 
           <div class="scanner-grid">
@@ -156,7 +155,7 @@
             <div class="scanner-right">
               <div class="result-column" aria-label="Classification result">
                 <div class="result-topline">
-                  <span id="resultTopLabel">Decision</span>
+                  <span id="resultTopLabel">Top material</span>
                   <strong id="resultClass">No scan yet</strong>
                 </div>
                 <div class="confidence-block">
@@ -172,7 +171,6 @@
                 </div>
                 <dl class="result-facts">
                   <div><dt>Possible material</dt><dd id="possibleMaterialValue">--</dd></div>
-                  <div><dt>Waste state</dt><dd id="wasteStateValue">Not scanned</dd></div>
                   <div><dt>Context</dt><dd id="contextValue">--</dd></div>
                   <div><dt>Latency</dt><dd id="latencyValue">--</dd></div>
                 </dl>
@@ -193,8 +191,8 @@
         <section class="teasers">
           <a class="teaser reveal-on-scroll" href="#pipeline" data-page-link>
             <span class="kicker">How it works</span>
-            <strong>Six steps, S1 to S6</strong>
-            <p>Upload, localize, crop, verify, fuse, decide &mdash; with the full methodology diagram.</p>
+            <strong>Five steps, S1 to S5</strong>
+            <p>Upload, localize, crop, verify, fuse &amp; route &mdash; with the full methodology diagram.</p>
           </a>
           <a class="teaser dark reveal-on-scroll" href="#evidence" data-page-link>
             <span class="kicker accent-light">Evidence</span>
@@ -204,7 +202,7 @@
           <a class="teaser reveal-on-scroll" href="#limits" data-page-link>
             <span class="kicker tone-warn">Limits</span>
             <strong>What still breaks, honestly</strong>
-            <p>Domain shift, tiny objects, and the conservative waste-state gate.</p>
+            <p>Domain shift, tiny objects, and low confidence on unfamiliar materials.</p>
           </a>
         </section>
       </main>
@@ -238,18 +236,14 @@
           </article>
           <article class="step-card reveal-on-scroll">
             <span class="step-id">S5</span>
-            <div><strong>Score fusion &amp; context prior</strong><p>Per-box score fuses detector and classifier confidences, then a scene-context prior adjusts the class scores.</p></div>
-          </article>
-          <article class="step-card reveal-on-scroll">
-            <span class="step-id">S6</span>
-            <div><strong>Decision gate &amp; bin routing</strong><p>Class thresholds and the waste-state gate pick the final decision. Uncertain detections route to review instead of a bin &mdash; conservative by design.</p></div>
+            <div><strong>Score fusion, context prior &amp; bin routing</strong><p>Per-box score fuses detector and classifier confidences, a scene-context prior adjusts the class scores, and the dominant material is routed to its bin by a direct material&rarr;bin lookup.</p></div>
           </article>
         </div>
 
         <div class="diagram-card">
           <div class="panel-heading">
             <span>Methodology workflow diagram</span>
-            <strong>S1 &rarr; S6</strong>
+            <strong>S1 &rarr; S5</strong>
           </div>
           <img src="assets/workflow_pipeline.svg" alt="Two-stage localization-first pipeline workflow diagram" loading="lazy" />
         </div>
@@ -407,12 +401,13 @@
           </article>
           <article class="tone-success reveal-on-scroll">
             <div>
-              <span>Waste-state decision</span>
-              <strong>Conservative by design</strong>
+              <span>Material-first routing</span>
+              <strong>No disposability judgment</strong>
             </div>
             <p>
-              The waste / not-waste / review decision applies conservative rules on top of the
-              verified material class; uncertain detections route to review instead of a bin.
+              The app reports what an object is made of and routes that material to its bin. It
+              does not judge whether the item should actually be thrown away &mdash; that
+              waste-state decision was removed because there was no dataset to train it reliably.
             </p>
           </article>
         </div>

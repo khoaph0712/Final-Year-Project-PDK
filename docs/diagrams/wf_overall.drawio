@@ -1,0 +1,99 @@
+<mxGraphModel adaptiveColors="auto">
+  <root>
+    <mxCell id="0"/>
+    <mxCell id="1" parent="0"/>
+    <mxCell id="title" value="WasteWise — Overall Project Workflow (corrected 2026-07-16)" style="text;html=1;fontStyle=1;fontSize=16;align=left;" vertex="1" parent="1">
+      <mxGeometry x="40" y="-60" width="700" height="30" as="geometry"/>
+    </mxCell>
+    <mxCell id="raw" value="Raw waste image datasets (TACO-official + Roboflow re-exports + PlastOPol + RealWaste + Trashify)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="460" y="40" width="220" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="audit" value="Leakage audit: MD5 + 64-bit perceptual dHash across all splits (2026-07-02)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="450" y="160" width="240" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="clean" value="Clean-split quarantine → dataset cleaning, object crops &amp; labels" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+      <mxGeometry x="460" y="280" width="220" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="mlLabel" value="ML branch" style="text;html=1;fontStyle=1;fontSize=14;align=center;fontColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="80" y="400" width="160" height="30" as="geometry"/>
+    </mxCell>
+    <mxCell id="dlLabel" value="DL branch (production)" style="text;html=1;fontStyle=1;fontSize=14;align=center;fontColor=#d79b00;" vertex="1" parent="1">
+      <mxGeometry x="900" y="400" width="220" height="30" as="geometry"/>
+    </mxCell>
+    <mxCell id="ml1" value="637 handcrafted features (8 spatial + 9 FFT + 44 color + 576 HOG)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="40" y="460" width="220" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="dl1" value="Stage 1: YOLO26m localization (6 classes)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+      <mxGeometry x="900" y="460" width="240" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="ml2" value="Classical model sweep: DT / SVM / RF / ExtraTrees / XGBoost / LogReg" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="40" y="570" width="220" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="dl2" value="Stage 2: ConvNeXt-Tiny + 637-feature crop classifier" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+      <mxGeometry x="900" y="570" width="240" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="ml3" value="PCA sweep 16→637 dims, best-model-per-dimension knee" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="40" y="680" width="220" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="dl3" value="Alpha-blend fusion (capped 0.40) + aggregate to dominant material → bin route" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+      <mxGeometry x="900" y="680" width="240" height="80" as="geometry"/>
+    </mxCell>
+    <mxCell id="ml4" value="Final ML evidence: ExtraTrees 73.8% acc (7-class crops)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+      <mxGeometry x="40" y="800" width="220" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="dl4" value="Final DL evidence (clean, audited): val mAP50 0.749, test mAP50 0.482, classifier 93.77% / 88.88%" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;" vertex="1" parent="1">
+      <mxGeometry x="900" y="800" width="240" height="90" as="geometry"/>
+    </mxCell>
+    <mxCell id="deploy" value="Deployed web app: Vercel frontend → Hugging Face Space backend" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+      <mxGeometry x="460" y="930" width="240" height="70" as="geometry"/>
+    </mxCell>
+    <mxCell id="report" value="Final report &amp; defense evidence (docs/01_final_report/)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;" vertex="1" parent="1">
+      <mxGeometry x="460" y="1030" width="240" height="60" as="geometry"/>
+    </mxCell>
+    <mxCell id="e1" edge="1" parent="1" source="raw" target="audit" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e2" edge="1" parent="1" source="audit" target="clean" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e3" edge="1" parent="1" source="clean" target="mlLabel" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e4" edge="1" parent="1" source="clean" target="dlLabel" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e5" edge="1" parent="1" source="mlLabel" target="ml1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e6" edge="1" parent="1" source="ml1" target="ml2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e7" edge="1" parent="1" source="ml2" target="ml3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e8" edge="1" parent="1" source="ml3" target="ml4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e9" edge="1" parent="1" source="dlLabel" target="dl1" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e10" edge="1" parent="1" source="dl1" target="dl2" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e11" edge="1" parent="1" source="dl2" target="dl3" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e12" edge="1" parent="1" source="dl3" target="dl4" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e13" edge="1" parent="1" source="ml4" target="deploy" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e14" edge="1" parent="1" source="dl4" target="deploy" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+    <mxCell id="e15" edge="1" parent="1" source="deploy" target="report" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;">
+      <mxGeometry relative="1" as="geometry"/>
+    </mxCell>
+  </root>
+</mxGraphModel>

@@ -419,6 +419,30 @@ wrong, how it was detected, and what fixed it. Each entry is thesis-usable evide
   shown as review" is upstream detector precision (tighter boxes / de-duplication), not a looser gate;
   a learned clean-vs-dirty *state* model remains blocked (no contamination label exists in any dataset).
 
+## F17. Waste-state gate (S6) removed entirely — untrainable decision layer, net complexity (2026-07-18)
+
+- **Decision (with supervisor):** remove the S6 waste-state decision (`waste` / `not_waste` /
+  `review`) from the served pipeline. Root cause it never solved: the gate was rule logic standing in
+  for a *trained* clean-vs-dirty state model, and no dataset in the project carries a contamination /
+  disposal-state label to train one (the recurring blocker noted at the end of F16). It could therefore
+  only ever be hand-tuned heuristics, and each retune (F16, and the joint-confidence tiers before it)
+  added branches without a ground truth to validate against.
+- **Evidence it wasn't paying its way:** the conference-paper Section 4.6 measurement already showed the
+  gated deployed config at 96.26% bin accuracy vs the ungated variant at 97.41% on the 1,042-image
+  external set — the gate cost ~1.15pp bin accuracy, and its only claimed benefit (waste-state routing)
+  was exactly the untrainable part. `runs/audits/pipeline_bin_decision_eval_no_gate.json` had shown the
+  same directional result earlier.
+- **Change shipped:** deleted `estimate_detection_waste_state` and `choose_final_decision` from
+  `web/server.py`; the headline material and bin route now come straight from the area×confidence
+  detection vote (`ROUTES.get(dominant, "Review")`, ungated). Web GUI collapsed S1–S6 → S1–S5 (the
+  waste-state fact row, the per-box review styling, and the "Decision" headline are gone). Decision
+  regression tests, the pipeline eval script, and every workflow diagram were updated; the
+  waste-state state-machine diagram was deleted (nothing left to depict).
+- **Lesson:** a decision layer you cannot train is not a feature, it is a liability you keep re-tuning.
+  When the only justification for a component is behaviour you have no ground truth for, the honest move
+  is to remove it, not to keep hand-calibrating it. Report what the models actually measure (material +
+  bin), not a disposal-state judgment the data never supported.
+
 ## Status summary
 
 | Failure | Severity | Status |
@@ -439,3 +463,4 @@ wrong, how it was detected, and what fixed it. Each entry is thesis-usable evide
 | F14 glass->plastic fusion bug | High | Fixed + deployed: alpha-blend cap 0.70->0.40 (detector vote can't override a confident classifier call); -0.7pp studio macro-F1 |
 | F15 hard-negative mining | High | Promoted + deployed: PlastOPol field small-object recall +16pp, studio preserved, TACO flat; same architecture |
 | F16 waste-gate loosening | Info | Rejected, reverted - 6-sample demo flattered it but a 270-image two-domain check showed ~15pp precision loss; the 0.30 box gate is a real precision guard, not stale |
+| F17 waste-state gate (S6) removed | Info | Removed 2026-07-18: untrainable decision layer (no disposal-state label in any dataset), cost ~1.15pp bin accuracy for no measurable benefit; pipeline now S1-S5, material + bin only |
