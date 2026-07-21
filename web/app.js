@@ -415,7 +415,7 @@ function renderHistory() {
     empty.className = "history-empty";
     empty.innerHTML = `
       <strong>No saved scans yet</strong>
-      <span>Run a scan on the scanner page &mdash; every result is saved here automatically.</span>
+      <span>Run a scan on the scanner page; every result is saved here automatically.</span>
       <a class="btn primary" href="#demo" data-page-link>Go to scanner</a>
     `;
     elements.historyList.replaceChildren(empty);

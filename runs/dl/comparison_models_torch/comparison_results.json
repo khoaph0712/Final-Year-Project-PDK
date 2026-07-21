@@ -1,0 +1,26 @@
+{
+  "resnet50": {
+    "model_name": "resnet50",
+    "parameters": 23771207,
+    "size_mb": 90.95650863647461,
+    "accuracy": 0.9223809523809524,
+    "loss": 0.26063577708034286,
+    "avg_latency_ms": 8.739686012268066,
+    "training_time_sec": 1075.8549783229828,
+    "epochs": 15,
+    "best_epoch_val_loss": 3,
+    "best_epoch_val_acc": 8
+  },
+  "mobilenetv2": {
+    "model_name": "mobilenetv2",
+    "parameters": 2388743,
+    "size_mb": 9.316705703735352,
+    "accuracy": 0.9142857142857143,
+    "loss": 0.28826625472023376,
+    "avg_latency_ms": 9.179320335388184,
+    "training_time_sec": 567.4886002540588,
+    "epochs": 15,
+    "best_epoch_val_loss": 6,
+    "best_epoch_val_acc": 10
+  }
+}

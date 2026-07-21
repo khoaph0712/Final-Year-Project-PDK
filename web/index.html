@@ -69,8 +69,8 @@
             </h1>
             <p>
               WasteWise is a Final Year Project on automated waste understanding: a two-stage
-              deep-learning pipeline &mdash; YOLO26m finds every object, a ConvNeXt classifier
-              verifies the material &mdash; backed by a classical machine-learning branch for
+              deep-learning pipeline (YOLO26m finds every object, a ConvNeXt classifier
+              verifies the material), backed by a classical machine-learning branch for
               explainable evidence. Every number on this site survives a leakage-audited test set.
             </p>
             <div class="actions">
@@ -113,7 +113,7 @@
           <p>
             Manual waste sorting is slow and error-prone, and recycling streams are easily
             contaminated. WasteWise localizes each waste object in a photo, verifies its material,
-            and routes it to the correct bin &mdash; with an honest, audited account of what works
+            and routes it to the correct bin, with an honest, audited account of what works
             and what does not.
           </p>
         </div>
@@ -137,24 +137,24 @@
         </div>
 
         <div class="fig-grid">
-          <figure class="fig span-full reveal-on-scroll">
+          <figure class="fig span-full tall reveal-on-scroll">
             <img src="assets/figures/wf_overall.png" alt="Overall WasteWise system architecture diagram" loading="lazy" />
-            <figcaption><strong>Fig 1.1 &mdash; Overall system architecture.</strong>
+            <figcaption><strong>Fig 1.1. Overall system architecture.</strong>
               The end-to-end system: a web frontend (Vercel) sends the photo to a Hugging Face Space
-              backend, where the two-stage pipeline &mdash; YOLO26m localization followed by ConvNeXt
-              material verification &mdash; produces per-object materials, confidences, and a bin route.
+              backend, where the two-stage pipeline (YOLO26m localization followed by ConvNeXt
+              material verification) produces per-object materials, confidences, and a bin route.
             </figcaption>
           </figure>
-          <figure class="fig reveal-on-scroll">
+          <figure class="fig span-full tall reveal-on-scroll">
             <img src="assets/figures/wf_use_case.png" alt="Use case diagram" loading="lazy" />
-            <figcaption><strong>Fig 1.2 &mdash; Use-case diagram.</strong>
+            <figcaption><strong>Fig 1.2. Use-case diagram.</strong>
               The user uploads or picks a sample photo, runs a scan, reviews per-object results and
               bin routes, and can revisit saved scans from browser history.
             </figcaption>
           </figure>
-          <figure class="fig reveal-on-scroll">
+          <figure class="fig span-full tall reveal-on-scroll">
             <img src="assets/figures/wf_gui.png" alt="GUI design diagram" loading="lazy" />
-            <figcaption><strong>Fig 1.3 &mdash; Interface design.</strong>
+            <figcaption><strong>Fig 1.3. Interface design.</strong>
               The scanner screen layout: image stage with detection overlays on the left, the
               classification result, confidence meter, and per-class scores on the right.
             </figcaption>
@@ -196,8 +196,8 @@
           <p class="page-intro">
             No single public dataset covers waste detection well: TACO has real litter photos but
             sparse labels, TrashNet has clean studio crops but no boxes, WaDaBa focuses on plastic
-            subtypes, and GINI frames garbage-vs-clean scenes. The project merges them &mdash; plus
-            Roboflow garbage-classification sources and the PlastOPol field dataset &mdash; into one
+            subtypes, and GINI frames garbage-vs-clean scenes. The project merges them, plus
+            Roboflow garbage-classification sources and the PlastOPol field dataset, into one
             YOLO-format dataset with 7 material classes. After tuning, the working dataset holds
             <strong>31,379 images and 67,385 boxes</strong> (24,668 / 3,298 / 3,413 train/valid/test).
           </p>
@@ -205,51 +205,51 @@
           <div class="fig-grid">
             <figure class="fig span-full reveal-on-scroll">
               <img src="assets/figures/eda_cross_dataset_comparison.png" alt="Cross-dataset comparison chart" loading="lazy" />
-              <figcaption><strong>Fig 2.1 &mdash; Cross-dataset comparison.</strong>
+              <figcaption><strong>Fig 2.1. Cross-dataset comparison.</strong>
                 Class coverage and image counts across the candidate source datasets. No single
-                source covers all 7 target materials in both studio and field conditions &mdash;
+                source covers all 7 target materials in both studio and field conditions, which is
                 the direct motivation for merging.
               </figcaption>
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/eda_taco_class_distribution.png" alt="TACO class distribution" loading="lazy" />
-              <figcaption><strong>Fig 2.2 &mdash; TACO source distribution.</strong>
+              <figcaption><strong>Fig 2.2. TACO source distribution.</strong>
                 TACO contributes real-world litter photos in context (streets, grass, water) with a
                 long-tailed class distribution dominated by plastic.
               </figcaption>
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/eda_trashnet_class_distribution.png" alt="TrashNet class distribution" loading="lazy" />
-              <figcaption><strong>Fig 2.3 &mdash; TrashNet source distribution.</strong>
-                TrashNet supplies clean, single-object studio photos with even class coverage &mdash;
-                useful volume for the classifier, but visually far from field conditions.
+              <figcaption><strong>Fig 2.3. TrashNet source distribution.</strong>
+                TrashNet supplies clean, single-object studio photos with even class coverage: useful
+                volume for the classifier, but visually far from field conditions.
               </figcaption>
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/eda_gini_class_distribution.png" alt="GINI class distribution" loading="lazy" />
-              <figcaption><strong>Fig 2.4 &mdash; GINI source distribution.</strong>
+              <figcaption><strong>Fig 2.4. GINI source distribution.</strong>
                 GINI is a binary garbage/clean scene dataset; its positive class adds messy,
                 cluttered garbage scenes the other sources lack.
               </figcaption>
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/eda_wadaba_class_distribution.png" alt="WaDaBa class distribution" loading="lazy" />
-              <figcaption><strong>Fig 2.5 &mdash; WaDaBa source distribution.</strong>
+              <figcaption><strong>Fig 2.5. WaDaBa source distribution.</strong>
                 WaDaBa contributes labelled plastic packaging by polymer subtype (PET, HDPE, PP&hellip;),
                 folded into the single Plastic class here.
               </figcaption>
             </figure>
-            <figure class="fig span-full reveal-on-scroll">
+            <figure class="fig span-full tall reveal-on-scroll">
               <img src="assets/figures/eda_wadaba_sample_grid.png" alt="WaDaBa sample image grid" loading="lazy" />
-              <figcaption><strong>Fig 2.6 &mdash; WaDaBa sample grid.</strong>
+              <figcaption><strong>Fig 2.6. WaDaBa sample grid.</strong>
                 Representative WaDaBa samples: single objects, controlled background, consistent
                 lighting. Studio-style sources like this are easy to classify but create the
                 domain gap measured later in the EDA and Discussion sections.
               </figcaption>
             </figure>
-            <figure class="fig span-full reveal-on-scroll">
+            <figure class="fig span-full tall reveal-on-scroll">
               <img src="assets/figures/wf_er_diagram.png" alt="Entity-relationship diagram of the dataset" loading="lazy" />
-              <figcaption><strong>Fig 2.7 &mdash; Data model.</strong>
+              <figcaption><strong>Fig 2.7. Data model.</strong>
                 Entity-relationship view of the merged dataset: each source image maps to one or
                 more labelled boxes; each box carries a material class; scans and history records
                 reference the same class vocabulary at inference time.
@@ -268,7 +268,7 @@
           <p class="kicker"><span class="flow-num">03 / 12</span> Image Preprocessing</p>
           <h2 class="page-title">From six raw sources to one clean, balanced dataset.</h2>
           <p class="page-intro">
-            Merging is not enough &mdash; the raw union is imbalanced, contains invalid and tiny
+            Merging is not enough. The raw union is imbalanced, contains invalid and tiny
             boxes, and duplicates the same photos across sources. The preprocessing pass removes
             invalid label rows and exact duplicates, drops degenerate boxes, re-splits
             train/valid/test by dominant class, and caps per-class counts so no material dominates.
@@ -278,9 +278,9 @@
           </p>
 
           <div class="fig-grid">
-            <figure class="fig span-full reveal-on-scroll">
+            <figure class="fig span-full tall reveal-on-scroll">
               <img src="assets/figures/wf_dfd.png" alt="Data flow diagram of preprocessing" loading="lazy" />
-              <figcaption><strong>Fig 3.1 &mdash; Preprocessing data flow.</strong>
+              <figcaption><strong>Fig 3.1. Preprocessing data flow.</strong>
                 The path from raw source archives to training-ready data: format conversion to YOLO
                 labels, class mapping to the 7-material vocabulary, dedup and validity filtering,
                 dominant-class re-splitting, and per-class balancing caps.
@@ -288,18 +288,18 @@
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/eda_balanced_class_distribution.png" alt="Balanced class distribution after preprocessing" loading="lazy" />
-              <figcaption><strong>Fig 3.2 &mdash; Class balance after preprocessing.</strong>
+              <figcaption><strong>Fig 3.2. Class balance after preprocessing.</strong>
                 Per-class box counts after balancing: the six materials sit near parity
                 (roughly 7,100&ndash;9,000 train boxes each), with the smaller catch-all
                 &ldquo;other&rdquo; class kept for background pressure.
               </figcaption>
             </figure>
-            <figure class="fig reveal-on-scroll">
+            <figure class="fig span-full tall reveal-on-scroll">
               <img src="assets/figures/train_yolo26m_labels.jpg" alt="Label statistics of the final detector dataset" loading="lazy" />
-              <figcaption><strong>Fig 3.3 &mdash; Final detector label statistics.</strong>
+              <figcaption><strong>Fig 3.3. Final detector label statistics.</strong>
                 Ultralytics label summary for the deployed detector's training set: class
                 frequencies, box placement, and box size distributions. Most boxes are small and
-                centered &mdash; a preview of the small-object challenge analyzed in the EDA.
+                centered, a preview of the small-object challenge analyzed in the EDA.
               </figcaption>
             </figure>
           </div>
@@ -316,10 +316,10 @@
       <main class="page" data-page="eda" id="page-eda" hidden>
         <section class="pres-section" id="s4">
           <p class="kicker"><span class="flow-num">04 / 12</span> Exploratory Data Analysis</p>
-          <h2 class="page-title">What the data actually looks like &mdash; including its bugs.</h2>
+          <h2 class="page-title">What the data actually looks like, including its bugs.</h2>
           <p class="page-intro">
             EDA on the merged dataset answered three questions: is the class balance usable, how
-            small are the objects, and &mdash; most importantly &mdash; can the test set be trusted?
+            small are the objects, and, most importantly, can the test set be trusted?
             The third question found a real evaluation bug: perceptual hashing showed
             <strong>2,406 test images (43%)</strong> of an earlier classifier evaluation set also
             appeared in training, inflating its accuracy from an honest 91.77% to 94.30%. All
@@ -329,53 +329,53 @@
           <div class="fig-grid">
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/eda_class_balance.png" alt="Class balance chart" loading="lazy" />
-              <figcaption><strong>Fig 4.1 &mdash; Class balance across splits.</strong>
+              <figcaption><strong>Fig 4.1. Class balance across splits.</strong>
                 Train/valid/test box counts per class in the tuned dataset. The six materials are
                 near-balanced by design; &ldquo;other&rdquo; stays intentionally smaller.
               </figcaption>
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/eda_box_area_hist.png" alt="Box area histogram" loading="lazy" />
-              <figcaption><strong>Fig 4.2 &mdash; Box area distribution.</strong>
+              <figcaption><strong>Fig 4.2. Box area distribution.</strong>
                 Bounding-box areas are heavily right-skewed: the bulk of objects occupy a small
                 fraction of the frame. Detection difficulty concentrates in this small-object mass.
               </figcaption>
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/eda_small_box_ratio.png" alt="Small box ratio chart" loading="lazy" />
-              <figcaption><strong>Fig 4.3 &mdash; Small-box ratio per class.</strong>
+              <figcaption><strong>Fig 4.3. Small-box ratio per class.</strong>
                 Share of boxes below the small-object threshold, per class. Litter-in-context
-                sources push several classes past 50% small boxes &mdash; this is why field
+                sources push several classes past 50% small boxes, which is why field
                 small-object recall became the project's central metric.
               </figcaption>
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/eda_source_composition.png" alt="Source composition per class" loading="lazy" />
-              <figcaption><strong>Fig 4.4 &mdash; Which source feeds which class.</strong>
+              <figcaption><strong>Fig 4.4. Which source feeds which class.</strong>
                 Per-class composition by source dataset. Some classes are dominated by studio
-                sources, others by field sources &mdash; so class identity and acquisition domain
+                sources, others by field sources, so class identity and acquisition domain
                 are partly entangled in the merged data.
               </figcaption>
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/ml_domain_importance.png" alt="Feature domain importance chart" loading="lazy" />
-              <figcaption><strong>Fig 4.5 &mdash; Feature-domain importance (ML branch).</strong>
+              <figcaption><strong>Fig 4.5. Feature-domain importance (ML branch).</strong>
                 Importance of the 637 handcrafted features grouped by domain (spatial, FFT, color,
-                HOG) under the tree-ensemble baseline. Color and HOG dominate &mdash; classical
+                HOG) under the tree-ensemble baseline. Color and HOG dominate: classical
                 evidence that material identity is mostly texture and color, not global shape.
               </figcaption>
             </figure>
-            <figure class="fig reveal-on-scroll">
+            <figure class="fig span-full tall reveal-on-scroll">
               <img src="assets/figures/wf_leakage_audit.png" alt="Leakage audit workflow diagram" loading="lazy" />
-              <figcaption><strong>Fig 4.6 &mdash; Leakage audit workflow.</strong>
+              <figcaption><strong>Fig 4.6. Leakage audit workflow.</strong>
                 The audit pipeline: perceptual-hash every train and test image, cluster near
                 duplicates across splits, quarantine leaked test images, and re-measure every
                 metric on the clean set.
               </figcaption>
             </figure>
-            <figure class="fig span-full reveal-on-scroll">
+            <figure class="fig span-full tall reveal-on-scroll">
               <img src="assets/figures/audit_near_dup_spotcheck.jpg" alt="Near-duplicate spot check examples" loading="lazy" />
-              <figcaption><strong>Fig 4.7 &mdash; Near-duplicate spot check.</strong>
+              <figcaption><strong>Fig 4.7. Near-duplicate spot check.</strong>
                 Actual leaked pairs caught by the audit: the same photo ingested through different
                 sources, sometimes recompressed or resized, landing in both train and test. This is
                 what silently inflates accuracy when datasets are merged naively.
@@ -397,8 +397,8 @@
           <p class="kicker"><span class="flow-num">05 / 12</span> Model Pipeline</p>
           <h2 class="page-title">Localize first, classify second.</h2>
           <p class="page-intro">
-            Stage 1 finds objects &mdash; what YOLO is good at. Stage 2 verifies the material of
-            each crop &mdash; what a dedicated classifier is good at &mdash; and filters false
+            Stage 1 finds objects, which is what YOLO is good at. Stage 2 verifies the material of
+            each crop, which is what a dedicated classifier is good at, and filters false
             alarms with a Background veto class.
           </p>
 
@@ -409,7 +409,7 @@
             </article>
             <article class="step-card reveal-on-scroll">
               <span class="step-id">S2</span>
-              <div><strong>Stage 1 &mdash; YOLO26m localization</strong><p>YOLO26m proposes a box around every candidate object. 100-epoch retrain, promoted from YOLO26s for higher field recall and precision: 74.9% mAP50, 83.4% precision on clean validation.</p></div>
+              <div><strong>Stage 1: YOLO26m localization</strong><p>YOLO26m proposes a box around every candidate object. 100-epoch retrain, promoted from YOLO26s for higher field recall and precision: 74.9% mAP50, 83.4% precision on clean validation.</p></div>
             </article>
             <article class="step-card reveal-on-scroll">
               <span class="step-id">S3</span>
@@ -417,7 +417,7 @@
             </article>
             <article class="step-card reveal-on-scroll">
               <span class="step-id">S4</span>
-              <div><strong>Stage 2 &mdash; crop verification</strong><p>A ConvNeXt-Tiny + 637-handcrafted-feature classifier re-checks every crop across 7 classes, including a Background veto. Fine-tuned on the detector's own crops so training matches production.</p></div>
+              <div><strong>Stage 2: crop verification</strong><p>A ConvNeXt-Tiny + 637-handcrafted-feature classifier re-checks every crop across 7 classes, including a Background veto. Fine-tuned on the detector's own crops so training matches production.</p></div>
             </article>
             <article class="step-card reveal-on-scroll">
               <span class="step-id">S5</span>
@@ -428,38 +428,38 @@
           <div class="fig-grid">
             <figure class="fig span-full reveal-on-scroll">
               <img src="assets/workflow_pipeline.svg" alt="Two-stage localization-first pipeline workflow diagram" loading="lazy" />
-              <figcaption><strong>Fig 5.1 &mdash; Two-stage pipeline, S1&ndash;S5.</strong>
+              <figcaption><strong>Fig 5.1. Two-stage pipeline, S1&ndash;S5.</strong>
                 The production flow exactly as served: upload, YOLO26m localization, crop
                 extraction with size filtering, ConvNeXt verification, then score fusion and bin
                 routing.
               </figcaption>
             </figure>
-            <figure class="fig reveal-on-scroll">
+            <figure class="fig span-full tall reveal-on-scroll">
               <img src="assets/figures/wf_dl_pipeline.png" alt="Deep learning pipeline diagram" loading="lazy" />
-              <figcaption><strong>Fig 5.2 &mdash; Deep-learning branch.</strong>
+              <figcaption><strong>Fig 5.2. Deep-learning branch.</strong>
                 The DL data path: detector crops feed the ConvNeXt-Tiny backbone; its embedding is
                 concatenated with the 637 handcrafted features before the final material head.
               </figcaption>
             </figure>
-            <figure class="fig reveal-on-scroll">
+            <figure class="fig span-full tall reveal-on-scroll">
               <img src="assets/figures/wf_ml_pipeline.png" alt="Classical ML pipeline diagram" loading="lazy" />
-              <figcaption><strong>Fig 5.3 &mdash; Classical ML branch.</strong>
+              <figcaption><strong>Fig 5.3. Classical ML branch.</strong>
                 The explainable path: the same crops are summarized into 637 handcrafted features
-                (spatial, FFT, color, HOG) and classified by tree ensembles &mdash; kept as
+                (spatial, FFT, color, HOG) and classified by tree ensembles, kept as
                 interpretable evidence beside the deep model.
               </figcaption>
             </figure>
-            <figure class="fig reveal-on-scroll">
+            <figure class="fig span-full tall reveal-on-scroll">
               <img src="assets/figures/wf_sequence.png" alt="Sequence diagram of a scan" loading="lazy" />
-              <figcaption><strong>Fig 5.4 &mdash; Scan sequence.</strong>
+              <figcaption><strong>Fig 5.4. Scan sequence.</strong>
                 Interaction sequence for one scan: browser &rarr; API &rarr; detector &rarr;
                 classifier &rarr; fused response, with the frontend rendering boxes and scores as
                 they return.
               </figcaption>
             </figure>
-            <figure class="fig reveal-on-scroll">
+            <figure class="fig span-full tall reveal-on-scroll">
               <img src="assets/figures/wf_deployment_uml.png" alt="Deployment diagram" loading="lazy" />
-              <figcaption><strong>Fig 5.5 &mdash; Deployment topology.</strong>
+              <figcaption><strong>Fig 5.5. Deployment topology.</strong>
                 Static frontend on Vercel; model server on a Hugging Face Space carrying the
                 YOLO26m and ConvNeXt checkpoints. When the API is offline the page says so instead
                 of pretending.
@@ -482,44 +482,46 @@
             won on field recall. The deployed classifier is ConvNeXt-Tiny + 637 features,
             fine-tuned on the detector's own crops so training matches production. The comparison
             models below (EfficientNetB0, ResNet50, MobileNetV2, tiny CNN) were trained on the same
-            data to justify the final choice.
+            balanced crop benchmark to justify the final choice. ResNet50 and MobileNetV2 were
+            retrained for 15 epochs so their curves show where each model stops learning and starts
+            memorizing; the earlier 2-epoch runs were too short to read.
           </p>
 
           <div class="fig-grid">
             <figure class="fig span-full reveal-on-scroll">
               <img src="assets/figures/train_yolo26m_curves.png" alt="YOLO26m training curves" loading="lazy" />
-              <figcaption><strong>Fig 6.1 &mdash; Deployed detector training curves (YOLO26m, 100 epochs).</strong>
+              <figcaption><strong>Fig 6.1. Deployed detector training curves (YOLO26m, 100 epochs).</strong>
                 Box, classification, and DFL losses fall smoothly on train and validation while
-                precision, recall, mAP50, and mAP50-95 climb &mdash; no divergence between train and
+                precision, recall, mAP50, and mAP50-95 climb. There is no divergence between train and
                 val curves, i.e. no visible overfitting at 100 epochs.
               </figcaption>
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/train_yolo26s_curves.png" alt="YOLO26s training curves" loading="lazy" />
-              <figcaption><strong>Fig 6.2 &mdash; Predecessor detector (YOLO26s).</strong>
+              <figcaption><strong>Fig 6.2. Predecessor detector (YOLO26s).</strong>
                 The earlier YOLO26s run that YOLO26m replaced. Its curves plateau lower; the
                 promotion decision came from matched-operating-point comparison, not curves alone.
               </figcaption>
             </figure>
-            <figure class="fig reveal-on-scroll">
+            <figure class="fig span-full tall reveal-on-scroll">
               <img src="assets/figures/cm_yolo26s_normalized.png" alt="Detector confusion matrix, normalized" loading="lazy" />
-              <figcaption><strong>Fig 6.3 &mdash; Detector confusion matrix (normalized).</strong>
+              <figcaption><strong>Fig 6.3. Detector confusion matrix (normalized).</strong>
                 Per-class detection confusion on validation. The strong diagonal shows materials
-                are rarely confused with each other; the main error mode is background &mdash;
-                missed objects and false alarms &mdash; not cross-material confusion.
+                are rarely confused with each other; the main error mode is background
+                (missed objects and false alarms), not cross-material confusion.
               </figcaption>
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/train_efficientnet_tuned.png" alt="EfficientNetB0 tuned training plots" loading="lazy" />
-              <figcaption><strong>Fig 6.4 &mdash; Classifier training (tuned EfficientNetB0 era).</strong>
+              <figcaption><strong>Fig 6.4. Classifier training (tuned EfficientNetB0 era).</strong>
                 Accuracy and loss curves for the tuned EfficientNetB0 classifier that preceded the
-                ConvNeXt model &mdash; the run whose test set the leakage audit later corrected
+                ConvNeXt model. This is the run whose test set the leakage audit later corrected
                 from 94.30% to 91.77%.
               </figcaption>
             </figure>
-            <figure class="fig reveal-on-scroll">
+            <figure class="fig span-full tall reveal-on-scroll">
               <img src="assets/figures/cm_efficientnetb0.png" alt="EfficientNetB0 confusion matrix" loading="lazy" />
-              <figcaption><strong>Fig 6.5 &mdash; EfficientNetB0 confusion matrix.</strong>
+              <figcaption><strong>Fig 6.5. EfficientNetB0 confusion matrix.</strong>
                 Crop-level confusion for the EfficientNetB0 classifier. Most mass sits on the
                 diagonal; residual confusion concentrates in visually similar pairs like
                 paper&ndash;cardboard.
@@ -527,39 +529,47 @@
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/train_resnet50.png" alt="ResNet50 training plots" loading="lazy" />
-              <figcaption><strong>Fig 6.6 &mdash; Comparison model: ResNet50.</strong>
-                ResNet50 converges to 89.8% test accuracy but needs 23.9M parameters and 161.5&nbsp;MB
-                &mdash; the accuracy-per-megabyte argument against it appears in Model Comparison.
+              <figcaption><strong>Fig 6.6. Comparison model: ResNet50.</strong>
+                15 fine-tuning epochs on the same balanced crops. Train loss falls from 0.65 to
+                0.05 while validation loss bottoms out at <strong>epoch 3</strong> and then drifts
+                back up: everything after epoch 3 is memorization, not learning. Validation accuracy
+                stays flat near 92% (best 92.2%), so the model is comfortably past underfitting and
+                into mild overfitting. It reaches that accuracy with 23.8M parameters, the
+                accuracy-per-parameter argument against it made in Model Comparison.
               </figcaption>
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/train_mobilenetv2.png" alt="MobileNetV2 training plots" loading="lazy" />
-              <figcaption><strong>Fig 6.7 &mdash; Comparison model: MobileNetV2.</strong>
-                MobileNetV2 is the smallest deep comparator (2.4M parameters) but plateaus at 85.4%
-                test accuracy &mdash; its thin feature layers under-represent the texture detail that
-                separates glass from plastic.
+              <figcaption><strong>Fig 6.7. Comparison model: MobileNetV2.</strong>
+                The same 15-epoch schedule on the smallest deep comparator (2.4M parameters).
+                Validation loss bottoms at <strong>epoch 6</strong>, three epochs later than
+                ResNet50, and the train/validation accuracy gap opens more slowly: a smaller model
+                overfits this dataset less readily. It plateaus at 91.4%, below ResNet50, because its
+                thin feature layers under-represent the texture detail that separates glass from
+                plastic.
               </figcaption>
             </figure>
-            <figure class="fig span-full reveal-on-scroll">
+            <figure class="fig span-full tall reveal-on-scroll">
               <img src="assets/figures/cm_grid_comparison.png" alt="Confusion matrix grid for comparison models" loading="lazy" />
-              <figcaption><strong>Fig 6.8 &mdash; Confusion matrices, side by side.</strong>
-                MobileNetV2, ResNet50, and EfficientNetB0 on the same test split. The diagonal
-                sharpens left to right &mdash; the visual version of the accuracy ranking in the
-                comparison table.
+              <figcaption><strong>Fig 6.8. Confusion matrices, side by side.</strong>
+                Crop counts for MobileNetV2 (91.4%), ResNet50 (92.2%), and EfficientNetB0 (94.3%) on
+                the same balanced test split, 300 crops per class in every panel. The diagonal
+                sharpens left to right: the visual version of the accuracy ranking in the comparison
+                table. All three share the same worst pair, paper against cardboard.
               </figcaption>
             </figure>
-            <figure class="fig reveal-on-scroll">
+            <figure class="fig span-full tall reveal-on-scroll">
               <img src="assets/figures/cm_extra_trees.png" alt="ExtraTrees confusion matrix" loading="lazy" />
-              <figcaption><strong>Fig 6.9 &mdash; Classical baseline confusion (ExtraTrees).</strong>
+              <figcaption><strong>Fig 6.9. Classical baseline confusion (ExtraTrees).</strong>
                 The best classical model on 637 handcrafted features. A clearly weaker diagonal
-                than any deep model &mdash; but every split of every tree is inspectable.
+                than any deep model, but every split of every tree is inspectable.
               </figcaption>
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/train_tinycnn_loss.png" alt="Tiny CNN training loss" loading="lazy" />
-              <figcaption><strong>Fig 6.10 &mdash; Tiny CNN baseline loss.</strong>
+              <figcaption><strong>Fig 6.10. Tiny CNN baseline loss.</strong>
                 A compact end-to-end CNN trained from scratch as the floor of the deep family:
-                it reaches only 48.1% accuracy &mdash; transfer learning, not depth alone, is what
+                it reaches only 48.1% accuracy. Transfer learning, not depth alone, is what
                 makes the deep models work here.
               </figcaption>
             </figure>
@@ -614,7 +624,7 @@
             <article class="evidence-card span-4 tone-warning">
               <span class="metric-label">Detector recall</span>
               <strong class="big-number" id="yoloRecall">67.2%</strong>
-              <p>Clean-val recall dipped slightly from YOLO26s's 69.0% while promoting to the 100-epoch YOLO26m retrain, but field recall &mdash; the metric that matters more &mdash; rose 70.9% to 78.1% at the same confidence threshold.</p>
+              <p>Clean-val recall dipped slightly from YOLO26s's 69.0% while promoting to the 100-epoch YOLO26m retrain, but field recall, the metric that matters more, rose 70.9% to 78.1% at the same confidence threshold.</p>
             </article>
             <article class="evidence-card span-4 tone-info">
               <span class="metric-label">Detector mAP50-95</span>
@@ -626,16 +636,16 @@
           <div class="fig-grid">
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/metric_boxpr_curve.png" alt="Precision-recall curve" loading="lazy" />
-              <figcaption><strong>Fig 7.1 &mdash; Precision&ndash;recall curve.</strong>
+              <figcaption><strong>Fig 7.1. Precision&ndash;recall curve.</strong>
                 Per-class and mean PR curves for the detector. The area under each curve is that
                 class's AP; the confidence threshold picks the live operating point along it.
               </figcaption>
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/metric_boxf1_curve.png" alt="F1-confidence curve" loading="lazy" />
-              <figcaption><strong>Fig 7.2 &mdash; F1&ndash;confidence curve.</strong>
+              <figcaption><strong>Fig 7.2. F1&ndash;confidence curve.</strong>
                 F1 as a function of the confidence threshold. The deployed threshold sits near the
-                curve's peak &mdash; lowered deliberately for the field domain, trading a little
+                curve's peak, lowered deliberately for the field domain, trading a little
                 precision for the recall the use case needs.
               </figcaption>
             </figure>
@@ -658,42 +668,42 @@
             retrain lifted field recall from <strong>70.9% to 78.1%</strong> and field small-object
             recall from <strong>58.6% to 68.2%</strong> at the same threshold. Hard-negative mining
             on new field data (PlastOPol) lifted held-out small-object recall from
-            <strong>38.6% to 54.7%</strong> &mdash; new data, not architecture, was the lever.
+            <strong>38.6% to 54.7%</strong>. New data, not architecture, was the lever.
           </p>
 
           <div class="fig-grid">
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/result_pipeline_grass_bottle.png" alt="Pipeline result: bottle on grass" loading="lazy" />
-              <figcaption><strong>Fig 8.1 &mdash; Field scene: bottle on grass.</strong>
+              <figcaption><strong>Fig 8.1. Field scene: bottle on grass.</strong>
                 Full pipeline output on an outdoor field photo: the detector localizes the bottle,
                 the classifier verifies Plastic, and the fused score routes it to Recycling.
               </figcaption>
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/result_pipeline_street_cans.png" alt="Pipeline result: street cans" loading="lazy" />
-              <figcaption><strong>Fig 8.2 &mdash; Field scene: cans on the street.</strong>
-                Multiple small metal objects in one frame &mdash; the small-object regime the
+              <figcaption><strong>Fig 8.2. Field scene: cans on the street.</strong>
+                Multiple small metal objects in one frame: the small-object regime the
                 dataset EDA flagged. Each can is localized and verified independently.
               </figcaption>
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/result_pipeline_kitchen.png" alt="Pipeline result: cluttered kitchen" loading="lazy" />
-              <figcaption><strong>Fig 8.3 &mdash; Cluttered indoor scene.</strong>
+              <figcaption><strong>Fig 8.3. Cluttered indoor scene.</strong>
                 A messy kitchen frame: overlapping objects, mixed materials, hard lighting. The
                 Background veto suppresses non-waste regions the detector proposes.
               </figcaption>
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/result_gradcam_1.jpg" alt="Grad-CAM heatmap example 1" loading="lazy" />
-              <figcaption><strong>Fig 8.4 &mdash; Grad-CAM: where the classifier looks.</strong>
+              <figcaption><strong>Fig 8.4. Grad-CAM: where the classifier looks.</strong>
                 Class-activation heatmap over a verified crop: the hot region sits on the object's
-                material surface, not the background &mdash; evidence the classifier learned
+                material surface, not the background. This is evidence the classifier learned
                 material texture rather than scene context.
               </figcaption>
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/result_gradcam_2.jpg" alt="Grad-CAM heatmap example 2" loading="lazy" />
-              <figcaption><strong>Fig 8.5 &mdash; Grad-CAM: plastic under field lighting.</strong>
+              <figcaption><strong>Fig 8.5. Grad-CAM: plastic under field lighting.</strong>
                 The same visualization on a field-domain plastic item: activation follows the
                 specular highlights and label texture that distinguish plastic from glass.
               </figcaption>
@@ -712,9 +722,9 @@
           <h2 class="page-title">Classical vs deep, and deep vs deep.</h2>
           <p class="page-intro">
             Two comparisons justify the final design. Classical vs deep: the best tree ensemble on
-            637 handcrafted features reaches 73.8% on the balanced benchmark &mdash; genuinely
+            637 handcrafted features reaches 73.8% on the balanced benchmark: genuinely
             useful, fully explainable, but ~20 points behind the deployed deep classifier.
-            Deep vs deep: EfficientNetB0 beat ResNet50 by 4.5 points at a fifth of the size, and
+            Deep vs deep: EfficientNetB0 beat ResNet50 by 2.1 points at a sixth of the weight size, and
             was later replaced by the ConvNeXt-Tiny + features model that survives the leakage
             audit at 93.77%.
           </p>
@@ -725,12 +735,13 @@
                 <span>Deep architecture shoot-out</span>
                 <strong>same data, same split</strong>
               </div>
-              <h3>EfficientNetB0: 94.3% at 29&nbsp;MB vs ResNet50's 89.8% at 161&nbsp;MB.</h3>
+              <h3>EfficientNetB0: 94.3% at 16.8&nbsp;MB vs ResNet50's 92.2% at 95.1&nbsp;MB.</h3>
               <p>
-                MobileNetV2 85.4% (20&nbsp;MB, 2.4M params) &middot; ResNet50 89.8% (161.5&nbsp;MB,
-                23.9M params) &middot; EfficientNetB0 94.3% (29.2&nbsp;MB, 4.2M params). Compound
-                scaling wins the accuracy-per-megabyte race. These figures predate the leakage
-                audit &mdash; the audited successor is the deployed ConvNeXt at 93.77% on the
+                MobileNetV2 91.4% (9.6&nbsp;MB, 2.4M params) &middot; ResNet50 92.2% (95.1&nbsp;MB,
+                23.8M params) &middot; EfficientNetB0 94.3% (16.8&nbsp;MB, 4.2M params). Sizes are
+                FP32 weights derived from the parameter count, so the three are compared on one
+                basis. Compound scaling wins the accuracy-per-megabyte race. These figures predate the leakage
+                audit; the audited successor is the deployed ConvNeXt at 93.77% on the
                 clean test set.
               </p>
             </article>
@@ -739,10 +750,10 @@
                 <span>Classical ML baseline</span>
                 <strong>explainable evidence</strong>
               </div>
-              <h3>73.8% &mdash; ExtraTrees on 637 handcrafted features.</h3>
+              <h3>73.8%: ExtraTrees on 637 handcrafted features.</h3>
               <p>
                 8 spatial + 9 FFT + 44 color + 576 HOG features per crop. Kept for comparison and
-                explainability evidence beside the deep pipeline &mdash; and it is the branch that
+                explainability evidence beside the deep pipeline, and it is the branch that
                 exposed the domain-shift problem (39.8% cross-domain).
               </p>
             </article>
@@ -751,15 +762,15 @@
           <div class="fig-grid">
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/cmp_ml_vs_dl.png" alt="ML vs DL comparison chart" loading="lazy" />
-              <figcaption><strong>Fig 9.1 &mdash; Classical ML vs deep baseline.</strong>
+              <figcaption><strong>Fig 9.1. Classical ML vs deep baseline.</strong>
                 On the same crop benchmark, tree ensembles (ExtraTrees 63.1%, RF 63.2%) clearly beat
-                linear models and the from-scratch tiny CNN (48.1%) &mdash; but all classical
+                linear models and the from-scratch tiny CNN (48.1%), but all classical
                 models trail the transfer-learned deep classifiers.
               </figcaption>
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/cmp_classical_models.png" alt="Classical model comparison chart" loading="lazy" />
-              <figcaption><strong>Fig 9.2 &mdash; Classical model family, ranked.</strong>
+              <figcaption><strong>Fig 9.2. Classical model family, ranked.</strong>
                 Accuracy and macro-F1 for six classical models on the balanced 6-class benchmark.
                 Tree ensembles lead; margin- and linear-based models trail on the 637-feature
                 vector.
@@ -767,15 +778,15 @@
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/cmp_pca_dimensionality.png" alt="PCA dimensionality chart" loading="lazy" />
-              <figcaption><strong>Fig 9.3 &mdash; PCA of the feature space.</strong>
+              <figcaption><strong>Fig 9.3. PCA of the feature space.</strong>
                 Explained variance vs component count for the 637-feature vector: a few dozen
-                components carry most variance, but the long tail still contributes accuracy &mdash;
+                components carry most variance, but the long tail still contributes accuracy, so
                 aggressive reduction costs performance.
               </figcaption>
             </figure>
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/cmp_pca_model_sweep.png" alt="PCA model sweep accuracy chart" loading="lazy" />
-              <figcaption><strong>Fig 9.4 &mdash; Accuracy vs PCA dimension, per model.</strong>
+              <figcaption><strong>Fig 9.4. Accuracy vs PCA dimension, per model.</strong>
                 Sweeping PCA dimensionality across classical models: accuracy saturates near the
                 full feature vector for tree ensembles, confirming the 637 features are not
                 redundant enough to compress for free.
@@ -817,7 +828,7 @@
               </div>
               <p>
                 A 960px training run was evaluated: validation unchanged, unseen-batch recall
-                up 3.9 points &mdash; not enough to chase. A later hard-negative mining fine-tune
+                up 3.9 points, not enough to chase. A later hard-negative mining fine-tune
                 on new field data confirmed the real lever: small-object recall on that held-out
                 domain rose 38.6% to 54.7% from new data alone, no resolution or architecture
                 change. Small objects remain the main source of misses; training-data diversity
@@ -831,14 +842,14 @@
               </div>
               <p>
                 The app reports what an object is made of and routes that material to its bin. It
-                does not judge whether the item should actually be thrown away &mdash; that
+                does not judge whether the item should actually be thrown away; that
                 waste-state decision was removed because there was no dataset to train it reliably.
               </p>
             </article>
           </div>
 
           <div class="method-note">
-            <p><strong>Method note</strong> &mdash; metrics on this site come from the leakage-audited evaluation sets. The audit scripts, quarantine manifest, and reports live in the project repository.</p>
+            <p><strong>Method note.</strong> Metrics on this site come from the leakage-audited evaluation sets. The audit scripts, quarantine manifest, and reports live in the project repository. The Stage-2 architecture shoot-out (EfficientNetB0, ResNet50, MobileNetV2) is measured on the balanced crop benchmark that predates the quarantine, so all three share one test set and stay comparable to each other, but not to the 93.77% clean-test headline.</p>
           </div>
 
           <div class="flow-footer">
@@ -852,8 +863,8 @@
           <p class="kicker"><span class="flow-num">11 / 12</span> Conclusion &amp; Future Work</p>
           <h2 class="page-title">A working, honestly-measured waste scanner.</h2>
           <p class="page-intro">
-            The project delivers a deployed two-stage pipeline &mdash; 93.77% clean-test material
-            accuracy, 74.9% detector mAP50 &mdash; and, just as importantly, a worked example of
+            The project delivers a deployed two-stage pipeline (93.77% clean-test material
+            accuracy, 74.9% detector mAP50) and, just as importantly, a worked example of
             finding and fixing one's own evaluation bug. The classical branch keeps every headline
             claim explainable; the audit trail keeps it honest.
           </p>
@@ -903,8 +914,8 @@
         <h2 class="page-title">The real model, served publicly.</h2>
         <p class="page-intro">
           This is not a mock-up: the trained YOLO26m localizer and ConvNeXt classifier run on a
-          Hugging Face Space backend, served through this page. Upload a photo or pick a sample
-          &mdash; the scan follows the exact pipeline order: localize, crop, verify, fuse &amp; route.
+          Hugging Face Space backend, served through this page. Upload a photo or pick a sample;
+          the scan follows the exact pipeline order: localize, crop, verify, fuse &amp; route.
         </p>
 
         <section class="scan-section" id="scan-live" aria-labelledby="scan-title">
@@ -1011,14 +1022,14 @@
         <div class="fig-grid">
           <figure class="fig reveal-on-scroll">
             <img src="assets/figures/app_screenshot_1.png" alt="Screenshot of the deployed scanner" loading="lazy" />
-            <figcaption><strong>Fig 12.1 &mdash; Deployed scanner in action.</strong>
+            <figcaption><strong>Fig 12.1. Deployed scanner in action.</strong>
               The production frontend on a real scan: detection boxes over the photo, verified
               material, fused confidence, and the bin route.
             </figcaption>
           </figure>
           <figure class="fig reveal-on-scroll">
             <img src="assets/figures/app_screenshot_2.png" alt="Screenshot of scan results detail" loading="lazy" />
-            <figcaption><strong>Fig 12.2 &mdash; Per-class score breakdown.</strong>
+            <figcaption><strong>Fig 12.2. Per-class score breakdown.</strong>
               The score panel after a scan: all 7 class probabilities including the Background
               veto, plus latency and scene context.
             </figcaption>

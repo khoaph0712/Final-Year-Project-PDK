@@ -1117,11 +1117,14 @@ section { scroll-margin-top: 80px; }
 
 .fig img {
   width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
   display: block;
   background: #fff;
   cursor: zoom-in;
   object-fit: contain;
-  max-height: 460px;
+  padding: 10px;
+  box-sizing: border-box;
 }
 
 .fig figcaption {
@@ -1138,7 +1141,9 @@ section { scroll-margin-top: 80px; }
 @media (min-width: 860px) {
   .fig-grid { grid-template-columns: 1fr 1fr; }
   .fig-grid .span-full { grid-column: 1 / -1; }
-  .fig-grid .span-full img { max-height: 640px; }
+  .fig-grid .span-full img { aspect-ratio: 24 / 9; }
+  /* dense diagrams: full width AND a taller box, so labels stay legible inline */
+  .fig-grid .span-full.tall img { aspect-ratio: 16 / 9; }
 }
 
 /* table of contents (home) */

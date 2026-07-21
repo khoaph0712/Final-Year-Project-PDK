@@ -6,6 +6,12 @@
       "runtimeExecutable": ".venv311\\Scripts\\python.exe",
       "runtimeArgs": ["web/server.py"],
       "port": 4175
+    },
+    {
+      "name": "web-static",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8899", "--directory", "web"],
+      "port": 8899
     }
   ]
 }

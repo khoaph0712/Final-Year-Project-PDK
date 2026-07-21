@@ -45,3 +45,6 @@ Thumbs.db
 *.tflite
 *.npy
 *.pkl
+
+# Retrained Stage-2 comparison checkpoints (regenerable via scripts/train_comparison_models_torch.py)
+runs/dl/comparison_models_torch/*/best.pt
