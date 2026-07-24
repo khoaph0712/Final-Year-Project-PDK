@@ -1166,6 +1166,7 @@ section { scroll-margin-top: 80px; }
 }
 
 .fig figcaption strong { color: var(--ink); }
+.fig figcaption .fig-talk { display: block; margin: 2px 0 6px; color: var(--accent); font-style: italic; font-weight: 500; }
 
 @media (min-width: 860px) {
   .fig-grid { grid-template-columns: 1fr 1fr; }
