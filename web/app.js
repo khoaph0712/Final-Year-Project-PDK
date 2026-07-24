@@ -242,6 +242,17 @@ function activatePage(page) {
   if (page === "modeling") startEvidenceCounts();
 }
 
+// Pages can hold several .pres-section flow steps (e.g. "modeling" holds s5-s11);
+// show only the current step so Next/Prev jump to a fresh page instead of
+// scrolling through the rest of that page's sections.
+function showOnlySection(page, sectionId) {
+  const pageEl = pageEls[page];
+  if (!pageEl) return;
+  pageEl.querySelectorAll(".pres-section").forEach((sec) => {
+    sec.hidden = sec.id !== sectionId;
+  });
+}
+
 let currentFlowIndex = 0;
 
 function updateFlowRail() {
@@ -254,15 +265,10 @@ function goToSection(sectionId) {
   const page = FLOW_PAGE[sectionId];
   if (!page) return false;
   activatePage(page);
+  showOnlySection(page, sectionId);
   currentFlowIndex = FLOW.findIndex(([id]) => id === sectionId);
   updateFlowRail();
-  const el = document.getElementById(sectionId);
-  const isFirstOnPage = FLOW.find(([, p]) => p === page)[0] === sectionId;
-  if (isFirstOnPage) {
-    window.scrollTo({ top: 0 });
-  } else if (el) {
-    requestAnimationFrame(() => el.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" }));
-  }
+  window.scrollTo({ top: 0 });
   return true;
 }
 
@@ -281,6 +287,7 @@ function handleHashChange() {
   if (first) {
     currentFlowIndex = FLOW.indexOf(first);
     updateFlowRail();
+    showOnlySection(page, first[0]);
   }
   window.scrollTo({ top: 0 });
 }
