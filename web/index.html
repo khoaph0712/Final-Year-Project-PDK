@@ -136,6 +136,15 @@
           </div>
         </div>
 
+        <p class="page-intro">
+          Three diagrams to orient the whole talk before the details start. Figure 1.1 is the
+          system end to end: a photo goes from the browser to a Hugging Face Space, through the
+          two-stage pipeline, and back as a material and a bin. Figure 1.2 is the same system from
+          the user's side: upload, scan, review, revisit. Figure 1.3 is the actual screen that
+          maps onto both: image on the left, verdict on the right. Everything covered in the next
+          eleven stops slots into one of these three pictures.
+        </p>
+
         <div class="fig-grid">
           <figure class="fig span-full tall reveal-on-scroll">
             <img src="assets/figures/wf_overall.png" alt="Overall WasteWise system architecture diagram" loading="lazy" />
@@ -200,6 +209,17 @@
             Roboflow garbage-classification sources and the PlastOPol field dataset, into one
             YOLO-format dataset with 7 material classes. After tuning, the working dataset holds
             <strong>31,379 images and 67,385 boxes</strong> (24,668 / 3,298 / 3,413 train/valid/test).
+          </p>
+
+          <p class="page-intro">
+            Figure 2.1 is the reason a merge was necessary at all: lay the six sources side by
+            side and none of them covers all seven materials in both studio and field settings.
+            Figures 2.2 through 2.5 show why each source earns its place: TACO for real litter in
+            context, TrashNet for clean even-coverage studio crops, GINI for cluttered garbage
+            scenes, WaDaBa for labelled plastic subtypes. Figure 2.6 puts a face on that last
+            point, a sample grid of WaDaBa's controlled, single-object photos, which is exactly
+            the studio look that creates the domain gap measured later. Figure 2.7 closes the loop
+            with the data model that ties every source's boxes to one shared class vocabulary.
           </p>
 
           <div class="fig-grid">
@@ -277,6 +297,16 @@
             637 handcrafted features (8 spatial + 9 FFT + 44 color + 576 HOG) for the ML branch.
           </p>
 
+          <p class="page-intro">
+            Figure 3.1 traces that whole pipeline as a flow: raw archives in, one balanced
+            YOLO-format dataset out, with dedup and validity filtering as the two gates nothing
+            skips. Figure 3.2 is what balancing actually bought: six materials sitting within a
+            couple thousand boxes of each other instead of one dominating the loss. Figure 3.3 is
+            the label summary for the exact dataset the deployed detector trained on, and it is
+            worth pausing on: most boxes are small and centered, which previews the small-object
+            problem the EDA takes on next.
+          </p>
+
           <div class="fig-grid">
             <figure class="fig span-full tall reveal-on-scroll">
               <img src="assets/figures/wf_dfd.png" alt="Data flow diagram of preprocessing" loading="lazy" />
@@ -324,6 +354,28 @@
             <strong>2,406 test images (43%)</strong> of an earlier classifier evaluation set also
             appeared in training, inflating its accuracy from an honest 91.77% to 94.30%. All
             headline numbers on this site are measured after that leakage was quarantined.
+          </p>
+
+          <div class="callout tone-warn">
+            <span class="callout-icon" aria-hidden="true">!</span>
+            <p><strong>The number that almost shipped.</strong> 94.30% looked like a finished
+              result. It wasn&rsquo;t: 43% of that test set was quietly sitting in training too,
+              recompressed or resized but still the same photo. An honest number that survives
+              an audit (91.77%) beats a flattering one that doesn&rsquo;t, so every metric on this
+              site is measured after the leaked images were found and removed.</p>
+          </div>
+
+          <p class="page-intro">
+            Figure 4.1 confirms the balancing pass held after the final splits. Figures 4.2 and
+            4.3 are the small-object case: a right-skewed box-area histogram, then the same story
+            broken down by class, several materials pushing past half their boxes below the
+            small-object threshold. Figure 4.4 shows why that is not just a data problem but a
+            confound, some classes lean on studio sources, others on field sources, so material
+            and acquisition domain are tangled together in the raw merge. Figure 4.5 is the
+            classical branch's own evidence: color and texture features dominate its decisions,
+            not shape, which is a clue worth remembering going into Modeling. Figures 4.6 and 4.7
+            are the audit itself, the pipeline that found the leak above, and an actual leaked
+            pair caught by it.
           </p>
 
           <div class="fig-grid">
@@ -425,6 +477,17 @@
             </article>
           </div>
 
+          <p class="page-intro">
+            Figure 5.1 is the five steps above drawn as one flow, worth pointing at while
+            recapping S1 through S5. Figures 5.2 and 5.3 split that flow into its two branches:
+            the deep path, where the ConvNeXt embedding is concatenated with the 637 handcrafted
+            features before the final head, and the classical path, the same crops summarized into
+            those features and scored by tree ensembles. Figure 5.4 is the same pipeline again but
+            as a sequence over time, browser to API to detector to classifier and back. Figure 5.5
+            is where it all actually runs, a static frontend on Vercel talking to a model server on
+            a Hugging Face Space.
+          </p>
+
           <div class="fig-grid">
             <figure class="fig span-full reveal-on-scroll">
               <img src="assets/workflow_pipeline.svg" alt="Two-stage localization-first pipeline workflow diagram" loading="lazy" />
@@ -485,6 +548,36 @@
             balanced crop benchmark to justify the final choice. ResNet50 and MobileNetV2 were
             retrained for 15 epochs so their curves show where each model stops learning and starts
             memorizing; the earlier 2-epoch runs were too short to read.
+          </p>
+
+          <p class="page-intro">
+            Figure 6.1 is the deployed detector's own curves, box/classification/DFL losses
+            falling smoothly while precision, recall, and both mAP metrics climb, with train and
+            validation tracking each other the whole way, no overfitting at 100 epochs. Figure 6.2
+            is what it replaced, YOLO26s, plateauing lower; Figure 6.3 is the detector's confusion
+            matrix, and the story there is background, not cross-material mix-ups. Figures 6.4 and
+            6.5 are the classifier era that the leakage audit later corrected, EfficientNetB0's
+            training run and its confusion matrix, most mass on the diagonal with paper and
+            cardboard as the one confusable pair.
+          </p>
+
+          <div class="callout tone-info">
+            <span class="callout-icon" aria-hidden="true">i</span>
+            <p><strong>Read the curve, not just the final number.</strong> ResNet50&rsquo;s
+              validation loss bottoms out at epoch 3 of 15; everything after that is
+              memorization wearing the costume of more training. MobileNetV2 buys three extra
+              epochs before the same thing happens, at a tenth of the parameters, which is why
+              parameter count alone never settles a model choice here.</p>
+          </div>
+
+          <p class="page-intro">
+            Figure 6.8 puts all three classifiers' confusion matrices side by side on the same 300
+            crops per class, and the diagonal visibly sharpens left to right in the order the
+            accuracy numbers predict. Figure 6.9 is the classical baseline's confusion, a clearly
+            weaker diagonal than any deep model, but every split of every tree behind it is
+            inspectable. Figure 6.10 is the floor: a tiny CNN trained from scratch manages only
+            48.1%, which is the evidence that transfer learning, not depth alone, is what makes
+            the deep models work on this dataset.
           </p>
 
           <div class="fig-grid">
@@ -633,6 +726,15 @@
             </article>
           </div>
 
+          <p class="page-intro">
+            The four cards above are single operating points; Figures 7.1 and 7.2 are what they
+            were picked from. Figure 7.1 is the precision-recall curve, the full trade-off surface
+            behind that 83.4%/67.2% pair, area under each class's curve is its AP. Figure 7.2 is
+            F1 against confidence threshold, and the deployed threshold sits deliberately off the
+            curve's peak, lowered for the field domain, buying recall the use case needs at a
+            small cost to precision.
+          </p>
+
           <div class="fig-grid">
             <figure class="fig reveal-on-scroll">
               <img src="assets/figures/metric_boxpr_curve.png" alt="Precision-recall curve" loading="lazy" />
@@ -669,6 +771,16 @@
             recall from <strong>58.6% to 68.2%</strong> at the same threshold. Hard-negative mining
             on new field data (PlastOPol) lifted held-out small-object recall from
             <strong>38.6% to 54.7%</strong>. New data, not architecture, was the lever.
+          </p>
+
+          <p class="page-intro">
+            Figures 8.1 through 8.3 are the pipeline running on the conditions it was built for:
+            a bottle on grass, several small cans on a street, a cluttered kitchen where the
+            Background veto has to suppress everything that is not waste. Then Figures 8.4 and 8.5
+            answer a different question, not just whether the classifier gets it right but where
+            it is looking when it does. Grad-CAM lights up the object's material surface, label
+            texture and specular highlights on plastic, not the background scene, which is the
+            evidence it learned material, not context.
           </p>
 
           <div class="fig-grid">
@@ -729,6 +841,16 @@
             audit at 93.77%.
           </p>
 
+          <div class="callout tone-warn">
+            <span class="callout-icon" aria-hidden="true">!</span>
+            <p><strong>The gotcha the classical branch exposed.</strong> Train the 637-feature
+              model on studio photos and test it on real-world field photos, and accuracy falls
+              off a cliff: from comfortably above 90% down to <strong>39.8%</strong>. Studio and
+              field photos are the same materials lit and framed differently, and that gap is the
+              whole reason field-domain data and matched operating points matter more than another
+              point of benchmark accuracy.</p>
+          </div>
+
           <div class="evidence-grid">
             <article class="evidence-card span-7 reveal-on-scroll">
               <div class="panel-heading">
@@ -758,6 +880,16 @@
               </p>
             </article>
           </div>
+
+          <p class="page-intro">
+            Figure 9.1 lines up the whole classical family against the deep baseline: tree
+            ensembles clear the linear models and the from-scratch tiny CNN, but every classical
+            model still trails the transfer-learned deep classifiers. Figure 9.2 ranks the
+            classical family on its own, tree ensembles leading a 637-feature vector that Figures
+            9.3 and 9.4 then interrogate directly: PCA shows a long tail of components still
+            carrying accuracy, and sweeping dimensionality per model confirms tree ensembles
+            saturate near the full vector, so there is no free compression to be had.
+          </p>
 
           <div class="fig-grid">
             <figure class="fig reveal-on-scroll">
@@ -1018,6 +1150,15 @@
         </div>
 
         <div class="history-grid" id="historyList"></div>
+
+        <p class="page-intro">
+          The scan above just ran the real thing; Figures 12.1 and 12.2 are a fallback record of
+          it in case the backend is asleep or offline during a live presentation. Figure 12.1 is a
+          full scan on the production frontend, boxes, verified material, fused confidence, and
+          bin route together. Figure 12.2 is the score panel underneath it, all seven class
+          probabilities including the Background veto, plus latency and scene context, the same
+          numbers the class-score list on this page is showing right now.
+        </p>
 
         <div class="fig-grid">
           <figure class="fig reveal-on-scroll">

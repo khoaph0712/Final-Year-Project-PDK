@@ -909,6 +909,35 @@ section { scroll-margin-top: 80px; }
 .limit-stack article.tone-info strong { color: var(--info); }
 .limit-stack article.tone-success strong { color: var(--accent); }
 
+.callout {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin: 28px 0;
+  padding: 20px 24px;
+  border-radius: var(--radius);
+  border: 1px solid var(--warn-soft-border);
+  background: var(--warn-soft);
+}
+.callout-icon {
+  flex-shrink: 0;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--warn);
+  color: var(--accent-ink);
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+.callout p { margin: 0; font-size: 0.92rem; line-height: 1.68; color: var(--ink); max-width: 68ch; }
+.callout strong { color: var(--warn); }
+.callout.tone-info { border-color: var(--info-soft-border); background: var(--info-soft); }
+.callout.tone-info .callout-icon { background: var(--info); }
+.callout.tone-info strong { color: var(--info); }
+
 .method-note {
   margin-top: 32px;
   background: var(--surface-2);
