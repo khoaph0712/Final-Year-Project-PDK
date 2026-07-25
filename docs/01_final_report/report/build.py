@@ -11,6 +11,8 @@ intermediate Markdown; pandoc strips HTML comments on conversion.
 from __future__ import annotations
 
 import argparse
+import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -20,9 +22,9 @@ ROOT = HERE.parents[2]
 BUILD = HERE / "_build"
 MERGED = BUILD / "REPORT.md"
 DOCX = HERE.parent / "WasteWise_FYP_Final_Report.docx"
-# Styles only -- pandoc reads styles.xml from the reference doc and ignores its
-# body, so the previous report doubles as the style template.
-REFERENCE = HERE.parent / "UNDERGRADUATE FINAL YEAR PROJECT REPORT (updated).docx"
+# Styles-only template built by make_reference.py. Pointing this at the previous
+# report directly also works, but drags its 74 embedded images into every build.
+REFERENCE = HERE / "reference.docx"
 
 
 def chapters() -> list[Path]:
@@ -36,9 +38,20 @@ def concat() -> Path:
     return MERGED
 
 
+def pandoc_exe() -> str:
+    # winget installs pandoc under LOCALAPPDATA and does not always add it to PATH.
+    found = shutil.which("pandoc")
+    if found:
+        return found
+    fallback = Path(os.environ["LOCALAPPDATA"]) / "Pandoc" / "pandoc.exe"
+    if fallback.exists():
+        return str(fallback)
+    sys.exit("pandoc not found: winget install --id JohnMacFarlane.Pandoc")
+
+
 def to_docx() -> None:
     cmd = [
-        "pandoc", str(MERGED), "-o", str(DOCX),
+        pandoc_exe(), str(MERGED), "-o", str(DOCX),
         f"--resource-path={ROOT}{';' if sys.platform == 'win32' else ':'}{HERE}",
         "--toc", "--toc-depth=3",
     ]

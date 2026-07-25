@@ -140,13 +140,15 @@ bits:
 $$
 b_{i,j} = \begin{cases} 1 & \text{if } I(i,\, j+1) > I(i,\, j) \\ 0 & \text{otherwise} \end{cases}
 \qquad 0 \le i \le 7,\; 0 \le j \le 7
-\tag{1}
 $$
+
+*Equation (1)*
 
 $$
 h(x) = \sum_{i=0}^{7} \sum_{j=0}^{7} b_{i,j} \cdot 2^{\,8i + j}
-\tag{2}
 $$
+
+*Equation (2)*
 
 <!-- src: scripts/audit_model_risks.py#dhash64 -->
 
@@ -158,8 +160,9 @@ the population count of their XOR:
 
 $$
 d_H(a, b) = \operatorname{popcount}(a \oplus b)
-\tag{3}
 $$
+
+*Equation (3)*
 
 <!-- src: scripts/audit_model_risks.py#hamming -->
 
@@ -168,8 +171,9 @@ near-duplicate threshold set at 4 bits:
 
 $$
 L(x, y) = \bigl[\,\mathrm{md5}(x) = \mathrm{md5}(y)\,\bigr] \;\lor\; \bigl[\, d_H\bigl(h(x), h(y)\bigr) \le 4 \,\bigr]
-\tag{4}
 $$
+
+*Equation (4)*
 
 The threshold is validated by an assertion pair that runs on every invocation: a
 rescaled copy of an image must hash within 4 bits of the original, and an
