@@ -68,9 +68,15 @@ def compute_color_features(crop_bgr: np.ndarray) -> np.ndarray:
 
 
 def compute_lbp(gray_image: np.ndarray) -> np.ndarray:
-    """Compute uniform Local Binary Patterns (LBP) for a 64x64 grayscale image.
-    
-    Uses circular P=8, R=1 neighborhood and maps 256 patterns to 10 uniform bins.
+    """LBP texture histogram (P=8, R=1 square neighborhood), 10 bins.
+
+    NOT standard u2/riu2 uniform LBP. The 58 uniform patterns get sequential labels
+    0..57 but the 10-bin histogram only counts labels 0..9 (the first 10 uniform
+    patterns by numeric value); labels 10..57 fall outside range=(0,10) and are
+    dropped, and bin 9 collides the 10th uniform pattern with all 198 non-uniform
+    patterns. Documented as-is on purpose: the deployed classifier was TRAINED on
+    features from this exact function, so "fixing" the binning is a feature
+    distribution shift that requires retraining. Train/serve parity > textbook LBP.
     """
     h, w = gray_image.shape
     lbp = np.zeros((h - 2, w - 2), dtype=np.uint8)

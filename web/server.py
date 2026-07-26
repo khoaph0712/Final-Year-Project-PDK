@@ -74,13 +74,13 @@ YOLO_GATE_CONF = 0.30
 # clean test mAP50 0.474@640 vs 0.409@960, recall 0.456 vs 0.429; realworld_v2 test mAP50
 # 0.499@640 vs 0.475@960 - and 960 costs ~2.25x the CPU inference time on the HF Space.
 YOLO_IMG_SIZE = int(os.environ.get("WASTEWISE_YOLO_IMG_SIZE", "640"))
-YOLO_IOU = 0.55
+YOLO_IOU = 0.55  # inert: YOLO26 is end-to-end/NMS-free and ignores iou=; kept for non-e2e swaps
 YOLO_MAX_DETECTIONS = int(os.environ.get("WASTEWISE_YOLO_MAX_DETECTIONS", "80"))
 MAX_CROP_VERIFICATIONS = int(os.environ.get("WASTEWISE_MAX_CROP_VERIFICATIONS", str(YOLO_MAX_DETECTIONS)))
 SCENE_TOP_K = 3
 CROP_PAD_PX = 10
-# Per-detection confidence bar for counting a box as a reliable material vote (headline
-# material and the mixed-load bin hint). Not a waste decision - just noise rejection.
+# Per-detection confidence bar for counting a box toward the mixed-load bin hint
+# (bins_present below). The headline material vote does NOT use it. Noise rejection only.
 MIN_RELIABLE_CONF = 0.50
 MAX_UPLOAD_BYTES = 15 * 1024 * 1024
 DOMINANT_OVERRIDE_MARGIN = 20
@@ -104,7 +104,9 @@ DOMINANT_OVERRIDE_MARGIN = 20
 #     plastic on the test split; the disagree gate recovers +1.2pp of it).
 #   * UNSURE-CROP ZOOM RETRY ON. Loose detector boxes dilute crops with background
 #     (banana-peel crop: organic 0.324 in the detector box vs 0.575 in a tight crop).
-#     When crop top-1 < 0.55, a 22%-per-side center-shrunk view is averaged in.
+#     When crop top-1 < 0.55, a 22%-per-side center-shrunk view is classified too and
+#     the view with the LOWER Background prob wins (averaging was tried and rejected:
+#     it let the emptier view's Background veto real objects).
 #   * REJECTED by measurement: sand-mask sat>=50 (didn't fix contexts, -0.4pp), organic
 #     prior floor (no effect - the prior tilt dominates), blanket alpha 0.15 (above).
 # Net on the combined independent sets (n=1045): macro 0.9692 -> 0.9546, entirely the
@@ -112,14 +114,12 @@ DOMINANT_OVERRIDE_MARGIN = 20
 # the organic/glass/cardboard-heavy valid split hits its best value of any variant at
 # 0.9810). Real-world: 7 of 12 non-dataset litter photos pass spanning all six classes -
 # the old config passed 6 with zero paper and zero organic.
-SAND_SAT_MIN = int(os.environ.get("WASTEWISE_SAND_SAT_MIN", "20"))
+SAND_SAT_MIN = int(os.environ.get("WASTEWISE_SAND_SAT_MIN", "20"))  # HSV fallback path only
 ALPHA_PLASTIC_VOTE = float(os.environ.get("WASTEWISE_ALPHA_PLASTIC_VOTE", "0.15"))
 ALPHA_PLASTIC_MODE = os.environ.get("WASTEWISE_ALPHA_PLASTIC_MODE", "disagree")  # blanket | disagree
 UNSURE_ZOOM = os.environ.get("WASTEWISE_UNSURE_ZOOM", "1") == "1"
 UNSURE_ZOOM_CONF = float(os.environ.get("WASTEWISE_UNSURE_ZOOM_CONF", "0.55"))
 UNSURE_ZOOM_SHRINK = 0.22  # fraction removed from each side of the box
-ORGANIC_PRIOR_FLOOR = float(os.environ.get("WASTEWISE_ORGANIC_PRIOR_FLOOR", "0"))
-CONTEXT_PRIOR_MODE = os.environ.get("WASTEWISE_CONTEXT_PRIOR", "off")  # on | off
 # YOLO26 is end-to-end/NMS-free: the iou= arg to predict() is silently ignored, and at
 # conf 0.04 near-duplicate proposals of one object flow through - drawn twice in the UI
 # and voting twice in the material aggregation. Class-agnostic greedy dedup fixes both.
@@ -685,6 +685,7 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
         return records, len(boxes), size_filtered
 
     crop_records, proposed_box_count, size_filtered_count = run_detector(YOLO_IMG_SIZE)
+    detector_imgsz = YOLO_IMG_SIZE
 
     # Dense-scene retry: many proposals at 640 means a multi-object scene where most items
     # shrink below detectable size; rerun at high res for real recall (34 -> 204 proposals
@@ -701,6 +702,7 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
             crop_records, proposed_box_count, size_filtered_count = (
                 dense_records, dense_proposed, dense_filtered,
             )
+            detector_imgsz = DENSE_RETRY_IMG_SIZE
 
     context = infer_context(
         image, exclude_boxes=[(r["x1"], r["y1"], r["x2"], r["y2"]) for r in crop_records]
@@ -713,9 +715,14 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
             models,
         )
         if UNSURE_ZOOM:
+            # Boxes under ~29px shrink below the 16px crop floor - the retry would just
+            # reclassify the identical crop, so skip them outright.
+            min_side = 16.0 / (1.0 - 2.0 * UNSURE_ZOOM_SHRINK)
             retry_idx = [
                 i for i in range(verified_crop_count)
                 if float(np.max(verified_probs[i])) < UNSURE_ZOOM_CONF
+                and (crop_records[i]["x2"] - crop_records[i]["x1"]) >= min_side
+                and (crop_records[i]["y2"] - crop_records[i]["y1"]) >= min_side
             ]
             if retry_idx:
                 zoom_crops = []
@@ -740,9 +747,9 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
                         verified_probs[i] = zoom_probs[j]
 
         # Class-agnostic duplicate-box removal, AFTER classification so the survivor of a
-        # duplicate pair is the most decisive view (highest top-1 prob), not whichever one
-        # YOLO happened to score higher - near-identical crops can classify differently
-        # and the higher-YOLO-conf view is not reliably the better-classified one.
+        # duplicate pair is the view that best frames a material object (lowest Background
+        # prob, tie-break highest top-1) - same principle as the zoom-retry pick rule.
+        # Highest-top-1 alone let a Background-decisive view erase a material detection.
         if BOX_DEDUP_IOU > 0 and verified_crop_count > 1:
 
             def box_iou(a: dict, b: dict) -> float:
@@ -754,10 +761,13 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
                 union = area_a + area_b - inter
                 return inter / union if union > 0 else 0.0
 
+            dedup_bg_idx = class_index("Background")
             order = sorted(
                 range(verified_crop_count),
-                key=lambda i: float(np.max(verified_probs[i])),
-                reverse=True,
+                key=lambda i: (
+                    float(verified_probs[i][dedup_bg_idx]),
+                    -float(np.max(verified_probs[i])),
+                ),
             )
             kept_idx: list[int] = []
             for i in order:
@@ -792,13 +802,11 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
     material_counts: dict[str, int] = {}
     material_weights: dict[str, float] = {}
 
-    CONTEXT_PRIORS = {
-        "Beach":    [0.35, 0.25, 0.20, 0.05, 0.05, 0.10],
-        "Grass":    [0.30, 0.15, 0.15, 0.20, 0.05, 0.15],
-        "Indoor":   [0.20, 0.10, 0.15, 0.30, 0.20, 0.05],
-        "Street":   [0.30, 0.15, 0.15, 0.20, 0.10, 0.10],
-        "default":  [1/6,  1/6,  1/6,  1/6,  1/6,  1/6]
-    }
+    # Context prior is UNIFORM - permanently. The scene-keyed prior tables (hand-written,
+    # never fitted to labeled scene data) were measured as a net plastic subsidy and removed
+    # with the 2026-07-26 audit (see header comment + runs/audits/realworld_fusion_sweep_
+    # 2026-07-26.json). The context label itself is UI-only.
+    prior = np.full(6, 1.0 / 6.0)
 
     for box_index, record in enumerate(crop_records):
         x1 = record["x1"]
@@ -808,7 +816,9 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
         yolo_label = record["yoloLabel"]
         yolo_key = record["yoloKey"]
         yolo_score = record["yoloScore"]
-        should_verify_crop = box_index < MAX_CROP_VERIFICATIONS
+        # verified_crop_count, not MAX_CROP_VERIFICATIONS: dedup may have shrunk
+        # verified_probs below the configured cap while unverified tail records remain.
+        should_verify_crop = box_index < verified_crop_count
 
         if should_verify_crop:
             crop_probs = verified_probs[box_index]
@@ -831,7 +841,7 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
                 yidx = class_index(yolo_key)
                 yolo_probs[yidx] = yolo_score
 
-            if yolo_score >= 0.30:
+            if yolo_score >= YOLO_GATE_CONF:
                 # A plastic vote from this detector carries little information on field
                 # boxes (84.7% plastic-vote base rate); trust it less than other materials.
                 # "disagree" mode discounts it only when the crop classifier's top material
@@ -846,25 +856,10 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
 
             combined_probs = alpha * yolo_probs + (1.0 - alpha) * crop_probs
 
-            # Apply Multi-Modal Bayesian Context Fusion
-            # ponytail: tried damping this prior toward uniform (infer_context is an HSV
-            # color heuristic with no ground truth to fit CONTEXT_PRIORS against) - measured
-            # -0.5 to -0.6pp material/bin/waste-state accuracy on
-            # runs/audits/pipeline_bin_decision_eval_*.json with no offsetting gain, so kept
-            # the raw prior. Revisit only with an eval set that labels true scene context.
-            if CONTEXT_PRIOR_MODE == "off":
-                prior = CONTEXT_PRIORS["default"]
-            else:
-                prior = CONTEXT_PRIORS.get(context, CONTEXT_PRIORS["default"])
-            if ORGANIC_PRIOR_FLOOR > 0:
-                floored = list(prior)
-                floored[5] = max(floored[5], ORGANIC_PRIOR_FLOOR)  # index 5 = organic
-                total_prior = sum(floored)
-                prior = [v / total_prior for v in floored]
             cv_probs = combined_probs[:6]
             bg_prob = combined_probs[6]
-            
-            fused_unnormalized = cv_probs * np.array(prior)
+
+            fused_unnormalized = cv_probs * prior
             sum_fused = np.sum(fused_unnormalized)
             if sum_fused > 0:
                 fused_probs = fused_unnormalized / sum_fused
@@ -922,7 +917,7 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
 
     if detections:
         detections.sort(key=lambda item: (item["confidence"], item["w"] * item["h"]), reverse=True)
-        decision_source = f"YOLO {YOLO_IMG_SIZE}px -> top {MAX_CROP_VERIFICATIONS} crop verify -> bottom-up aggregation"
+        decision_source = f"YOLO {detector_imgsz}px -> top {verified_crop_count} crop verify -> bottom-up aggregation"
     else:
         decision_source = "scene classifier fallback; no boxes found"
 
@@ -959,12 +954,16 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
     possible_source = "scene classifier"
     if detections:
         matching_detections = [item for item in detections if item["label"] == dominant_material]
-        candidate_detection = max(
-            matching_detections or detections,
-            key=lambda item: (item["confidence"], item["w"] * item["h"]),
-        )
-        possible_confidence = int(candidate_detection["confidence"])
-        possible_source = candidate_detection.get("labelSource", "localized detection")
+        # Only pair the headline with a detection's confidence when that detection actually
+        # carries the headline label - falling back to max(all detections) paired e.g. a
+        # scene-classifier "Paper" headline with a Background box's confidence.
+        if matching_detections:
+            candidate_detection = max(
+                matching_detections,
+                key=lambda item: (item["confidence"], item["w"] * item["h"]),
+            )
+            possible_confidence = int(candidate_detection["confidence"])
+            possible_source = candidate_detection.get("labelSource", "localized detection")
 
     # Mixed-load bin hint: a real secondary object is often physically smaller in frame than
     # the dominant one, so an area-weighted share test (tried: >=15% of total scene weight)
@@ -999,7 +998,10 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
 
     return {
         "className": dominant_material,
-        "confidence": round(scene_pred_conf * 100),
+        # The headline confidence must belong to the headline class: possible_confidence is
+        # the best detection carrying dominant_material (or the scene prob when no boxes).
+        # scene_pred_conf here paired e.g. "Plastic" with Background's scene-mean prob.
+        "confidence": possible_confidence,
         "topPredictions": scene_top,
         "context": context,
         "latency": latency_ms,
@@ -1018,8 +1020,7 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
             "localizer": str(YOLO_PATH.relative_to(ROOT)),
             "localizerType": LOCALIZER_LABEL,
             "yoloConf": YOLO_CONF,
-            "yoloIou": YOLO_IOU,
-            "yoloImageSize": YOLO_IMG_SIZE,
+            "yoloImageSize": detector_imgsz,
             "maxDetections": YOLO_MAX_DETECTIONS,
             "maxCropVerifications": MAX_CROP_VERIFICATIONS,
             "decisionSource": decision_source,
@@ -1027,7 +1028,7 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
             "sizeFilteredBoxes": size_filtered_count,
             "keptBoxes": len(crop_records),
             "verifiedCrops": verified_crop_count,
-            "contextPrior": CONTEXT_PRIORS.get(context, CONTEXT_PRIORS["default"]),
+            "contextPrior": prior.tolist(),
             "fullImageClass": title_class(scene_pred_key),
             "fullImageConfidence": round(scene_pred_conf * 100),
             "sceneTopK": scene_top,
@@ -1064,10 +1065,23 @@ class WasteWiseHandler(SimpleHTTPRequestHandler):
         self.send_response(204)
         self.end_headers()
 
+    def do_HEAD(self) -> None:
+        # Same routing as do_GET: API paths and API_ONLY mode answer JSON headers instead
+        # of falling through to the static file server (which 404s /api/* on the Space).
+        if self.path == "/api/health" or API_ONLY:
+            self.send_response(200)
+            self.send_header("Content-Type", "application/json; charset=utf-8")
+            self.end_headers()
+            return
+        super().do_HEAD()
+
     def do_GET(self) -> None:
         if self.path == "/api/health":
-            classifier_path = TUNED_CLASSIFIER_PATH if TUNED_CLASSIFIER_PATH.exists() else CLASSIFIER_PATH
-            classifier_type = "convnext_637_tuned" if TUNED_CLASSIFIER_PATH.exists() and TUNED_SCALER_PATH.exists() else "efficientnet_keras"
+            # Path and type must come from the same condition or a missing scaler file
+            # reports the tuned path with the keras type.
+            tuned_ok = TUNED_CLASSIFIER_PATH.exists() and TUNED_SCALER_PATH.exists()
+            classifier_path = TUNED_CLASSIFIER_PATH if tuned_ok else CLASSIFIER_PATH
+            classifier_type = "convnext_637_tuned" if tuned_ok else "efficientnet_keras"
             self.write_json(
                 {
                     "ok": True,
@@ -1077,12 +1091,17 @@ class WasteWiseHandler(SimpleHTTPRequestHandler):
                     "localizerType": LOCALIZER_LABEL,
                     "yoloConf": YOLO_CONF,
                     "yoloGateConf": YOLO_GATE_CONF,
-                    "yoloIou": YOLO_IOU,
                     "yoloImageSize": YOLO_IMG_SIZE,
                     "maxDetections": YOLO_MAX_DETECTIONS,
                     "maxCropVerifications": MAX_CROP_VERIFICATIONS,
                     "sceneTopK": SCENE_TOP_K,
                     "minReliableConf": MIN_RELIABLE_CONF,
+                    "alphaPlasticVote": ALPHA_PLASTIC_VOTE,
+                    "alphaPlasticMode": ALPHA_PLASTIC_MODE,
+                    "unsureZoom": UNSURE_ZOOM,
+                    "boxDedupIou": BOX_DEDUP_IOU,
+                    "denseRetryMin": DENSE_RETRY_MIN,
+                    "denseRetryImageSize": DENSE_RETRY_IMG_SIZE,
                 }
             )
             return
@@ -1104,7 +1123,17 @@ class WasteWiseHandler(SimpleHTTPRequestHandler):
             self.send_error(404, "Unknown endpoint")
             return
 
-        content_length = int(self.headers.get("Content-Length", 0) or 0)
+        # Validate before trusting: a non-numeric Content-Length must 400 (not crash the
+        # handler), and a negative one must not reach rfile.read() - read(-1) buffers the
+        # socket until EOF, which defeats the upload cap entirely.
+        try:
+            content_length = int(self.headers.get("Content-Length", "0") or "0")
+        except ValueError:
+            self.write_json({"error": "Invalid Content-Length header."}, status=400)
+            return
+        if content_length <= 0:
+            self.write_json({"error": "Empty image upload."}, status=400)
+            return
         if content_length > MAX_UPLOAD_BYTES:
             self.write_json({"error": f"Upload too large (max {MAX_UPLOAD_BYTES // (1024 * 1024)}MB)."}, status=413)
             return

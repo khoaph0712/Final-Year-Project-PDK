@@ -846,6 +846,214 @@
      }
     ]
    }
+  },
+  "sweep_v13_batchfix": {
+   "env": {
+    "note": "18-finding backend review batch fix: dedup survivor = lowest Background prob (was highest top-1), zoom skip <29px, Content-Length validation, headline confidence pairing, health truthfulness. Verdict: DEPLOYED (A mat 0.9271->0.929, B mat 0.979->0.981, C 7/12 unchanged)"
+   },
+   "report": {
+    "A_test": {
+     "n": 521,
+     "material_acc": 0.929,
+     "bin_acc": 0.9923,
+     "per_class": {
+      "metal": {
+       "n": 84,
+       "acc": 0.9881
+      },
+      "organic": {
+       "n": 1,
+       "acc": 1.0
+      },
+      "paper": {
+       "n": 260,
+       "acc": 0.95
+      },
+      "cardboard": {
+       "n": 3,
+       "acc": 0.6667
+      },
+      "plastic": {
+       "n": 173,
+       "acc": 0.8728
+      }
+     },
+     "confusion": {
+      "metal": {
+       "metal": 83,
+       "paper": 1
+      },
+      "organic": {
+       "organic": 1
+      },
+      "paper": {
+       "paper": 247,
+       "plastic": 3,
+       "metal": 3,
+       "cardboard": 4,
+       "glass": 1,
+       "background": 1,
+       "organic": 1
+      },
+      "cardboard": {
+       "cardboard": 2,
+       "paper": 1
+      },
+      "plastic": {
+       "plastic": 151,
+       "paper": 7,
+       "glass": 8,
+       "cardboard": 2,
+       "metal": 3,
+       "background": 1,
+       "organic": 1
+      }
+     }
+    },
+    "B_valid": {
+     "n": 525,
+     "material_acc": 0.981,
+     "bin_acc": 0.9962,
+     "per_class": {
+      "organic": {
+       "n": 166,
+       "acc": 0.994
+      },
+      "cardboard": {
+       "n": 109,
+       "acc": 0.9725
+      },
+      "glass": {
+       "n": 198,
+       "acc": 0.9798
+      },
+      "metal": {
+       "n": 52,
+       "acc": 0.9615
+      }
+     },
+     "confusion": {
+      "organic": {
+       "organic": 165,
+       "background": 1
+      },
+      "cardboard": {
+       "organic": 1,
+       "cardboard": 106,
+       "paper": 1,
+       "metal": 1
+      },
+      "glass": {
+       "metal": 3,
+       "glass": 194,
+       "plastic": 1
+      },
+      "metal": {
+       "glass": 1,
+       "metal": 50,
+       "plastic": 1
+      }
+     }
+    },
+    "C_real": [
+     {
+      "file": "cardboard_2.jpg",
+      "expected": "cardboard",
+      "top": "cardboard",
+      "conf": 96,
+      "context": "Indoor",
+      "pass": true
+     },
+     {
+      "file": "cardboard_4.jpg",
+      "expected": "cardboard",
+      "top": "paper",
+      "conf": 86,
+      "context": "Landfill",
+      "pass": false
+     },
+     {
+      "file": "glass_2.jpg",
+      "expected": "glass",
+      "top": "glass",
+      "conf": 98,
+      "context": "Grass",
+      "pass": true
+     },
+     {
+      "file": "metal_4.jpg",
+      "expected": "metal",
+      "top": "metal",
+      "conf": 71,
+      "context": "Outdoor",
+      "pass": true
+     },
+     {
+      "file": "organic_1.jpg",
+      "expected": "organic",
+      "top": "organic",
+      "conf": 31,
+      "context": "Street",
+      "pass": true
+     },
+     {
+      "file": "paper_12.jpg",
+      "expected": "paper",
+      "top": "cardboard",
+      "conf": 59,
+      "context": "Nature",
+      "pass": false
+     },
+     {
+      "file": "paper_13.jpg",
+      "expected": "paper",
+      "top": "cardboard",
+      "conf": 42,
+      "context": "Grass",
+      "pass": false
+     },
+     {
+      "file": "paper_7.jpg",
+      "expected": "paper",
+      "top": "paper",
+      "conf": 63,
+      "context": "Grass",
+      "pass": true
+     },
+     {
+      "file": "plastic_2.jpg",
+      "expected": "plastic",
+      "top": "plastic",
+      "conf": 96,
+      "context": "Nature",
+      "pass": true
+     },
+     {
+      "file": "plastic_3.jpg",
+      "expected": "plastic",
+      "top": "plastic",
+      "conf": 81,
+      "context": "Outdoor",
+      "pass": true
+     },
+     {
+      "file": "plastic_4.jpg",
+      "expected": "plastic",
+      "top": "cardboard",
+      "conf": 58,
+      "context": "Landfill",
+      "pass": false
+     },
+     {
+      "file": "cardboard_3.png",
+      "expected": "cardboard",
+      "top": "plastic",
+      "conf": 68,
+      "context": "Street",
+      "pass": false
+     }
+    ]
+   }
   }
  }
 }
