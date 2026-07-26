@@ -152,6 +152,12 @@ CMD ["python", "web/server.py", "--host", "0.0.0.0", "--port", "7860"]
         DEPLOY_DIR / "requirements-space.txt",
         """numpy>=1.26.0,<2.0
 opencv-python-headless>=4.9.0,<5
+# ultralytics depends on opencv-python (non-headless, no upper bound); without this pin
+# pip installs opencv-python 5.x ALONGSIDE the pinned headless 4.x - both unpack into the
+# same cv2/ directory and whichever wins lacks HOGDescriptor (removed in OpenCV 5), which
+# the 637-feature extractor needs on every crop. Pin both dists to the same 4.x so the
+# file clobber is harmless.
+opencv-python>=4.9.0,<5
 torch==2.4.1
 torchvision==0.19.1
 ultralytics==8.4.92
