@@ -29,6 +29,7 @@ TUNED_CLASSIFIER_PATH = ROOT / "runs" / "dl" / "convnext_ensemble_tuned" / "best
 TUNED_SCALER_PATH = ROOT / "runs" / "dl" / "convnext_ensemble_tuned" / "handcrafted_scaler.npz"
 YOLO_PATH = ROOT / "models" / "trained" / "yolov11_detector" / "best.pt"
 LOCALIZER_LABEL = "YOLO26m hard-case localizer"
+PLACES365_DIR = ROOT / "models" / "places365"
 
 CLASSIFIER_CLASSES = ["plastic", "glass", "metal", "paper", "cardboard", "organic", "Background"]
 # Detector candidate-generation confidence. Lowered 0.10 -> 0.04 (F13): sweeping the deployed
@@ -298,6 +299,7 @@ def preload_models_background() -> None:
     def worker() -> None:
         try:
             get_models()
+            get_scene_net()
             print("[OK] Models preloaded in background.")
         except Exception as exc:  # noqa: BLE001
             print(f"[WARN] Background model preload failed: {exc}", file=sys.stderr)
@@ -352,7 +354,98 @@ def patch_torchvision_nms() -> None:
         torchvision.ops.nms = nms
 
 
+# Places365 scene recognition (context label is cosmetic - UI only, no effect on class
+# scores since CONTEXT_PRIOR_MODE=off). ResNet-18 pretrained on 365 scene categories,
+# summed into waste-relevant buckets; replaces the old HSV color heuristic that tagged
+# any tan/blue surface as "Beach". ~30-60ms per image on CPU.
+_scene_net = None
+_scene_lock = threading.Lock()
+
+# First matching bucket wins per category; Street before Grass so "parking_lot" is not
+# matched by "park".
+SCENE_BUCKETS = [
+    ("Beach", ("beach", "sandbar", "coast", "lagoon")),
+    ("Water", ("ocean", "underwater", "sea", "river", "lake", "raft", "wave", "canal",
+               "pond", "harbor", "wharf", "swamp", "swimming", "waterfall")),
+    ("Landfill", ("landfill", "junkyard", "garbage", "excavation", "trench")),
+    ("Street", ("street", "alley", "road", "highway", "crosswalk", "parking",
+                "gas_station", "driveway", "plaza", "downtown", "medina", "bazaar",
+                "loading_dock", "sidewalk")),
+    ("Grass", ("lawn", "yard", "field", "park", "pasture", "meadow", "garden", "golf",
+               "picnic", "playground", "campsite")),
+    ("Nature", ("forest", "rainforest", "bamboo", "jungle", "mountain", "desert",
+                "badlands", "canyon", "marsh", "tundra", "cliff", "valley", "ice",
+                "snow", "glacier")),
+]
+
+
+def get_scene_net() -> dict[str, Any] | None:
+    global _scene_net
+    if _scene_net is not None:
+        return _scene_net or None
+    with _scene_lock:
+        if _scene_net is not None:
+            return _scene_net or None
+        weights = PLACES365_DIR / "resnet18_places365.pth.tar"
+        cats_file = PLACES365_DIR / "categories_places365.txt"
+        io_file = PLACES365_DIR / "IO_places365.txt"
+        if not (weights.exists() and cats_file.exists() and io_file.exists()):
+            _scene_net = {}  # sentinel: unavailable, fall back to HSV
+            return None
+        import torch
+        import torchvision
+
+        ckpt = torch.load(str(weights), map_location="cpu", weights_only=False)
+        net = torchvision.models.resnet18(num_classes=365)
+        net.load_state_dict({k.replace("module.", ""): v for k, v in ckpt["state_dict"].items()})
+        net.eval()
+        cats = [line.strip().split(" ")[0][3:] for line in cats_file.read_text().splitlines() if line.strip()]
+        # IO_places365.txt: "/a/airfield 2" -> 1 = indoor, 2 = outdoor
+        io = [int(line.strip().split(" ")[-1]) for line in io_file.read_text().splitlines() if line.strip()]
+        bucket_of = []
+        for cat in cats:
+            match = next((name for name, keys in SCENE_BUCKETS if any(k in cat for k in keys)), None)
+            bucket_of.append(match)
+        _scene_net = {"net": net, "cats": cats, "io": io, "bucketOf": bucket_of, "torch": torch}
+        return _scene_net
+
+
 def infer_context(image_bgr: Any, exclude_boxes: list | None = None) -> str:
+    scene = get_scene_net()
+    if scene is None:
+        return infer_context_hsv(image_bgr, exclude_boxes)
+    import cv2
+    import numpy as np
+
+    torch = scene["torch"]
+    rgb = cv2.cvtColor(cv2.resize(image_bgr, (224, 224), interpolation=cv2.INTER_AREA), cv2.COLOR_BGR2RGB)
+    arr = rgb.astype(np.float32) / 255.0
+    arr = (arr - np.array([0.485, 0.456, 0.406], dtype=np.float32)) / np.array(
+        [0.229, 0.224, 0.225], dtype=np.float32
+    )
+    with torch.no_grad():
+        probs = torch.softmax(scene["net"](torch.from_numpy(arr.transpose(2, 0, 1))[None]), dim=1)[0]
+    top_probs, top_idx = probs.topk(5)
+
+    bucket_mass: dict[str, float] = {}
+    indoor_mass = outdoor_mass = 0.0
+    for p, i in zip(top_probs.tolist(), top_idx.tolist()):
+        bucket = scene["bucketOf"][i]
+        if bucket:
+            bucket_mass[bucket] = bucket_mass.get(bucket, 0.0) + p
+        if scene["io"][i] == 1:
+            indoor_mass += p
+        else:
+            outdoor_mass += p
+
+    if bucket_mass:
+        best = max(bucket_mass, key=bucket_mass.get)
+        if bucket_mass[best] >= 0.15:
+            return best
+    return "Indoor" if indoor_mass > outdoor_mass else "Outdoor"
+
+
+def infer_context_hsv(image_bgr: Any, exclude_boxes: list | None = None) -> str:
     import cv2
     import numpy as np
 
@@ -1069,6 +1162,7 @@ def main() -> None:
 
     if args.warmup:
         get_models()
+        get_scene_net()
     elif not args.no_preload and os.environ.get("WASTEWISE_PRELOAD_MODELS", "1") != "0":
         preload_models_background()
 

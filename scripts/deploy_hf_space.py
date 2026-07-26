@@ -18,6 +18,9 @@ MODEL_FILES = [
     ROOT / "runs" / "dl" / "convnext_ensemble_tuned" / "best_convnext_ensemble_tuned.pth",
     ROOT / "runs" / "dl" / "convnext_ensemble_tuned" / "handcrafted_scaler.npz",
     ROOT / "models" / "trained" / "yolov11_detector" / "best.pt",
+    ROOT / "models" / "places365" / "resnet18_places365.pth.tar",
+    ROOT / "models" / "places365" / "categories_places365.txt",
+    ROOT / "models" / "places365" / "IO_places365.txt",
 ]
 SUPPORT_FILES = [
     ROOT / "scripts" / "custom_feature_extractor.py",

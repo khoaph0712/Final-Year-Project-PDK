@@ -53,3 +53,4 @@ runs/dl/comparison_models_torch/*/best.pt
 
 .vercel
 .env*
+*.pth.tar
