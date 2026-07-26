@@ -392,22 +392,29 @@ def get_scene_net() -> dict[str, Any] | None:
         if not (weights.exists() and cats_file.exists() and io_file.exists()):
             _scene_net = {}  # sentinel: unavailable, fall back to HSV
             return None
-        import torch
-        import torchvision
+        # A scene-net load failure must degrade to the HSV fallback, not 500 every
+        # request - the context label is cosmetic and never worth taking the API down.
+        try:
+            import torch
+            import torchvision
 
-        ckpt = torch.load(str(weights), map_location="cpu", weights_only=False)
-        net = torchvision.models.resnet18(num_classes=365)
-        net.load_state_dict({k.replace("module.", ""): v for k, v in ckpt["state_dict"].items()})
-        net.eval()
-        cats = [line.strip().split(" ")[0][3:] for line in cats_file.read_text().splitlines() if line.strip()]
-        # IO_places365.txt: "/a/airfield 2" -> 1 = indoor, 2 = outdoor
-        io = [int(line.strip().split(" ")[-1]) for line in io_file.read_text().splitlines() if line.strip()]
-        bucket_of = []
-        for cat in cats:
-            match = next((name for name, keys in SCENE_BUCKETS if any(k in cat for k in keys)), None)
-            bucket_of.append(match)
-        _scene_net = {"net": net, "cats": cats, "io": io, "bucketOf": bucket_of, "torch": torch}
-        return _scene_net
+            ckpt = torch.load(str(weights), map_location="cpu", weights_only=False)
+            net = torchvision.models.resnet18(num_classes=365)
+            net.load_state_dict({k.replace("module.", ""): v for k, v in ckpt["state_dict"].items()})
+            net.eval()
+            cats = [line.strip().split(" ")[0][3:] for line in cats_file.read_text().splitlines() if line.strip()]
+            # IO_places365.txt: "/a/airfield 2" -> 1 = indoor, 2 = outdoor
+            io = [int(line.strip().split(" ")[-1]) for line in io_file.read_text().splitlines() if line.strip()]
+            bucket_of = []
+            for cat in cats:
+                match = next((name for name, keys in SCENE_BUCKETS if any(k in cat for k in keys)), None)
+                bucket_of.append(match)
+            _scene_net = {"net": net, "cats": cats, "io": io, "bucketOf": bucket_of, "torch": torch}
+            return _scene_net
+        except Exception as exc:  # noqa: BLE001
+            print(f"[WARN] Places365 scene net failed to load, using HSV fallback: {exc!r}", file=sys.stderr)
+            _scene_net = {}
+            return None
 
 
 def infer_context(image_bgr: Any, exclude_boxes: list | None = None) -> str:
@@ -704,9 +711,13 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
             )
             detector_imgsz = DENSE_RETRY_IMG_SIZE
 
-    context = infer_context(
-        image, exclude_boxes=[(r["x1"], r["y1"], r["x2"], r["y2"]) for r in crop_records]
-    )
+    try:
+        context = infer_context(
+            image, exclude_boxes=[(r["x1"], r["y1"], r["x2"], r["y2"]) for r in crop_records]
+        )
+    except Exception as exc:  # noqa: BLE001 - cosmetic label must never fail the request
+        print(f"[WARN] infer_context failed: {exc!r}", file=sys.stderr)
+        context = "Unknown"
 
     verified_crop_count = min(MAX_CROP_VERIFICATIONS, len(crop_records))
     if verified_crop_count > 0:
@@ -1151,7 +1162,12 @@ class WasteWiseHandler(SimpleHTTPRequestHandler):
             self.write_json({"error": str(exc)}, status=400)
         except Exception as exc:  # noqa: BLE001
             print(f"[ERROR] /api/predict failed: {exc!r}", file=sys.stderr)
-            self.write_json({"error": "Internal error while processing the image."}, status=500)
+            # detail included on purpose: FYP demo API, and Space logs are owner-only -
+            # a bare 500 already cost a full blind debug cycle (OpenCV 5, 2026-07-27).
+            self.write_json(
+                {"error": "Internal error while processing the image.", "detail": repr(exc)},
+                status=500,
+            )
 
     def read_multipart_image(self, content_length: int) -> bytes:
         """Extract the 'image' part from a multipart/form-data body.
