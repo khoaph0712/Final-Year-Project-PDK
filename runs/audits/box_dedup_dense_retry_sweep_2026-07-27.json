@@ -1,0 +1,851 @@
+{
+ "date": "2026-07-27",
+ "purpose": "Fix duplicate boxes (YOLO26 is NMS-free, iou arg ignored) and dense-scene under-detection (640px too coarse for many-object scenes). Deployed: post-classification class-agnostic dedup IoU 0.55 + dense retry at 960px when >=8 proposals at 640.",
+ "eval_sets": {
+  "A_test": "external_datasets/rf_garbage_cls/test stride 2",
+  "B_valid": "external_datasets/rf_garbage_cls/valid stride 4",
+  "C_real": "12 real-world photos (scratchpad real_trash, sources in Demo images/RESULTS.md)"
+ },
+ "variants": {
+  "sweep_v9_final_pickview": {
+   "env": {
+    "note": "deployed baseline before this audit"
+   },
+   "report": {
+    "A_test": {
+     "n": 521,
+     "material_acc": 0.9251,
+     "bin_acc": 0.9923,
+     "per_class": {
+      "metal": {
+       "n": 84,
+       "acc": 0.9762
+      },
+      "organic": {
+       "n": 1,
+       "acc": 1.0
+      },
+      "paper": {
+       "n": 260,
+       "acc": 0.9462
+      },
+      "cardboard": {
+       "n": 3,
+       "acc": 0.6667
+      },
+      "plastic": {
+       "n": 173,
+       "acc": 0.8728
+      }
+     },
+     "confusion": {
+      "metal": {
+       "metal": 82,
+       "glass": 1,
+       "paper": 1
+      },
+      "organic": {
+       "organic": 1
+      },
+      "paper": {
+       "paper": 246,
+       "plastic": 3,
+       "metal": 3,
+       "cardboard": 5,
+       "glass": 1,
+       "background": 1,
+       "organic": 1
+      },
+      "cardboard": {
+       "cardboard": 2,
+       "paper": 1
+      },
+      "plastic": {
+       "plastic": 151,
+       "cardboard": 2,
+       "paper": 7,
+       "glass": 9,
+       "metal": 2,
+       "background": 1,
+       "organic": 1
+      }
+     }
+    },
+    "B_valid": {
+     "n": 525,
+     "material_acc": 0.981,
+     "bin_acc": 0.9962,
+     "per_class": {
+      "organic": {
+       "n": 166,
+       "acc": 0.994
+      },
+      "cardboard": {
+       "n": 109,
+       "acc": 0.9725
+      },
+      "glass": {
+       "n": 198,
+       "acc": 0.9798
+      },
+      "metal": {
+       "n": 52,
+       "acc": 0.9615
+      }
+     },
+     "confusion": {
+      "organic": {
+       "organic": 165,
+       "background": 1
+      },
+      "cardboard": {
+       "organic": 1,
+       "cardboard": 106,
+       "paper": 1,
+       "metal": 1
+      },
+      "glass": {
+       "metal": 3,
+       "glass": 194,
+       "plastic": 1
+      },
+      "metal": {
+       "glass": 1,
+       "metal": 50,
+       "plastic": 1
+      }
+     }
+    },
+    "C_real": [
+     {
+      "file": "cardboard_2.jpg",
+      "expected": "cardboard",
+      "top": "cardboard",
+      "conf": 93,
+      "context": "Beach",
+      "pass": true
+     },
+     {
+      "file": "cardboard_4.jpg",
+      "expected": "cardboard",
+      "top": "paper",
+      "conf": 53,
+      "context": "Beach",
+      "pass": false
+     },
+     {
+      "file": "glass_2.jpg",
+      "expected": "glass",
+      "top": "glass",
+      "conf": 54,
+      "context": "Grass",
+      "pass": true
+     },
+     {
+      "file": "metal_4.jpg",
+      "expected": "metal",
+      "top": "metal",
+      "conf": 79,
+      "context": "Beach",
+      "pass": true
+     },
+     {
+      "file": "organic_1.jpg",
+      "expected": "organic",
+      "top": "organic",
+      "conf": 35,
+      "context": "Beach",
+      "pass": true
+     },
+     {
+      "file": "paper_12.jpg",
+      "expected": "paper",
+      "top": "cardboard",
+      "conf": 60,
+      "context": "Beach",
+      "pass": false
+     },
+     {
+      "file": "paper_13.jpg",
+      "expected": "paper",
+      "top": "cardboard",
+      "conf": 46,
+      "context": "Grass",
+      "pass": false
+     },
+     {
+      "file": "paper_7.jpg",
+      "expected": "paper",
+      "top": "paper",
+      "conf": 44,
+      "context": "Beach",
+      "pass": true
+     },
+     {
+      "file": "plastic_2.jpg",
+      "expected": "plastic",
+      "top": "plastic",
+      "conf": 51,
+      "context": "Street",
+      "pass": true
+     },
+     {
+      "file": "plastic_3.jpg",
+      "expected": "plastic",
+      "top": "plastic",
+      "conf": 43,
+      "context": "Beach",
+      "pass": true
+     },
+     {
+      "file": "plastic_4.jpg",
+      "expected": "plastic",
+      "top": "cardboard",
+      "conf": 19,
+      "context": "Beach",
+      "pass": false
+     },
+     {
+      "file": "cardboard_3.png",
+      "expected": "cardboard",
+      "top": "plastic",
+      "conf": 59,
+      "context": "Beach",
+      "pass": false
+     }
+    ]
+   }
+  },
+  "sweep_v10_dedup": {
+   "env": {
+    "WASTEWISE_BOX_DEDUP_IOU": "0.55 (default)"
+   },
+   "report": {
+    "A_test": {
+     "n": 521,
+     "material_acc": 0.9251,
+     "bin_acc": 0.9904,
+     "per_class": {
+      "metal": {
+       "n": 84,
+       "acc": 0.9881
+      },
+      "organic": {
+       "n": 1,
+       "acc": 1.0
+      },
+      "paper": {
+       "n": 260,
+       "acc": 0.95
+      },
+      "cardboard": {
+       "n": 3,
+       "acc": 0.6667
+      },
+      "plastic": {
+       "n": 173,
+       "acc": 0.8613
+      }
+     },
+     "confusion": {
+      "metal": {
+       "metal": 83,
+       "paper": 1
+      },
+      "organic": {
+       "organic": 1
+      },
+      "paper": {
+       "paper": 247,
+       "plastic": 3,
+       "metal": 3,
+       "cardboard": 4,
+       "glass": 1,
+       "background": 1,
+       "organic": 1
+      },
+      "cardboard": {
+       "cardboard": 2,
+       "paper": 1
+      },
+      "plastic": {
+       "plastic": 149,
+       "cardboard": 3,
+       "paper": 6,
+       "glass": 9,
+       "metal": 3,
+       "background": 2,
+       "organic": 1
+      }
+     }
+    },
+    "B_valid": {
+     "n": 525,
+     "material_acc": 0.981,
+     "bin_acc": 0.9962,
+     "per_class": {
+      "organic": {
+       "n": 166,
+       "acc": 0.994
+      },
+      "cardboard": {
+       "n": 109,
+       "acc": 0.9725
+      },
+      "glass": {
+       "n": 198,
+       "acc": 0.9798
+      },
+      "metal": {
+       "n": 52,
+       "acc": 0.9615
+      }
+     },
+     "confusion": {
+      "organic": {
+       "organic": 165,
+       "background": 1
+      },
+      "cardboard": {
+       "organic": 1,
+       "cardboard": 106,
+       "paper": 1,
+       "metal": 1
+      },
+      "glass": {
+       "metal": 3,
+       "glass": 194,
+       "plastic": 1
+      },
+      "metal": {
+       "glass": 1,
+       "metal": 50,
+       "plastic": 1
+      }
+     }
+    },
+    "C_real": [
+     {
+      "file": "cardboard_2.jpg",
+      "expected": "cardboard",
+      "top": "cardboard",
+      "conf": 94,
+      "context": "Street",
+      "pass": true
+     },
+     {
+      "file": "cardboard_4.jpg",
+      "expected": "cardboard",
+      "top": "paper",
+      "conf": 53,
+      "context": "Indoor",
+      "pass": false
+     },
+     {
+      "file": "glass_2.jpg",
+      "expected": "glass",
+      "top": "glass",
+      "conf": 54,
+      "context": "Grass",
+      "pass": true
+     },
+     {
+      "file": "metal_4.jpg",
+      "expected": "metal",
+      "top": "metal",
+      "conf": 79,
+      "context": "Indoor",
+      "pass": true
+     },
+     {
+      "file": "organic_1.jpg",
+      "expected": "organic",
+      "top": "organic",
+      "conf": 35,
+      "context": "Street",
+      "pass": true
+     },
+     {
+      "file": "paper_12.jpg",
+      "expected": "paper",
+      "top": "cardboard",
+      "conf": 60,
+      "context": "Indoor",
+      "pass": false
+     },
+     {
+      "file": "paper_13.jpg",
+      "expected": "paper",
+      "top": "cardboard",
+      "conf": 44,
+      "context": "Grass",
+      "pass": false
+     },
+     {
+      "file": "paper_7.jpg",
+      "expected": "paper",
+      "top": "paper",
+      "conf": 68,
+      "context": "Grass",
+      "pass": true
+     },
+     {
+      "file": "plastic_2.jpg",
+      "expected": "plastic",
+      "top": "plastic",
+      "conf": 57,
+      "context": "Street",
+      "pass": true
+     },
+     {
+      "file": "plastic_3.jpg",
+      "expected": "plastic",
+      "top": "plastic",
+      "conf": 43,
+      "context": "Indoor",
+      "pass": true
+     },
+     {
+      "file": "plastic_4.jpg",
+      "expected": "plastic",
+      "top": "cardboard",
+      "conf": 22,
+      "context": "Indoor",
+      "pass": false
+     },
+     {
+      "file": "cardboard_3.png",
+      "expected": "cardboard",
+      "top": "plastic",
+      "conf": 59,
+      "context": "Street",
+      "pass": false
+     }
+    ]
+   }
+  },
+  "sweep_v11_dedup_960": {
+   "env": {
+    "WASTEWISE_YOLO_IMG_SIZE": "960",
+    "verdict": "REJECTED: shattered close-ups, C 7/12 -> 4/12, B -1.3pp"
+   },
+   "report": {
+    "A_test": {
+     "n": 521,
+     "material_acc": 0.9194,
+     "bin_acc": 0.9904,
+     "per_class": {
+      "metal": {
+       "n": 84,
+       "acc": 0.9762
+      },
+      "organic": {
+       "n": 1,
+       "acc": 1.0
+      },
+      "paper": {
+       "n": 260,
+       "acc": 0.9577
+      },
+      "cardboard": {
+       "n": 3,
+       "acc": 0.6667
+      },
+      "plastic": {
+       "n": 173,
+       "acc": 0.8382
+      }
+     },
+     "confusion": {
+      "metal": {
+       "metal": 82,
+       "plastic": 1,
+       "paper": 1
+      },
+      "organic": {
+       "organic": 1
+      },
+      "paper": {
+       "paper": 249,
+       "plastic": 3,
+       "metal": 3,
+       "cardboard": 2,
+       "glass": 1,
+       "background": 1,
+       "organic": 1
+      },
+      "cardboard": {
+       "cardboard": 2,
+       "paper": 1
+      },
+      "plastic": {
+       "plastic": 145,
+       "glass": 11,
+       "metal": 6,
+       "paper": 6,
+       "organic": 2,
+       "background": 1,
+       "cardboard": 2
+      }
+     }
+    },
+    "B_valid": {
+     "n": 525,
+     "material_acc": 0.9676,
+     "bin_acc": 0.9905,
+     "per_class": {
+      "organic": {
+       "n": 166,
+       "acc": 0.994
+      },
+      "cardboard": {
+       "n": 109,
+       "acc": 0.9633
+      },
+      "glass": {
+       "n": 198,
+       "acc": 0.9444
+      },
+      "metal": {
+       "n": 52,
+       "acc": 0.9808
+      }
+     },
+     "confusion": {
+      "organic": {
+       "organic": 165,
+       "metal": 1
+      },
+      "cardboard": {
+       "organic": 1,
+       "cardboard": 105,
+       "paper": 2,
+       "metal": 1
+      },
+      "glass": {
+       "metal": 5,
+       "glass": 187,
+       "organic": 2,
+       "background": 1,
+       "plastic": 2,
+       "cardboard": 1
+      },
+      "metal": {
+       "glass": 1,
+       "metal": 51
+      }
+     }
+    },
+    "C_real": [
+     {
+      "file": "cardboard_2.jpg",
+      "expected": "cardboard",
+      "top": "cardboard",
+      "conf": 91,
+      "context": "Street",
+      "pass": true
+     },
+     {
+      "file": "cardboard_4.jpg",
+      "expected": "cardboard",
+      "top": "paper",
+      "conf": 38,
+      "context": "Indoor",
+      "pass": false
+     },
+     {
+      "file": "glass_2.jpg",
+      "expected": "glass",
+      "top": "glass",
+      "conf": 97,
+      "context": "Grass",
+      "pass": true
+     },
+     {
+      "file": "metal_4.jpg",
+      "expected": "metal",
+      "top": "metal",
+      "conf": 52,
+      "context": "Indoor",
+      "pass": true
+     },
+     {
+      "file": "organic_1.jpg",
+      "expected": "organic",
+      "top": "background",
+      "conf": 44,
+      "context": "Street",
+      "pass": false
+     },
+     {
+      "file": "paper_12.jpg",
+      "expected": "paper",
+      "top": "cardboard",
+      "conf": 69,
+      "context": "Indoor",
+      "pass": false
+     },
+     {
+      "file": "paper_13.jpg",
+      "expected": "paper",
+      "top": "metal",
+      "conf": 45,
+      "context": "Grass",
+      "pass": false
+     },
+     {
+      "file": "paper_7.jpg",
+      "expected": "paper",
+      "top": "background",
+      "conf": 64,
+      "context": "Grass",
+      "pass": false
+     },
+     {
+      "file": "plastic_2.jpg",
+      "expected": "plastic",
+      "top": "metal",
+      "conf": 83,
+      "context": "Street",
+      "pass": false
+     },
+     {
+      "file": "plastic_3.jpg",
+      "expected": "plastic",
+      "top": "plastic",
+      "conf": 47,
+      "context": "Indoor",
+      "pass": true
+     },
+     {
+      "file": "plastic_4.jpg",
+      "expected": "plastic",
+      "top": "cardboard",
+      "conf": 21,
+      "context": "Indoor",
+      "pass": false
+     },
+     {
+      "file": "cardboard_3.png",
+      "expected": "cardboard",
+      "top": "metal",
+      "conf": 63,
+      "context": "Street",
+      "pass": false
+     }
+    ]
+   }
+  },
+  "sweep_v12_dense_retry": {
+   "env": {
+    "WASTEWISE_DENSE_RETRY_MIN": "8 (default)",
+    "WASTEWISE_DENSE_RETRY_IMG_SIZE": "960 (default)",
+    "verdict": "DEPLOYED"
+   },
+   "report": {
+    "A_test": {
+     "n": 521,
+     "material_acc": 0.9271,
+     "bin_acc": 0.9904,
+     "per_class": {
+      "metal": {
+       "n": 84,
+       "acc": 0.9881
+      },
+      "organic": {
+       "n": 1,
+       "acc": 1.0
+      },
+      "paper": {
+       "n": 260,
+       "acc": 0.95
+      },
+      "cardboard": {
+       "n": 3,
+       "acc": 0.6667
+      },
+      "plastic": {
+       "n": 173,
+       "acc": 0.8671
+      }
+     },
+     "confusion": {
+      "metal": {
+       "metal": 83,
+       "paper": 1
+      },
+      "organic": {
+       "organic": 1
+      },
+      "paper": {
+       "paper": 247,
+       "plastic": 3,
+       "metal": 3,
+       "cardboard": 4,
+       "glass": 1,
+       "background": 1,
+       "organic": 1
+      },
+      "cardboard": {
+       "cardboard": 2,
+       "paper": 1
+      },
+      "plastic": {
+       "plastic": 150,
+       "cardboard": 3,
+       "paper": 6,
+       "glass": 8,
+       "metal": 3,
+       "background": 2,
+       "organic": 1
+      }
+     }
+    },
+    "B_valid": {
+     "n": 525,
+     "material_acc": 0.979,
+     "bin_acc": 0.9962,
+     "per_class": {
+      "organic": {
+       "n": 166,
+       "acc": 0.994
+      },
+      "cardboard": {
+       "n": 109,
+       "acc": 0.9725
+      },
+      "glass": {
+       "n": 198,
+       "acc": 0.9747
+      },
+      "metal": {
+       "n": 52,
+       "acc": 0.9615
+      }
+     },
+     "confusion": {
+      "organic": {
+       "organic": 165,
+       "background": 1
+      },
+      "cardboard": {
+       "organic": 1,
+       "cardboard": 106,
+       "paper": 1,
+       "metal": 1
+      },
+      "glass": {
+       "metal": 3,
+       "glass": 193,
+       "cardboard": 1,
+       "plastic": 1
+      },
+      "metal": {
+       "glass": 1,
+       "metal": 50,
+       "plastic": 1
+      }
+     }
+    },
+    "C_real": [
+     {
+      "file": "cardboard_2.jpg",
+      "expected": "cardboard",
+      "top": "cardboard",
+      "conf": 94,
+      "context": "Street",
+      "pass": true
+     },
+     {
+      "file": "cardboard_4.jpg",
+      "expected": "cardboard",
+      "top": "paper",
+      "conf": 53,
+      "context": "Indoor",
+      "pass": false
+     },
+     {
+      "file": "glass_2.jpg",
+      "expected": "glass",
+      "top": "glass",
+      "conf": 54,
+      "context": "Grass",
+      "pass": true
+     },
+     {
+      "file": "metal_4.jpg",
+      "expected": "metal",
+      "top": "metal",
+      "conf": 79,
+      "context": "Indoor",
+      "pass": true
+     },
+     {
+      "file": "organic_1.jpg",
+      "expected": "organic",
+      "top": "organic",
+      "conf": 35,
+      "context": "Street",
+      "pass": true
+     },
+     {
+      "file": "paper_12.jpg",
+      "expected": "paper",
+      "top": "cardboard",
+      "conf": 60,
+      "context": "Indoor",
+      "pass": false
+     },
+     {
+      "file": "paper_13.jpg",
+      "expected": "paper",
+      "top": "cardboard",
+      "conf": 44,
+      "context": "Grass",
+      "pass": false
+     },
+     {
+      "file": "paper_7.jpg",
+      "expected": "paper",
+      "top": "paper",
+      "conf": 68,
+      "context": "Grass",
+      "pass": true
+     },
+     {
+      "file": "plastic_2.jpg",
+      "expected": "plastic",
+      "top": "plastic",
+      "conf": 57,
+      "context": "Street",
+      "pass": true
+     },
+     {
+      "file": "plastic_3.jpg",
+      "expected": "plastic",
+      "top": "plastic",
+      "conf": 43,
+      "context": "Indoor",
+      "pass": true
+     },
+     {
+      "file": "plastic_4.jpg",
+      "expected": "plastic",
+      "top": "cardboard",
+      "conf": 22,
+      "context": "Indoor",
+      "pass": false
+     },
+     {
+      "file": "cardboard_3.png",
+      "expected": "cardboard",
+      "top": "plastic",
+      "conf": 59,
+      "context": "Street",
+      "pass": false
+     }
+    ]
+   }
+  }
+ }
+}

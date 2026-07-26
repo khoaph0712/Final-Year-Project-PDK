@@ -119,6 +119,13 @@ UNSURE_ZOOM_CONF = float(os.environ.get("WASTEWISE_UNSURE_ZOOM_CONF", "0.55"))
 UNSURE_ZOOM_SHRINK = 0.22  # fraction removed from each side of the box
 ORGANIC_PRIOR_FLOOR = float(os.environ.get("WASTEWISE_ORGANIC_PRIOR_FLOOR", "0"))
 CONTEXT_PRIOR_MODE = os.environ.get("WASTEWISE_CONTEXT_PRIOR", "off")  # on | off
+# YOLO26 is end-to-end/NMS-free: the iou= arg to predict() is silently ignored, and at
+# conf 0.04 near-duplicate proposals of one object flow through - drawn twice in the UI
+# and voting twice in the material aggregation. Class-agnostic greedy dedup fixes both.
+BOX_DEDUP_IOU = float(os.environ.get("WASTEWISE_BOX_DEDUP_IOU", "0.55"))  # 0 disables
+# Dense-scene detector retry (see comment at the call site in predict_image).
+DENSE_RETRY_MIN = int(os.environ.get("WASTEWISE_DENSE_RETRY_MIN", "8"))  # 0 disables
+DENSE_RETRY_IMG_SIZE = int(os.environ.get("WASTEWISE_DENSE_RETRY_IMG_SIZE", "960"))
 # API-only mode (set in the HF Space Dockerfile): serve /api/* only; the Vercel
 # frontend is the one website. Local dev keeps serving web/ as before.
 API_ONLY = os.environ.get("WASTEWISE_API_ONLY", "0") == "1"
@@ -359,6 +366,8 @@ def infer_context(image_bgr: Any, exclude_boxes: list | None = None) -> str:
     bg_mask = np.ones((h, w), dtype=bool)
     for x1, y1, x2, y2 in exclude_boxes or []:
         bg_mask[max(0, int(y1)):min(h, int(y2)), max(0, int(x1)):min(w, int(x2))] = False
+    if not bg_mask.any():  # box covers the whole frame - no background left to read
+        bg_mask[:] = True
     total = max(1, int(np.sum(bg_mask)))
 
     green = cv2.inRange(hsv, np.array([35, 40, 40]), np.array([85, 255, 255])) > 0
@@ -523,65 +532,82 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
     # per-mode CNN thresholds it set were shadowed by CLASS_THRESHOLDS covering every
     # material class. If a real recovery pass is wanted, it must run BELOW YOLO_CONF and be
     # re-measured against runs/audits/pipeline_bin_decision_eval_*.json first.
-    yolo_result = localizer.predict(
-        image,
-        conf=YOLO_CONF,
-        iou=YOLO_IOU,
-        imgsz=YOLO_IMG_SIZE,
-        max_det=YOLO_MAX_DETECTIONS,
-        verbose=False,
-    )[0]
+    def run_detector(imgsz: int) -> tuple[list, int, int]:
+        result = localizer.predict(
+            image,
+            conf=YOLO_CONF,
+            iou=YOLO_IOU,
+            imgsz=imgsz,
+            max_det=YOLO_MAX_DETECTIONS,
+            verbose=False,
+        )[0]
+        boxes = list(result.boxes[:YOLO_MAX_DETECTIONS])
 
-    boxes = list(yolo_result.boxes[:YOLO_MAX_DETECTIONS])
-
-    # Sort YOLO proposals by confidence and size
-    boxes.sort(
-        key=lambda box: (
-            float(box.conf[0]) if box.conf is not None else 0.0,
-            float((box.xyxy[0][2] - box.xyxy[0][0]) * (box.xyxy[0][3] - box.xyxy[0][1])),
-        ),
-        reverse=True,
-    )
-
-    proposed_box_count = len(boxes)
-    size_filtered_count = 0
-
-    crop_records = []
-    for raw_box in boxes:
-        x1, y1, x2, y2 = [float(v) for v in raw_box.xyxy[0].tolist()]
-        cls_idx = int(raw_box.cls[0]) if raw_box.cls is not None else -1
-        yolo_label = localizer.names.get(cls_idx, str(cls_idx)) if hasattr(localizer, "names") else str(cls_idx)
-        yolo_key = normalize_class_key(str(yolo_label))
-        yolo_score = float(raw_box.conf[0]) if raw_box.conf is not None else 0.0
-
-        w_box = x2 - x1
-        h_box = y2 - y1
-
-        # Physical Size Filter: reject tiny blurry crops (width or height < 24 px)
-        if w_box < 24 or h_box < 24:
-            size_filtered_count += 1
-            continue
-
-        ix1 = max(0, int(round(x1)) - CROP_PAD_PX)
-        iy1 = max(0, int(round(y1)) - CROP_PAD_PX)
-        ix2 = min(width, int(round(x2)) + CROP_PAD_PX)
-        iy2 = min(height, int(round(y2)) + CROP_PAD_PX)
-        crop = image[iy1:iy2, ix1:ix2]
-        if crop.size == 0 or crop.shape[0] < 16 or crop.shape[1] < 16:
-            continue
-
-        crop_records.append(
-            {
-                "x1": x1,
-                "y1": y1,
-                "x2": x2,
-                "y2": y2,
-                "crop": crop,
-                "yoloLabel": yolo_label,
-                "yoloKey": yolo_key,
-                "yoloScore": yolo_score,
-            }
+        # Sort YOLO proposals by confidence and size
+        boxes.sort(
+            key=lambda box: (
+                float(box.conf[0]) if box.conf is not None else 0.0,
+                float((box.xyxy[0][2] - box.xyxy[0][0]) * (box.xyxy[0][3] - box.xyxy[0][1])),
+            ),
+            reverse=True,
         )
+
+        size_filtered = 0
+        records = []
+        for raw_box in boxes:
+            x1, y1, x2, y2 = [float(v) for v in raw_box.xyxy[0].tolist()]
+            cls_idx = int(raw_box.cls[0]) if raw_box.cls is not None else -1
+            yolo_label = localizer.names.get(cls_idx, str(cls_idx)) if hasattr(localizer, "names") else str(cls_idx)
+            yolo_key = normalize_class_key(str(yolo_label))
+            yolo_score = float(raw_box.conf[0]) if raw_box.conf is not None else 0.0
+
+            w_box = x2 - x1
+            h_box = y2 - y1
+
+            # Physical Size Filter: reject tiny blurry crops (width or height < 24 px)
+            if w_box < 24 or h_box < 24:
+                size_filtered += 1
+                continue
+
+            ix1 = max(0, int(round(x1)) - CROP_PAD_PX)
+            iy1 = max(0, int(round(y1)) - CROP_PAD_PX)
+            ix2 = min(width, int(round(x2)) + CROP_PAD_PX)
+            iy2 = min(height, int(round(y2)) + CROP_PAD_PX)
+            crop = image[iy1:iy2, ix1:ix2]
+            if crop.size == 0 or crop.shape[0] < 16 or crop.shape[1] < 16:
+                continue
+
+            records.append(
+                {
+                    "x1": x1,
+                    "y1": y1,
+                    "x2": x2,
+                    "y2": y2,
+                    "crop": crop,
+                    "yoloLabel": yolo_label,
+                    "yoloKey": yolo_key,
+                    "yoloScore": yolo_score,
+                }
+            )
+        return records, len(boxes), size_filtered
+
+    crop_records, proposed_box_count, size_filtered_count = run_detector(YOLO_IMG_SIZE)
+
+    # Dense-scene retry: many proposals at 640 means a multi-object scene where most items
+    # shrink below detectable size; rerun at high res for real recall (34 -> 204 proposals
+    # on the floating-bottles demo). Close-up single-object photos yield 1-6 proposals and
+    # never trigger, which matters: blanket 960 shattered close-ups into spurious fragments
+    # and dropped real-photo pass rate 7/12 -> 4/12 (sweep_v11 vs v10, 2026-07-27).
+    if (
+        DENSE_RETRY_MIN > 0
+        and len(crop_records) >= DENSE_RETRY_MIN
+        and DENSE_RETRY_IMG_SIZE > YOLO_IMG_SIZE
+    ):
+        dense_records, dense_proposed, dense_filtered = run_detector(DENSE_RETRY_IMG_SIZE)
+        if len(dense_records) > len(crop_records):
+            crop_records, proposed_box_count, size_filtered_count = (
+                dense_records, dense_proposed, dense_filtered,
+            )
 
     context = infer_context(
         image, exclude_boxes=[(r["x1"], r["y1"], r["x2"], r["y2"]) for r in crop_records]
@@ -619,6 +645,45 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
                     # averaging instead lets the emptier view's Background veto real objects
                     if float(zoom_probs[j][bg_idx]) < float(verified_probs[i][bg_idx]):
                         verified_probs[i] = zoom_probs[j]
+
+        # Class-agnostic duplicate-box removal, AFTER classification so the survivor of a
+        # duplicate pair is the most decisive view (highest top-1 prob), not whichever one
+        # YOLO happened to score higher - near-identical crops can classify differently
+        # and the higher-YOLO-conf view is not reliably the better-classified one.
+        if BOX_DEDUP_IOU > 0 and verified_crop_count > 1:
+
+            def box_iou(a: dict, b: dict) -> float:
+                ix = max(0.0, min(a["x2"], b["x2"]) - max(a["x1"], b["x1"]))
+                iy = max(0.0, min(a["y2"], b["y2"]) - max(a["y1"], b["y1"]))
+                inter = ix * iy
+                area_a = max(0.0, a["x2"] - a["x1"]) * max(0.0, a["y2"] - a["y1"])
+                area_b = max(0.0, b["x2"] - b["x1"]) * max(0.0, b["y2"] - b["y1"])
+                union = area_a + area_b - inter
+                return inter / union if union > 0 else 0.0
+
+            order = sorted(
+                range(verified_crop_count),
+                key=lambda i: float(np.max(verified_probs[i])),
+                reverse=True,
+            )
+            kept_idx: list[int] = []
+            for i in order:
+                if all(
+                    box_iou(crop_records[i], crop_records[j]) <= BOX_DEDUP_IOU
+                    for j in kept_idx
+                ):
+                    kept_idx.append(i)
+            kept_idx.sort()  # restore YOLO-confidence ordering for downstream indexing
+            # ponytail: unverified tail only exists if MAX_CROP_VERIFICATIONS is lowered
+            # below max_det (never in the deployed config); dedup it against kept boxes only.
+            tail = [
+                r for r in crop_records[verified_crop_count:]
+                if all(box_iou(r, crop_records[j]) <= BOX_DEDUP_IOU for j in kept_idx)
+            ]
+            verified_probs = [verified_probs[i] for i in kept_idx]
+            crop_records = [crop_records[i] for i in kept_idx] + tail
+            verified_crop_count = len(kept_idx)
+
         # Bottom-up scene classification aggregation
         scene_probs = np.mean(verified_probs, axis=0)
     else:
