@@ -109,9 +109,9 @@ def main() -> int:
         remove_tree(DEPLOY_DIR)
     DEPLOY_DIR.mkdir(parents=True)
 
-    for name in ["index.html", "styles.css", "app.js", "README.md", ".nojekyll"]:
-        copy_tree_item(ROOT / "web" / name, DEPLOY_DIR / "web" / name)
-    copy_tree_item(ROOT / "web" / "assets", DEPLOY_DIR / "web" / "assets")
+    # Backend-only Space: the frontend is served by Vercel (wastewise-fyp.vercel.app,
+    # which proxies /api/* here via vercel.json rewrites). Shipping the frontend too
+    # duplicated the site on the *.hf.space domain.
     copy_tree_item(ROOT / "web" / "server.py", DEPLOY_DIR / "web" / "server.py")
 
     for model_file in MODEL_FILES:
@@ -130,6 +130,7 @@ WORKDIR /app
 ENV TF_CPP_MIN_LOG_LEVEL=3
 ENV MPLCONFIGDIR=/tmp/matplotlib
 ENV HF_HOME=/tmp/huggingface
+ENV WASTEWISE_API_ONLY=1
 
 RUN apt-get update \\
     && apt-get install -y --no-install-recommends libgl1 libglib2.0-0 git git-lfs \\
@@ -166,12 +167,12 @@ pinned: false
 
 # WasteWise AI
 
-Full web deployment for the WasteWise FYP application.
+Backend model API for the WasteWise FYP application. The frontend is served
+by Vercel (https://wastewise-fyp.vercel.app), which proxies `/api/*` here.
 
-- Frontend: `web/index.html`, `web/styles.css`, `web/app.js`
-- Backend: `web/server.py`
+- Backend: `web/server.py` (API-only mode)
 - Models: hard-case ConvNeXt + 637-feature classifier and YOLO26m localizer
-- API: `/api/predict`
+- API: `GET /api/health`, `POST /api/predict`
 """,
     )
     write_file(

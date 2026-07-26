@@ -119,6 +119,9 @@ UNSURE_ZOOM_CONF = float(os.environ.get("WASTEWISE_UNSURE_ZOOM_CONF", "0.55"))
 UNSURE_ZOOM_SHRINK = 0.22  # fraction removed from each side of the box
 ORGANIC_PRIOR_FLOOR = float(os.environ.get("WASTEWISE_ORGANIC_PRIOR_FLOOR", "0"))
 CONTEXT_PRIOR_MODE = os.environ.get("WASTEWISE_CONTEXT_PRIOR", "off")  # on | off
+# API-only mode (set in the HF Space Dockerfile): serve /api/* only; the Vercel
+# frontend is the one website. Local dev keeps serving web/ as before.
+API_ONLY = os.environ.get("WASTEWISE_API_ONLY", "0") == "1"
 
 # web/app.js keeps a fallback-only copy of this table; keep the two in sync.
 ROUTES = {
@@ -907,6 +910,17 @@ class WasteWiseHandler(SimpleHTTPRequestHandler):
                     "maxCropVerifications": MAX_CROP_VERIFICATIONS,
                     "sceneTopK": SCENE_TOP_K,
                     "minReliableConf": MIN_RELIABLE_CONF,
+                }
+            )
+            return
+        if API_ONLY:
+            # Backend-only deployment (HF Space): the frontend lives on Vercel, so any
+            # non-API GET answers with a service card instead of mirroring the site.
+            self.write_json(
+                {
+                    "service": "WasteWise model API",
+                    "frontend": "https://wastewise-fyp.vercel.app",
+                    "endpoints": ["/api/health", "POST /api/predict"],
                 }
             )
             return
