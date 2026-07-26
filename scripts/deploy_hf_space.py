@@ -151,7 +151,7 @@ CMD ["python", "web/server.py", "--host", "0.0.0.0", "--port", "7860"]
     write_file(
         DEPLOY_DIR / "requirements-space.txt",
         """numpy>=1.26.0,<2.0
-opencv-python-headless>=4.9.0
+opencv-python-headless>=4.9.0,<5
 torch==2.4.1
 torchvision==0.19.1
 ultralytics==8.4.92
