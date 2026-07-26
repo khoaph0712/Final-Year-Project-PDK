@@ -130,6 +130,36 @@ DENSE_RETRY_IMG_SIZE = int(os.environ.get("WASTEWISE_DENSE_RETRY_IMG_SIZE", "960
 # API-only mode (set in the HF Space Dockerfile): serve /api/* only; the Vercel
 # frontend is the one website. Local dev keeps serving web/ as before.
 API_ONLY = os.environ.get("WASTEWISE_API_ONLY", "0") == "1"
+# Repo to self-heal model weights from when the HF Spaces build leaves LFS pointer files
+# in the image instead of real bytes (seen 2026-07-27: every torch.load died with
+# UnpicklingError "invalid load key, 'v'" - the 'v' is "version https://git-lfs...").
+WEIGHTS_REPO = os.environ.get("WASTEWISE_WEIGHTS_REPO", "KhoaPhung/wastewise-ai")
+
+
+def ensure_lfs_materialized(path: Path) -> None:
+    """If path holds a Git LFS pointer instead of real bytes, download the real file."""
+    try:
+        if not path.exists() or path.stat().st_size > 1024:
+            return
+        head = path.read_bytes()
+    except OSError:
+        return
+    if not head.startswith(b"version https://git-lfs"):
+        return
+    import urllib.request
+
+    rel = path.relative_to(ROOT).as_posix()
+    url = f"https://huggingface.co/spaces/{WEIGHTS_REPO}/resolve/main/{rel}"
+    print(f"[WARN] {rel} is an LFS pointer, downloading real bytes from {url}", file=sys.stderr)
+    tmp = path.with_name(path.name + ".tmp")
+    with urllib.request.urlopen(url, timeout=600) as response, open(tmp, "wb") as out:
+        while True:
+            chunk = response.read(1 << 20)
+            if not chunk:
+                break
+            out.write(chunk)
+    tmp.replace(path)
+    print(f"[OK] {rel} restored ({path.stat().st_size} bytes)", file=sys.stderr)
 
 # web/app.js keeps a fallback-only copy of this table; keep the two in sync.
 ROUTES = {
@@ -263,6 +293,9 @@ def get_models() -> dict[str, Any]:
         from ultralytics import YOLO
 
         patch_torchvision_nms()
+
+        for weights_path in (YOLO_PATH, TUNED_CLASSIFIER_PATH, TUNED_SCALER_PATH):
+            ensure_lfs_materialized(weights_path)
 
         if not YOLO_PATH.exists():
             raise FileNotFoundError(f"YOLO model not found: {YOLO_PATH}")
@@ -398,6 +431,7 @@ def get_scene_net() -> dict[str, Any] | None:
             import torch
             import torchvision
 
+            ensure_lfs_materialized(weights)
             ckpt = torch.load(str(weights), map_location="cpu", weights_only=False)
             net = torchvision.models.resnet18(num_classes=365)
             net.load_state_dict({k.replace("module.", ""): v for k, v in ckpt["state_dict"].items()})
