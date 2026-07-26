@@ -83,6 +83,42 @@ CROP_PAD_PX = 10
 MIN_RELIABLE_CONF = 0.50
 MAX_UPLOAD_BYTES = 15 * 1024 * 1024
 DOMINANT_OVERRIDE_MARGIN = 20
+# 2026-07-26 real-world fusion audit: 13 non-dataset litter photos through the full
+# pipeline + 8 fusion variants swept on two independent eval sets (rf_garbage_cls test
+# stride-2, n=521, plastic/paper-heavy; rf_garbage_cls valid stride-4, n=524,
+# organic/glass/cardboard-heavy; archived in runs/audits/realworld_fusion_sweep_2026-07-26.json).
+# Findings and decisions:
+#   * CONTEXT PRIOR OFF. infer_context mislabels asphalt/benches as "Beach" (the sand HSV
+#     mask overlaps warm grey pavement), and the hand-written priors tilt every ambiguous
+#     crop toward plastic (organic x0.05-0.15 vs plastic x0.20-0.35). Measured: prior-off
+#     costs -1.5pp on the plastic-heavy test split but GAINS +0.2pp on the organic-heavy
+#     valid split - the prior's "value" was a plastic subsidy, not scene understanding.
+#     Real-world evidence: banana peel -> Plastic 65%; a cardboard-sleeved coffee cup's
+#     correct Cardboard-50 crop call flipped to Plastic by the Grass prior alone.
+#     infer_context stays for the UI context field; only the prior multiply is disabled.
+#   * PLASTIC-VOTE DISCOUNT, disagree-gated. The detector votes plastic on 84.7% of field
+#     boxes (see above), so a plastic vote that CONTRADICTS the crop classifier's top
+#     material carries ~no information: alpha 0.40 -> 0.15 for exactly those votes.
+#     Corroborating plastic votes keep 0.40 (blanket discount measured -2.9pp extra
+#     plastic on the test split; the disagree gate recovers +1.2pp of it).
+#   * UNSURE-CROP ZOOM RETRY ON. Loose detector boxes dilute crops with background
+#     (banana-peel crop: organic 0.324 in the detector box vs 0.575 in a tight crop).
+#     When crop top-1 < 0.55, a 22%-per-side center-shrunk view is averaged in.
+#   * REJECTED by measurement: sand-mask sat>=50 (didn't fix contexts, -0.4pp), organic
+#     prior floor (no effect - the prior tilt dominates), blanket alpha 0.15 (above).
+# Net on the combined independent sets (n=1045): macro 0.9692 -> 0.9546, entirely the
+# plastic subsidy coming off (plastic 0.965 -> 0.873; every other class flat or up, and
+# the organic/glass/cardboard-heavy valid split hits its best value of any variant at
+# 0.9810). Real-world: 7 of 12 non-dataset litter photos pass spanning all six classes -
+# the old config passed 6 with zero paper and zero organic.
+SAND_SAT_MIN = int(os.environ.get("WASTEWISE_SAND_SAT_MIN", "20"))
+ALPHA_PLASTIC_VOTE = float(os.environ.get("WASTEWISE_ALPHA_PLASTIC_VOTE", "0.15"))
+ALPHA_PLASTIC_MODE = os.environ.get("WASTEWISE_ALPHA_PLASTIC_MODE", "disagree")  # blanket | disagree
+UNSURE_ZOOM = os.environ.get("WASTEWISE_UNSURE_ZOOM", "1") == "1"
+UNSURE_ZOOM_CONF = float(os.environ.get("WASTEWISE_UNSURE_ZOOM_CONF", "0.55"))
+UNSURE_ZOOM_SHRINK = 0.22  # fraction removed from each side of the box
+ORGANIC_PRIOR_FLOOR = float(os.environ.get("WASTEWISE_ORGANIC_PRIOR_FLOOR", "0"))
+CONTEXT_PRIOR_MODE = os.environ.get("WASTEWISE_CONTEXT_PRIOR", "off")  # on | off
 
 # web/app.js keeps a fallback-only copy of this table; keep the two in sync.
 ROUTES = {
@@ -314,7 +350,7 @@ def infer_context(image_bgr: Any) -> str:
     total = max(1, image_bgr.shape[0] * image_bgr.shape[1])
 
     green = cv2.inRange(hsv, np.array([35, 40, 40]), np.array([85, 255, 255]))
-    sand = cv2.inRange(hsv, np.array([10, 20, 80]), np.array([28, 150, 255]))
+    sand = cv2.inRange(hsv, np.array([10, SAND_SAT_MIN, 80]), np.array([28, 150, 255]))
     water = cv2.inRange(hsv, np.array([90, 30, 50]), np.array([130, 255, 255]))
 
     green_pct = float(np.sum(green > 0) / total)
@@ -539,6 +575,32 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
             [record["crop"] for record in crop_records[:verified_crop_count]],
             models,
         )
+        if UNSURE_ZOOM:
+            retry_idx = [
+                i for i in range(verified_crop_count)
+                if float(np.max(verified_probs[i])) < UNSURE_ZOOM_CONF
+            ]
+            if retry_idx:
+                zoom_crops = []
+                for i in retry_idx:
+                    r = crop_records[i]
+                    bw = r["x2"] - r["x1"]
+                    bh = r["y2"] - r["y1"]
+                    sx1 = max(0, int(round(r["x1"] + UNSURE_ZOOM_SHRINK * bw)))
+                    sy1 = max(0, int(round(r["y1"] + UNSURE_ZOOM_SHRINK * bh)))
+                    sx2 = min(width, int(round(r["x2"] - UNSURE_ZOOM_SHRINK * bw)))
+                    sy2 = min(height, int(round(r["y2"] - UNSURE_ZOOM_SHRINK * bh)))
+                    crop = image[sy1:sy2, sx1:sx2]
+                    if crop.size == 0 or crop.shape[0] < 16 or crop.shape[1] < 16:
+                        crop = r["crop"]
+                    zoom_crops.append(crop)
+                zoom_probs = classify_bgr_batch(zoom_crops, models)
+                bg_idx = class_index("Background")
+                for j, i in enumerate(retry_idx):
+                    # keep the view that better frames a material object (less Background);
+                    # averaging instead lets the emptier view's Background veto real objects
+                    if float(zoom_probs[j][bg_idx]) < float(verified_probs[i][bg_idx]):
+                        verified_probs[i] = zoom_probs[j]
         # Bottom-up scene classification aggregation
         scene_probs = np.mean(verified_probs, axis=0)
     else:
@@ -594,7 +656,15 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
                 yolo_probs[yidx] = yolo_score
 
             if yolo_score >= 0.30:
-                alpha = 0.40
+                # A plastic vote from this detector carries little information on field
+                # boxes (84.7% plastic-vote base rate); trust it less than other materials.
+                # "disagree" mode discounts it only when the crop classifier's top material
+                # contradicts it, so corroborating votes keep the full boost.
+                plastic_discount = yolo_key == "plastic" and (
+                    ALPHA_PLASTIC_MODE == "blanket"
+                    or CLASSIFIER_CLASSES[int(np.argmax(crop_probs[:6]))] != "plastic"
+                )
+                alpha = ALPHA_PLASTIC_VOTE if plastic_discount else 0.40
             else:
                 alpha = 0.15
 
@@ -606,7 +676,15 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
             # -0.5 to -0.6pp material/bin/waste-state accuracy on
             # runs/audits/pipeline_bin_decision_eval_*.json with no offsetting gain, so kept
             # the raw prior. Revisit only with an eval set that labels true scene context.
-            prior = CONTEXT_PRIORS.get(context, CONTEXT_PRIORS["default"])
+            if CONTEXT_PRIOR_MODE == "off":
+                prior = CONTEXT_PRIORS["default"]
+            else:
+                prior = CONTEXT_PRIORS.get(context, CONTEXT_PRIORS["default"])
+            if ORGANIC_PRIOR_FLOOR > 0:
+                floored = list(prior)
+                floored[5] = max(floored[5], ORGANIC_PRIOR_FLOOR)  # index 5 = organic
+                total_prior = sum(floored)
+                prior = [v / total_prior for v in floored]
             cv_probs = combined_probs[:6]
             bg_prob = combined_probs[6]
             

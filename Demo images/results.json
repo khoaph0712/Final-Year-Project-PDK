@@ -1,0 +1,354 @@
+[
+ {
+  "file": "cardboard_2.jpg",
+  "expected": "cardboard",
+  "top": "Cardboard",
+  "confidence": 93,
+  "bin": "Recycling",
+  "pass": true,
+  "detections": [
+   {
+    "label": "Cardboard",
+    "confidence": 96,
+    "x": 0.13081222772598267,
+    "y": 0.04353880776954624,
+    "w": 99.11796897649765,
+    "h": 22.679440087438053
+   },
+   {
+    "label": "Cardboard",
+    "confidence": 92,
+    "x": 0.0,
+    "y": 0.03892183303833008,
+    "w": 99.56865310668945,
+    "h": 32.47381305526086
+   }
+  ]
+ },
+ {
+  "file": "cardboard_3.png",
+  "expected": "cardboard",
+  "top": "Plastic",
+  "confidence": 59,
+  "bin": "Recycling",
+  "pass": false,
+  "detections": [
+   {
+    "label": "Plastic",
+    "confidence": 68,
+    "x": 15.336507558822632,
+    "y": 1.2271690033441687,
+    "w": 68.48751664161682,
+    "h": 89.29649189891491
+   }
+  ]
+ },
+ {
+  "file": "cardboard_4.jpg",
+  "expected": "cardboard",
+  "top": "Paper",
+  "confidence": 53,
+  "bin": "Recycling",
+  "pass": false,
+  "detections": [
+   {
+    "label": "Cardboard",
+    "confidence": 94,
+    "x": 3.0148983001708984,
+    "y": 0.06627877553304036,
+    "w": 46.45411014556885,
+    "h": 48.1508461634318
+   },
+   {
+    "label": "Paper",
+    "confidence": 86,
+    "x": 36.11680030822754,
+    "y": 27.78453826904297,
+    "w": 63.88319969177246,
+    "h": 72.1418571472168
+   }
+  ]
+ },
+ {
+  "file": "glass_2.jpg",
+  "expected": "glass",
+  "top": "Glass",
+  "confidence": 54,
+  "bin": "Recycling",
+  "pass": true,
+  "detections": [
+   {
+    "label": "Glass",
+    "confidence": 98,
+    "x": 26.925652027130127,
+    "y": 35.061635971069336,
+    "w": 38.499934673309326,
+    "h": 44.08457120259603
+   },
+   {
+    "label": "Background",
+    "confidence": 60,
+    "x": 59.84459400177003,
+    "y": 35.051962534586586,
+    "w": 5.587854385375977,
+    "h": 7.6020749409993496
+   }
+  ]
+ },
+ {
+  "file": "metal_4.jpg",
+  "expected": "metal",
+  "top": "Metal",
+  "confidence": 79,
+  "bin": "Recycling",
+  "pass": true,
+  "detections": [
+   {
+    "label": "Metal",
+    "confidence": 84,
+    "x": 49.65801239013672,
+    "y": 9.639774199198383,
+    "w": 22.025184631347656,
+    "h": 37.25298900425248
+   },
+   {
+    "label": "Metal",
+    "confidence": 71,
+    "x": 49.65801239013672,
+    "y": 9.639774199198383,
+    "w": 22.025184631347656,
+    "h": 37.25298900425248
+   }
+  ]
+ },
+ {
+  "file": "organic_1.jpg",
+  "expected": "organic",
+  "top": "Organic",
+  "confidence": 35,
+  "bin": "Compost",
+  "pass": true,
+  "detections": [
+   {
+    "label": "Organic",
+    "confidence": 31,
+    "x": 41.41303539276123,
+    "y": 38.395334939185226,
+    "w": 58.58696460723877,
+    "h": 23.562754444332505
+   }
+  ]
+ },
+ {
+  "file": "paper_12.jpg",
+  "expected": "paper",
+  "top": "Cardboard",
+  "confidence": 60,
+  "bin": "Recycling",
+  "pass": false,
+  "detections": [
+   {
+    "label": "Cardboard",
+    "confidence": 60,
+    "x": 28.260446166992185,
+    "y": 20.332822971001356,
+    "w": 38.608584594726565,
+    "h": 64.39691189520373
+   },
+   {
+    "label": "Cardboard",
+    "confidence": 59,
+    "x": 28.260446166992185,
+    "y": 20.332822971001356,
+    "w": 38.608584594726565,
+    "h": 64.39691189520373
+   }
+  ]
+ },
+ {
+  "file": "paper_13.jpg",
+  "expected": "paper",
+  "top": "Cardboard",
+  "confidence": 46,
+  "bin": "Recycling",
+  "pass": false,
+  "detections": [
+   {
+    "label": "Cardboard",
+    "confidence": 50,
+    "x": 26.100066304206848,
+    "y": 27.487393220265705,
+    "w": 50.5391925573349,
+    "h": 38.75821828842163
+   },
+   {
+    "label": "Cardboard",
+    "confidence": 42,
+    "x": 26.100066304206848,
+    "y": 27.487393220265705,
+    "w": 50.5391925573349,
+    "h": 38.75821828842163
+   },
+   {
+    "label": "Cardboard",
+    "confidence": 40,
+    "x": 64.06961679458618,
+    "y": 28.941980997721355,
+    "w": 12.410706281661987,
+    "h": 27.882524331410725
+   }
+  ]
+ },
+ {
+  "file": "paper_7.jpg",
+  "expected": "paper",
+  "top": "Paper",
+  "confidence": 44,
+  "bin": "Recycling",
+  "pass": true,
+  "detections": [
+   {
+    "label": "Paper",
+    "confidence": 62,
+    "x": 0.43456792831420893,
+    "y": 46.771583557128906,
+    "w": 86.85046434402466,
+    "h": 53.17162831624349
+   },
+   {
+    "label": "Background",
+    "confidence": 49,
+    "x": 0.0,
+    "y": 46.26683553059896,
+    "w": 86.82533264160156,
+    "h": 53.73316446940104
+   }
+  ]
+ },
+ {
+  "file": "plastic_2.jpg",
+  "expected": "plastic",
+  "top": "Plastic",
+  "confidence": 51,
+  "bin": "Recycling",
+  "pass": true,
+  "detections": [
+   {
+    "label": "Plastic",
+    "confidence": 96,
+    "x": 34.54636096954346,
+    "y": 56.30598068237305,
+    "w": 23.22695255279541,
+    "h": 13.835614522298176
+   },
+   {
+    "label": "Metal",
+    "confidence": 73,
+    "x": 9.666262865066528,
+    "y": 49.32126998901367,
+    "w": 36.34518027305603,
+    "h": 39.1679318745931
+   },
+   {
+    "label": "Metal",
+    "confidence": 66,
+    "x": 9.666262865066528,
+    "y": 49.32126998901367,
+    "w": 36.34518027305603,
+    "h": 39.1679318745931
+   },
+   {
+    "label": "Metal",
+    "confidence": 57,
+    "x": 9.29065227508545,
+    "y": 50.56312561035157,
+    "w": 48.233580589294434,
+    "h": 37.930564880371094
+   }
+  ]
+ },
+ {
+  "file": "plastic_3.jpg",
+  "expected": "plastic",
+  "top": "Plastic",
+  "confidence": 43,
+  "bin": "Recycling",
+  "pass": true,
+  "detections": [
+   {
+    "label": "Plastic",
+    "confidence": 81,
+    "x": 45.67678928375244,
+    "y": 4.395208475951077,
+    "w": 37.24059581756592,
+    "h": 75.70279491373222
+   },
+   {
+    "label": "Plastic",
+    "confidence": 48,
+    "x": 63.93229484558105,
+    "y": 76.14328240427515,
+    "w": 9.130020141601562,
+    "h": 4.214468610572704
+   }
+  ]
+ },
+ {
+  "file": "plastic_4.jpg",
+  "expected": "plastic",
+  "top": "Cardboard",
+  "confidence": 19,
+  "bin": "Recycling",
+  "pass": false,
+  "detections": [
+   {
+    "label": "Organic",
+    "confidence": 69,
+    "x": 77.2044849395752,
+    "y": 90.60613588675761,
+    "w": 2.8800487518310547,
+    "h": 8.255395950665594
+   },
+   {
+    "label": "Plastic",
+    "confidence": 67,
+    "x": 7.0528846979141235,
+    "y": 67.34135573617613,
+    "w": 25.109130740165707,
+    "h": 12.385901043190463
+   },
+   {
+    "label": "Cardboard",
+    "confidence": 58,
+    "x": 20.193536281585693,
+    "y": 46.29582672386995,
+    "w": 48.418309688568115,
+    "h": 46.18737057261191
+   },
+   {
+    "label": "Paper",
+    "confidence": 51,
+    "x": 20.193536281585693,
+    "y": 46.29582672386995,
+    "w": 48.418309688568115,
+    "h": 46.18737057261191
+   },
+   {
+    "label": "Metal",
+    "confidence": 37,
+    "x": 62.84514904022217,
+    "y": 67.09876509700483,
+    "w": 25.61821460723877,
+    "h": 12.72992646924371
+   },
+   {
+    "label": "Metal",
+    "confidence": 35,
+    "x": 62.84514904022217,
+    "y": 67.09876509700483,
+    "w": 25.61821460723877,
+    "h": 12.72992646924371
+   }
+  ]
+ }
+]

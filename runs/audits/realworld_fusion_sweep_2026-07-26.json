@@ -1,0 +1,2121 @@
+{
+ "date": "2026-07-26",
+ "instrument": {
+  "A_test": "external_datasets/rf_garbage_cls/test stride 2 (n=521), plastic/paper-heavy, independent of training",
+  "B_valid": "external_datasets/rf_garbage_cls/valid stride 4 (n=524), organic/glass/cardboard-heavy, independent of training",
+  "C_real": "real-world non-dataset litter photos (Wikimedia Commons/Flickr CC), roster grew v0:11 -> v9:12 as candidates were curated"
+ },
+ "deployed": "v9_final_pickview (hard-coded as defaults in web/server.py)",
+ "variants": {
+  "v0_baseline": {
+   "env": {},
+   "A_test": {
+    "n": 521,
+    "material_acc": 0.9578,
+    "bin_acc": 0.9942,
+    "per_class": {
+     "metal": {
+      "n": 84,
+      "acc": 0.9643
+     },
+     "organic": {
+      "n": 1,
+      "acc": 1.0
+     },
+     "paper": {
+      "n": 260,
+      "acc": 0.9538
+     },
+     "cardboard": {
+      "n": 3,
+      "acc": 0.6667
+     },
+     "plastic": {
+      "n": 173,
+      "acc": 0.9653
+     }
+    },
+    "confusion": {
+     "metal": {
+      "metal": 81,
+      "glass": 1,
+      "plastic": 1,
+      "paper": 1
+     },
+     "organic": {
+      "organic": 1
+     },
+     "paper": {
+      "paper": 248,
+      "plastic": 5,
+      "metal": 2,
+      "cardboard": 2,
+      "glass": 1,
+      "background": 1,
+      "organic": 1
+     },
+     "cardboard": {
+      "cardboard": 2,
+      "paper": 1
+     },
+     "plastic": {
+      "plastic": 167,
+      "glass": 3,
+      "background": 1,
+      "metal": 1,
+      "paper": 1
+     }
+    }
+   },
+   "B_valid": {
+    "n": 525,
+    "material_acc": 0.979,
+    "bin_acc": 0.9962,
+    "per_class": {
+     "organic": {
+      "n": 166,
+      "acc": 0.994
+     },
+     "cardboard": {
+      "n": 109,
+      "acc": 0.9725
+     },
+     "glass": {
+      "n": 198,
+      "acc": 0.9747
+     },
+     "metal": {
+      "n": 52,
+      "acc": 0.9615
+     }
+    },
+    "confusion": {
+     "organic": {
+      "organic": 165,
+      "background": 1
+     },
+     "cardboard": {
+      "organic": 1,
+      "cardboard": 106,
+      "paper": 1,
+      "metal": 1
+     },
+     "glass": {
+      "metal": 3,
+      "glass": 193,
+      "plastic": 2
+     },
+     "metal": {
+      "glass": 1,
+      "metal": 50,
+      "plastic": 1
+     }
+    }
+   },
+   "C_real": [
+    {
+     "file": "cardboard_2.jpg",
+     "expected": "cardboard",
+     "top": "cardboard",
+     "conf": 93,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "cardboard_4.jpg",
+     "expected": "cardboard",
+     "top": "paper",
+     "conf": 53,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "glass_2.jpg",
+     "expected": "glass",
+     "top": "glass",
+     "conf": 54,
+     "context": "Grass",
+     "pass": true
+    },
+    {
+     "file": "metal_4.jpg",
+     "expected": "metal",
+     "top": "metal",
+     "conf": 79,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "organic_1.jpg",
+     "expected": "organic",
+     "top": "plastic",
+     "conf": 35,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "paper_3.jpg",
+     "expected": "paper",
+     "top": "plastic",
+     "conf": 33,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "paper_7.jpg",
+     "expected": "paper",
+     "top": "plastic",
+     "conf": 56,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "plastic_2.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 51,
+     "context": "Street",
+     "pass": true
+    },
+    {
+     "file": "plastic_3.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 43,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "plastic_4.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 21,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "cardboard_3.png",
+     "expected": "cardboard",
+     "top": "plastic",
+     "conf": 59,
+     "context": "Beach",
+     "pass": false
+    }
+   ]
+  },
+  "v1_sand50": {
+   "env": {
+    "WASTEWISE_SAND_SAT_MIN": "50"
+   },
+   "A_test": {
+    "n": 521,
+    "material_acc": 0.9539,
+    "bin_acc": 0.9942,
+    "per_class": {
+     "metal": {
+      "n": 84,
+      "acc": 0.9643
+     },
+     "organic": {
+      "n": 1,
+      "acc": 1.0
+     },
+     "paper": {
+      "n": 260,
+      "acc": 0.9538
+     },
+     "cardboard": {
+      "n": 3,
+      "acc": 0.6667
+     },
+     "plastic": {
+      "n": 173,
+      "acc": 0.9538
+     }
+    },
+    "confusion": {
+     "metal": {
+      "metal": 81,
+      "glass": 1,
+      "plastic": 1,
+      "paper": 1
+     },
+     "organic": {
+      "organic": 1
+     },
+     "paper": {
+      "paper": 248,
+      "plastic": 5,
+      "metal": 2,
+      "cardboard": 2,
+      "glass": 1,
+      "background": 1,
+      "organic": 1
+     },
+     "cardboard": {
+      "cardboard": 2,
+      "paper": 1
+     },
+     "plastic": {
+      "plastic": 165,
+      "glass": 3,
+      "background": 1,
+      "paper": 3,
+      "metal": 1
+     }
+    }
+   },
+   "B_valid": {
+    "n": 525,
+    "material_acc": 0.9771,
+    "bin_acc": 0.9962,
+    "per_class": {
+     "organic": {
+      "n": 166,
+      "acc": 0.994
+     },
+     "cardboard": {
+      "n": 109,
+      "acc": 0.9633
+     },
+     "glass": {
+      "n": 198,
+      "acc": 0.9747
+     },
+     "metal": {
+      "n": 52,
+      "acc": 0.9615
+     }
+    },
+    "confusion": {
+     "organic": {
+      "organic": 165,
+      "background": 1
+     },
+     "cardboard": {
+      "organic": 1,
+      "cardboard": 105,
+      "paper": 2,
+      "metal": 1
+     },
+     "glass": {
+      "metal": 3,
+      "glass": 193,
+      "plastic": 2
+     },
+     "metal": {
+      "glass": 1,
+      "metal": 50,
+      "plastic": 1
+     }
+    }
+   },
+   "C_real": [
+    {
+     "file": "cardboard_2.jpg",
+     "expected": "cardboard",
+     "top": "cardboard",
+     "conf": 93,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "cardboard_4.jpg",
+     "expected": "cardboard",
+     "top": "paper",
+     "conf": 53,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "glass_2.jpg",
+     "expected": "glass",
+     "top": "glass",
+     "conf": 54,
+     "context": "Grass",
+     "pass": true
+    },
+    {
+     "file": "metal_4.jpg",
+     "expected": "metal",
+     "top": "metal",
+     "conf": 79,
+     "context": "Street",
+     "pass": true
+    },
+    {
+     "file": "organic_1.jpg",
+     "expected": "organic",
+     "top": "plastic",
+     "conf": 35,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "paper_3.jpg",
+     "expected": "paper",
+     "top": "plastic",
+     "conf": 33,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "paper_7.jpg",
+     "expected": "paper",
+     "top": "plastic",
+     "conf": 56,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "plastic_2.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 51,
+     "context": "Street",
+     "pass": true
+    },
+    {
+     "file": "plastic_3.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 43,
+     "context": "Street",
+     "pass": true
+    },
+    {
+     "file": "plastic_4.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 21,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "cardboard_3.png",
+     "expected": "cardboard",
+     "top": "plastic",
+     "conf": 59,
+     "context": "Beach",
+     "pass": false
+    }
+   ]
+  },
+  "v2_sand50_alpha15": {
+   "env": {
+    "WASTEWISE_SAND_SAT_MIN": "50",
+    "WASTEWISE_ALPHA_PLASTIC_VOTE": "0.15"
+   },
+   "A_test": {
+    "n": 521,
+    "material_acc": 0.9443,
+    "bin_acc": 0.9942,
+    "per_class": {
+     "metal": {
+      "n": 84,
+      "acc": 0.9643
+     },
+     "organic": {
+      "n": 1,
+      "acc": 1.0
+     },
+     "paper": {
+      "n": 260,
+      "acc": 0.9577
+     },
+     "cardboard": {
+      "n": 3,
+      "acc": 0.6667
+     },
+     "plastic": {
+      "n": 173,
+      "acc": 0.9191
+     }
+    },
+    "confusion": {
+     "metal": {
+      "metal": 81,
+      "glass": 1,
+      "plastic": 1,
+      "paper": 1
+     },
+     "organic": {
+      "organic": 1
+     },
+     "paper": {
+      "paper": 249,
+      "plastic": 4,
+      "metal": 2,
+      "cardboard": 2,
+      "glass": 1,
+      "background": 1,
+      "organic": 1
+     },
+     "cardboard": {
+      "cardboard": 2,
+      "paper": 1
+     },
+     "plastic": {
+      "plastic": 159,
+      "glass": 7,
+      "metal": 2,
+      "paper": 4,
+      "background": 1
+     }
+    }
+   },
+   "B_valid": {
+    "n": 525,
+    "material_acc": 0.979,
+    "bin_acc": 0.9943,
+    "per_class": {
+     "organic": {
+      "n": 166,
+      "acc": 0.994
+     },
+     "cardboard": {
+      "n": 109,
+      "acc": 0.9633
+     },
+     "glass": {
+      "n": 198,
+      "acc": 0.9798
+     },
+     "metal": {
+      "n": 52,
+      "acc": 0.9615
+     }
+    },
+    "confusion": {
+     "organic": {
+      "organic": 165,
+      "background": 1
+     },
+     "cardboard": {
+      "organic": 1,
+      "cardboard": 105,
+      "paper": 2,
+      "metal": 1
+     },
+     "glass": {
+      "metal": 3,
+      "glass": 194,
+      "plastic": 1
+     },
+     "metal": {
+      "glass": 1,
+      "metal": 50,
+      "background": 1
+     }
+    }
+   },
+   "C_real": [
+    {
+     "file": "cardboard_2.jpg",
+     "expected": "cardboard",
+     "top": "cardboard",
+     "conf": 93,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "cardboard_4.jpg",
+     "expected": "cardboard",
+     "top": "paper",
+     "conf": 53,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "glass_2.jpg",
+     "expected": "glass",
+     "top": "glass",
+     "conf": 54,
+     "context": "Grass",
+     "pass": true
+    },
+    {
+     "file": "metal_4.jpg",
+     "expected": "metal",
+     "top": "metal",
+     "conf": 79,
+     "context": "Street",
+     "pass": true
+    },
+    {
+     "file": "organic_1.jpg",
+     "expected": "organic",
+     "top": "plastic",
+     "conf": 35,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "paper_3.jpg",
+     "expected": "paper",
+     "top": "plastic",
+     "conf": 33,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "paper_7.jpg",
+     "expected": "paper",
+     "top": "background",
+     "conf": 56,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "plastic_2.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 51,
+     "context": "Street",
+     "pass": true
+    },
+    {
+     "file": "plastic_3.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 43,
+     "context": "Street",
+     "pass": true
+    },
+    {
+     "file": "plastic_4.jpg",
+     "expected": "plastic",
+     "top": "cardboard",
+     "conf": 21,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "cardboard_3.png",
+     "expected": "cardboard",
+     "top": "plastic",
+     "conf": 59,
+     "context": "Beach",
+     "pass": false
+    }
+   ]
+  },
+  "v3_all": {
+   "env": {
+    "WASTEWISE_SAND_SAT_MIN": "50",
+    "WASTEWISE_ALPHA_PLASTIC_VOTE": "0.15",
+    "WASTEWISE_ORGANIC_PRIOR_FLOOR": "0.1667"
+   },
+   "A_test": {
+    "n": 521,
+    "material_acc": 0.9424,
+    "bin_acc": 0.9923,
+    "per_class": {
+     "metal": {
+      "n": 84,
+      "acc": 0.9643
+     },
+     "organic": {
+      "n": 1,
+      "acc": 1.0
+     },
+     "paper": {
+      "n": 260,
+      "acc": 0.9538
+     },
+     "cardboard": {
+      "n": 3,
+      "acc": 0.6667
+     },
+     "plastic": {
+      "n": 173,
+      "acc": 0.9191
+     }
+    },
+    "confusion": {
+     "metal": {
+      "metal": 81,
+      "glass": 1,
+      "plastic": 1,
+      "paper": 1
+     },
+     "organic": {
+      "organic": 1
+     },
+     "paper": {
+      "paper": 248,
+      "plastic": 4,
+      "metal": 2,
+      "organic": 2,
+      "cardboard": 2,
+      "glass": 1,
+      "background": 1
+     },
+     "cardboard": {
+      "cardboard": 2,
+      "paper": 1
+     },
+     "plastic": {
+      "plastic": 159,
+      "glass": 7,
+      "metal": 2,
+      "paper": 4,
+      "background": 1
+     }
+    }
+   },
+   "B_valid": {
+    "n": 525,
+    "material_acc": 0.979,
+    "bin_acc": 0.9943,
+    "per_class": {
+     "organic": {
+      "n": 166,
+      "acc": 0.994
+     },
+     "cardboard": {
+      "n": 109,
+      "acc": 0.9633
+     },
+     "glass": {
+      "n": 198,
+      "acc": 0.9798
+     },
+     "metal": {
+      "n": 52,
+      "acc": 0.9615
+     }
+    },
+    "confusion": {
+     "organic": {
+      "organic": 165,
+      "background": 1
+     },
+     "cardboard": {
+      "organic": 1,
+      "cardboard": 105,
+      "paper": 2,
+      "metal": 1
+     },
+     "glass": {
+      "metal": 3,
+      "glass": 194,
+      "plastic": 1
+     },
+     "metal": {
+      "glass": 1,
+      "metal": 50,
+      "background": 1
+     }
+    }
+   },
+   "C_real": [
+    {
+     "file": "cardboard_2.jpg",
+     "expected": "cardboard",
+     "top": "cardboard",
+     "conf": 93,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "cardboard_4.jpg",
+     "expected": "cardboard",
+     "top": "paper",
+     "conf": 53,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "glass_2.jpg",
+     "expected": "glass",
+     "top": "glass",
+     "conf": 54,
+     "context": "Grass",
+     "pass": true
+    },
+    {
+     "file": "metal_4.jpg",
+     "expected": "metal",
+     "top": "metal",
+     "conf": 79,
+     "context": "Street",
+     "pass": true
+    },
+    {
+     "file": "organic_1.jpg",
+     "expected": "organic",
+     "top": "plastic",
+     "conf": 35,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "paper_3.jpg",
+     "expected": "paper",
+     "top": "plastic",
+     "conf": 33,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "paper_7.jpg",
+     "expected": "paper",
+     "top": "background",
+     "conf": 56,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "plastic_2.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 51,
+     "context": "Street",
+     "pass": true
+    },
+    {
+     "file": "plastic_3.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 43,
+     "context": "Street",
+     "pass": true
+    },
+    {
+     "file": "plastic_4.jpg",
+     "expected": "plastic",
+     "top": "cardboard",
+     "conf": 21,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "cardboard_3.png",
+     "expected": "cardboard",
+     "top": "plastic",
+     "conf": 59,
+     "context": "Beach",
+     "pass": false
+    }
+   ]
+  },
+  "v4_sand50_floor": {
+   "env": {
+    "WASTEWISE_SAND_SAT_MIN": "50",
+    "WASTEWISE_ORGANIC_PRIOR_FLOOR": "0.1667"
+   },
+   "A_test": {
+    "n": 521,
+    "material_acc": 0.952,
+    "bin_acc": 0.9923,
+    "per_class": {
+     "metal": {
+      "n": 84,
+      "acc": 0.9643
+     },
+     "organic": {
+      "n": 1,
+      "acc": 1.0
+     },
+     "paper": {
+      "n": 260,
+      "acc": 0.95
+     },
+     "cardboard": {
+      "n": 3,
+      "acc": 0.6667
+     },
+     "plastic": {
+      "n": 173,
+      "acc": 0.9538
+     }
+    },
+    "confusion": {
+     "metal": {
+      "metal": 81,
+      "glass": 1,
+      "plastic": 1,
+      "paper": 1
+     },
+     "organic": {
+      "organic": 1
+     },
+     "paper": {
+      "paper": 247,
+      "plastic": 5,
+      "metal": 2,
+      "organic": 2,
+      "cardboard": 2,
+      "glass": 1,
+      "background": 1
+     },
+     "cardboard": {
+      "cardboard": 2,
+      "paper": 1
+     },
+     "plastic": {
+      "plastic": 165,
+      "glass": 3,
+      "background": 1,
+      "paper": 3,
+      "metal": 1
+     }
+    }
+   },
+   "B_valid": {
+    "n": 525,
+    "material_acc": 0.9771,
+    "bin_acc": 0.9962,
+    "per_class": {
+     "organic": {
+      "n": 166,
+      "acc": 0.994
+     },
+     "cardboard": {
+      "n": 109,
+      "acc": 0.9633
+     },
+     "glass": {
+      "n": 198,
+      "acc": 0.9747
+     },
+     "metal": {
+      "n": 52,
+      "acc": 0.9615
+     }
+    },
+    "confusion": {
+     "organic": {
+      "organic": 165,
+      "background": 1
+     },
+     "cardboard": {
+      "organic": 1,
+      "cardboard": 105,
+      "paper": 2,
+      "metal": 1
+     },
+     "glass": {
+      "metal": 3,
+      "glass": 193,
+      "plastic": 2
+     },
+     "metal": {
+      "glass": 1,
+      "metal": 50,
+      "plastic": 1
+     }
+    }
+   },
+   "C_real": [
+    {
+     "file": "cardboard_2.jpg",
+     "expected": "cardboard",
+     "top": "cardboard",
+     "conf": 93,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "cardboard_4.jpg",
+     "expected": "cardboard",
+     "top": "paper",
+     "conf": 53,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "glass_2.jpg",
+     "expected": "glass",
+     "top": "glass",
+     "conf": 54,
+     "context": "Grass",
+     "pass": true
+    },
+    {
+     "file": "metal_4.jpg",
+     "expected": "metal",
+     "top": "metal",
+     "conf": 79,
+     "context": "Street",
+     "pass": true
+    },
+    {
+     "file": "organic_1.jpg",
+     "expected": "organic",
+     "top": "plastic",
+     "conf": 35,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "organic_10.jpg",
+     "expected": "organic",
+     "top": "organic",
+     "conf": 96,
+     "context": "Grass",
+     "pass": true
+    },
+    {
+     "file": "organic_11.jpg",
+     "expected": "organic",
+     "top": "organic",
+     "conf": 91,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "organic_9.jpg",
+     "expected": "organic",
+     "top": "metal",
+     "conf": 41,
+     "context": "Street",
+     "pass": false
+    },
+    {
+     "file": "paper_10.jpg",
+     "expected": "paper",
+     "top": "plastic",
+     "conf": 34,
+     "context": "Grass",
+     "pass": false
+    },
+    {
+     "file": "paper_11.jpg",
+     "expected": "paper",
+     "top": "paper",
+     "conf": 42,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "paper_3.jpg",
+     "expected": "paper",
+     "top": "plastic",
+     "conf": 33,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "paper_7.jpg",
+     "expected": "paper",
+     "top": "plastic",
+     "conf": 56,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "paper_9.jpg",
+     "expected": "paper",
+     "top": "paper",
+     "conf": 76,
+     "context": "Street",
+     "pass": true
+    },
+    {
+     "file": "plastic_2.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 51,
+     "context": "Street",
+     "pass": true
+    },
+    {
+     "file": "plastic_3.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 43,
+     "context": "Street",
+     "pass": true
+    },
+    {
+     "file": "plastic_4.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 21,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "cardboard_3.png",
+     "expected": "cardboard",
+     "top": "plastic",
+     "conf": 59,
+     "context": "Beach",
+     "pass": false
+    }
+   ]
+  },
+  "v5_noprior": {
+   "env": {
+    "WASTEWISE_CONTEXT_PRIOR": "off"
+   },
+   "A_test": {
+    "n": 521,
+    "material_acc": 0.9424,
+    "bin_acc": 0.9942,
+    "per_class": {
+     "metal": {
+      "n": 84,
+      "acc": 0.9762
+     },
+     "organic": {
+      "n": 1,
+      "acc": 1.0
+     },
+     "paper": {
+      "n": 260,
+      "acc": 0.95
+     },
+     "cardboard": {
+      "n": 3,
+      "acc": 0.6667
+     },
+     "plastic": {
+      "n": 173,
+      "acc": 0.9191
+     }
+    },
+    "confusion": {
+     "metal": {
+      "metal": 82,
+      "glass": 1,
+      "paper": 1
+     },
+     "organic": {
+      "organic": 1
+     },
+     "paper": {
+      "paper": 247,
+      "plastic": 4,
+      "metal": 2,
+      "cardboard": 4,
+      "glass": 1,
+      "background": 1,
+      "organic": 1
+     },
+     "cardboard": {
+      "cardboard": 2,
+      "paper": 1
+     },
+     "plastic": {
+      "plastic": 159,
+      "metal": 2,
+      "glass": 6,
+      "paper": 4,
+      "background": 1,
+      "cardboard": 1
+     }
+    }
+   },
+   "B_valid": {
+    "n": 525,
+    "material_acc": 0.981,
+    "bin_acc": 0.9962,
+    "per_class": {
+     "organic": {
+      "n": 166,
+      "acc": 0.994
+     },
+     "cardboard": {
+      "n": 109,
+      "acc": 0.9725
+     },
+     "glass": {
+      "n": 198,
+      "acc": 0.9798
+     },
+     "metal": {
+      "n": 52,
+      "acc": 0.9615
+     }
+    },
+    "confusion": {
+     "organic": {
+      "organic": 165,
+      "background": 1
+     },
+     "cardboard": {
+      "organic": 1,
+      "cardboard": 106,
+      "paper": 1,
+      "metal": 1
+     },
+     "glass": {
+      "metal": 3,
+      "glass": 194,
+      "plastic": 1
+     },
+     "metal": {
+      "glass": 1,
+      "metal": 50,
+      "plastic": 1
+     }
+    }
+   },
+   "C_real": [
+    {
+     "file": "cardboard_2.jpg",
+     "expected": "cardboard",
+     "top": "cardboard",
+     "conf": 93,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "cardboard_4.jpg",
+     "expected": "cardboard",
+     "top": "paper",
+     "conf": 53,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "glass_2.jpg",
+     "expected": "glass",
+     "top": "glass",
+     "conf": 54,
+     "context": "Grass",
+     "pass": true
+    },
+    {
+     "file": "metal_4.jpg",
+     "expected": "metal",
+     "top": "metal",
+     "conf": 79,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "organic_1.jpg",
+     "expected": "organic",
+     "top": "plastic",
+     "conf": 35,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "paper_12.jpg",
+     "expected": "paper",
+     "top": "cardboard",
+     "conf": 60,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "paper_13.jpg",
+     "expected": "paper",
+     "top": "cardboard",
+     "conf": 46,
+     "context": "Grass",
+     "pass": false
+    },
+    {
+     "file": "paper_3.jpg",
+     "expected": "paper",
+     "top": "plastic",
+     "conf": 33,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "paper_7.jpg",
+     "expected": "paper",
+     "top": "plastic",
+     "conf": 56,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "plastic_2.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 51,
+     "context": "Street",
+     "pass": true
+    },
+    {
+     "file": "plastic_3.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 43,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "plastic_4.jpg",
+     "expected": "plastic",
+     "top": "cardboard",
+     "conf": 21,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "cardboard_3.png",
+     "expected": "cardboard",
+     "top": "plastic",
+     "conf": 59,
+     "context": "Beach",
+     "pass": false
+    }
+   ]
+  },
+  "v6_noprior_alpha15": {
+   "env": {
+    "WASTEWISE_CONTEXT_PRIOR": "off",
+    "WASTEWISE_ALPHA_PLASTIC_VOTE": "0.15"
+   },
+   "A_test": {
+    "n": 521,
+    "material_acc": 0.9328,
+    "bin_acc": 0.9942,
+    "per_class": {
+     "metal": {
+      "n": 84,
+      "acc": 0.9762
+     },
+     "organic": {
+      "n": 1,
+      "acc": 1.0
+     },
+     "paper": {
+      "n": 260,
+      "acc": 0.95
+     },
+     "cardboard": {
+      "n": 3,
+      "acc": 0.6667
+     },
+     "plastic": {
+      "n": 173,
+      "acc": 0.8902
+     }
+    },
+    "confusion": {
+     "metal": {
+      "metal": 82,
+      "glass": 1,
+      "paper": 1
+     },
+     "organic": {
+      "organic": 1
+     },
+     "paper": {
+      "paper": 247,
+      "plastic": 4,
+      "metal": 2,
+      "cardboard": 4,
+      "glass": 1,
+      "background": 1,
+      "organic": 1
+     },
+     "cardboard": {
+      "cardboard": 2,
+      "paper": 1
+     },
+     "plastic": {
+      "plastic": 154,
+      "metal": 5,
+      "glass": 8,
+      "paper": 4,
+      "background": 1,
+      "cardboard": 1
+     }
+    }
+   },
+   "B_valid": {
+    "n": 525,
+    "material_acc": 0.981,
+    "bin_acc": 0.9943,
+    "per_class": {
+     "organic": {
+      "n": 166,
+      "acc": 0.994
+     },
+     "cardboard": {
+      "n": 109,
+      "acc": 0.9725
+     },
+     "glass": {
+      "n": 198,
+      "acc": 0.9798
+     },
+     "metal": {
+      "n": 52,
+      "acc": 0.9615
+     }
+    },
+    "confusion": {
+     "organic": {
+      "organic": 165,
+      "background": 1
+     },
+     "cardboard": {
+      "organic": 1,
+      "cardboard": 106,
+      "paper": 1,
+      "metal": 1
+     },
+     "glass": {
+      "metal": 3,
+      "glass": 194,
+      "plastic": 1
+     },
+     "metal": {
+      "glass": 1,
+      "metal": 50,
+      "background": 1
+     }
+    }
+   },
+   "C_real": [
+    {
+     "file": "cardboard_2.jpg",
+     "expected": "cardboard",
+     "top": "cardboard",
+     "conf": 93,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "cardboard_4.jpg",
+     "expected": "cardboard",
+     "top": "paper",
+     "conf": 53,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "glass_2.jpg",
+     "expected": "glass",
+     "top": "glass",
+     "conf": 54,
+     "context": "Grass",
+     "pass": true
+    },
+    {
+     "file": "metal_4.jpg",
+     "expected": "metal",
+     "top": "metal",
+     "conf": 79,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "organic_1.jpg",
+     "expected": "organic",
+     "top": "organic",
+     "conf": 35,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "paper_12.jpg",
+     "expected": "paper",
+     "top": "cardboard",
+     "conf": 60,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "paper_13.jpg",
+     "expected": "paper",
+     "top": "cardboard",
+     "conf": 46,
+     "context": "Grass",
+     "pass": false
+    },
+    {
+     "file": "paper_3.jpg",
+     "expected": "paper",
+     "top": "plastic",
+     "conf": 33,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "paper_7.jpg",
+     "expected": "paper",
+     "top": "background",
+     "conf": 56,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "plastic_2.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 51,
+     "context": "Street",
+     "pass": true
+    },
+    {
+     "file": "plastic_3.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 43,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "plastic_4.jpg",
+     "expected": "plastic",
+     "top": "cardboard",
+     "conf": 21,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "cardboard_3.png",
+     "expected": "cardboard",
+     "top": "plastic",
+     "conf": 59,
+     "context": "Beach",
+     "pass": false
+    }
+   ]
+  },
+  "v7_noprior_disagree": {
+   "env": {
+    "WASTEWISE_CONTEXT_PRIOR": "off",
+    "WASTEWISE_ALPHA_PLASTIC_VOTE": "0.15",
+    "WASTEWISE_ALPHA_PLASTIC_MODE": "disagree"
+   },
+   "A_test": {
+    "n": 521,
+    "material_acc": 0.9367,
+    "bin_acc": 0.9942,
+    "per_class": {
+     "metal": {
+      "n": 84,
+      "acc": 0.9762
+     },
+     "organic": {
+      "n": 1,
+      "acc": 1.0
+     },
+     "paper": {
+      "n": 260,
+      "acc": 0.95
+     },
+     "cardboard": {
+      "n": 3,
+      "acc": 0.6667
+     },
+     "plastic": {
+      "n": 173,
+      "acc": 0.9017
+     }
+    },
+    "confusion": {
+     "metal": {
+      "metal": 82,
+      "glass": 1,
+      "paper": 1
+     },
+     "organic": {
+      "organic": 1
+     },
+     "paper": {
+      "paper": 247,
+      "plastic": 4,
+      "metal": 2,
+      "cardboard": 4,
+      "glass": 1,
+      "background": 1,
+      "organic": 1
+     },
+     "cardboard": {
+      "cardboard": 2,
+      "paper": 1
+     },
+     "plastic": {
+      "plastic": 156,
+      "metal": 4,
+      "glass": 7,
+      "paper": 4,
+      "background": 1,
+      "cardboard": 1
+     }
+    }
+   },
+   "B_valid": {
+    "n": 525,
+    "material_acc": 0.981,
+    "bin_acc": 0.9962,
+    "per_class": {
+     "organic": {
+      "n": 166,
+      "acc": 0.994
+     },
+     "cardboard": {
+      "n": 109,
+      "acc": 0.9725
+     },
+     "glass": {
+      "n": 198,
+      "acc": 0.9798
+     },
+     "metal": {
+      "n": 52,
+      "acc": 0.9615
+     }
+    },
+    "confusion": {
+     "organic": {
+      "organic": 165,
+      "background": 1
+     },
+     "cardboard": {
+      "organic": 1,
+      "cardboard": 106,
+      "paper": 1,
+      "metal": 1
+     },
+     "glass": {
+      "metal": 3,
+      "glass": 194,
+      "plastic": 1
+     },
+     "metal": {
+      "glass": 1,
+      "metal": 50,
+      "plastic": 1
+     }
+    }
+   },
+   "C_real": [
+    {
+     "file": "cardboard_2.jpg",
+     "expected": "cardboard",
+     "top": "cardboard",
+     "conf": 93,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "cardboard_4.jpg",
+     "expected": "cardboard",
+     "top": "paper",
+     "conf": 53,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "glass_2.jpg",
+     "expected": "glass",
+     "top": "glass",
+     "conf": 54,
+     "context": "Grass",
+     "pass": true
+    },
+    {
+     "file": "metal_4.jpg",
+     "expected": "metal",
+     "top": "metal",
+     "conf": 79,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "organic_1.jpg",
+     "expected": "organic",
+     "top": "organic",
+     "conf": 35,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "paper_12.jpg",
+     "expected": "paper",
+     "top": "cardboard",
+     "conf": 60,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "paper_13.jpg",
+     "expected": "paper",
+     "top": "cardboard",
+     "conf": 46,
+     "context": "Grass",
+     "pass": false
+    },
+    {
+     "file": "paper_3.jpg",
+     "expected": "paper",
+     "top": "plastic",
+     "conf": 33,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "paper_7.jpg",
+     "expected": "paper",
+     "top": "background",
+     "conf": 56,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "plastic_2.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 51,
+     "context": "Street",
+     "pass": true
+    },
+    {
+     "file": "plastic_3.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 43,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "plastic_4.jpg",
+     "expected": "plastic",
+     "top": "cardboard",
+     "conf": 21,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "cardboard_3.png",
+     "expected": "cardboard",
+     "top": "plastic",
+     "conf": 59,
+     "context": "Beach",
+     "pass": false
+    }
+   ]
+  },
+  "v8_final": {
+   "env": {
+    "note": "zoom retry with AVERAGING combine - superseded by v9 pick-view"
+   },
+   "A_test": {
+    "n": 521,
+    "material_acc": 0.929,
+    "bin_acc": 0.9923,
+    "per_class": {
+     "metal": {
+      "n": 84,
+      "acc": 0.9762
+     },
+     "organic": {
+      "n": 1,
+      "acc": 1.0
+     },
+     "paper": {
+      "n": 260,
+      "acc": 0.95
+     },
+     "cardboard": {
+      "n": 3,
+      "acc": 0.6667
+     },
+     "plastic": {
+      "n": 173,
+      "acc": 0.8786
+     }
+    },
+    "confusion": {
+     "metal": {
+      "metal": 82,
+      "glass": 1,
+      "paper": 1
+     },
+     "organic": {
+      "organic": 1
+     },
+     "paper": {
+      "paper": 247,
+      "plastic": 4,
+      "metal": 2,
+      "cardboard": 4,
+      "glass": 1,
+      "background": 1,
+      "organic": 1
+     },
+     "cardboard": {
+      "cardboard": 2,
+      "paper": 1
+     },
+     "plastic": {
+      "plastic": 152,
+      "paper": 7,
+      "glass": 9,
+      "metal": 2,
+      "background": 1,
+      "organic": 1,
+      "cardboard": 1
+     }
+    }
+   },
+   "B_valid": {
+    "n": 525,
+    "material_acc": 0.981,
+    "bin_acc": 0.9962,
+    "per_class": {
+     "organic": {
+      "n": 166,
+      "acc": 0.994
+     },
+     "cardboard": {
+      "n": 109,
+      "acc": 0.9725
+     },
+     "glass": {
+      "n": 198,
+      "acc": 0.9798
+     },
+     "metal": {
+      "n": 52,
+      "acc": 0.9615
+     }
+    },
+    "confusion": {
+     "organic": {
+      "organic": 165,
+      "background": 1
+     },
+     "cardboard": {
+      "organic": 1,
+      "cardboard": 106,
+      "paper": 1,
+      "metal": 1
+     },
+     "glass": {
+      "metal": 3,
+      "glass": 194,
+      "plastic": 1
+     },
+     "metal": {
+      "glass": 1,
+      "metal": 50,
+      "plastic": 1
+     }
+    }
+   },
+   "C_real": [
+    {
+     "file": "cardboard_2.jpg",
+     "expected": "cardboard",
+     "top": "cardboard",
+     "conf": 93,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "cardboard_4.jpg",
+     "expected": "cardboard",
+     "top": "paper",
+     "conf": 53,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "glass_2.jpg",
+     "expected": "glass",
+     "top": "glass",
+     "conf": 54,
+     "context": "Grass",
+     "pass": true
+    },
+    {
+     "file": "metal_4.jpg",
+     "expected": "metal",
+     "top": "metal",
+     "conf": 79,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "organic_1.jpg",
+     "expected": "organic",
+     "top": "background",
+     "conf": 62,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "paper_12.jpg",
+     "expected": "paper",
+     "top": "cardboard",
+     "conf": 60,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "paper_13.jpg",
+     "expected": "paper",
+     "top": "cardboard",
+     "conf": 40,
+     "context": "Grass",
+     "pass": false
+    },
+    {
+     "file": "paper_3.jpg",
+     "expected": "paper",
+     "top": "plastic",
+     "conf": 30,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "paper_7.jpg",
+     "expected": "paper",
+     "top": "paper",
+     "conf": 47,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "plastic_2.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 51,
+     "context": "Street",
+     "pass": true
+    },
+    {
+     "file": "plastic_3.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 43,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "plastic_4.jpg",
+     "expected": "plastic",
+     "top": "cardboard",
+     "conf": 25,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "cardboard_3.png",
+     "expected": "cardboard",
+     "top": "plastic",
+     "conf": 59,
+     "context": "Beach",
+     "pass": false
+    }
+   ]
+  },
+  "v9_final_pickview": {
+   "env": {
+    "WASTEWISE_CONTEXT_PRIOR": "off",
+    "WASTEWISE_ALPHA_PLASTIC_VOTE": "0.15",
+    "WASTEWISE_ALPHA_PLASTIC_MODE": "disagree",
+    "WASTEWISE_UNSURE_ZOOM": "1"
+   },
+   "A_test": {
+    "n": 521,
+    "material_acc": 0.9251,
+    "bin_acc": 0.9923,
+    "per_class": {
+     "metal": {
+      "n": 84,
+      "acc": 0.9762
+     },
+     "organic": {
+      "n": 1,
+      "acc": 1.0
+     },
+     "paper": {
+      "n": 260,
+      "acc": 0.9462
+     },
+     "cardboard": {
+      "n": 3,
+      "acc": 0.6667
+     },
+     "plastic": {
+      "n": 173,
+      "acc": 0.8728
+     }
+    },
+    "confusion": {
+     "metal": {
+      "metal": 82,
+      "glass": 1,
+      "paper": 1
+     },
+     "organic": {
+      "organic": 1
+     },
+     "paper": {
+      "paper": 246,
+      "plastic": 3,
+      "metal": 3,
+      "cardboard": 5,
+      "glass": 1,
+      "background": 1,
+      "organic": 1
+     },
+     "cardboard": {
+      "cardboard": 2,
+      "paper": 1
+     },
+     "plastic": {
+      "plastic": 151,
+      "cardboard": 2,
+      "paper": 7,
+      "glass": 9,
+      "metal": 2,
+      "background": 1,
+      "organic": 1
+     }
+    }
+   },
+   "B_valid": {
+    "n": 525,
+    "material_acc": 0.981,
+    "bin_acc": 0.9962,
+    "per_class": {
+     "organic": {
+      "n": 166,
+      "acc": 0.994
+     },
+     "cardboard": {
+      "n": 109,
+      "acc": 0.9725
+     },
+     "glass": {
+      "n": 198,
+      "acc": 0.9798
+     },
+     "metal": {
+      "n": 52,
+      "acc": 0.9615
+     }
+    },
+    "confusion": {
+     "organic": {
+      "organic": 165,
+      "background": 1
+     },
+     "cardboard": {
+      "organic": 1,
+      "cardboard": 106,
+      "paper": 1,
+      "metal": 1
+     },
+     "glass": {
+      "metal": 3,
+      "glass": 194,
+      "plastic": 1
+     },
+     "metal": {
+      "glass": 1,
+      "metal": 50,
+      "plastic": 1
+     }
+    }
+   },
+   "C_real": [
+    {
+     "file": "cardboard_2.jpg",
+     "expected": "cardboard",
+     "top": "cardboard",
+     "conf": 93,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "cardboard_4.jpg",
+     "expected": "cardboard",
+     "top": "paper",
+     "conf": 53,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "glass_2.jpg",
+     "expected": "glass",
+     "top": "glass",
+     "conf": 54,
+     "context": "Grass",
+     "pass": true
+    },
+    {
+     "file": "metal_4.jpg",
+     "expected": "metal",
+     "top": "metal",
+     "conf": 79,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "organic_1.jpg",
+     "expected": "organic",
+     "top": "organic",
+     "conf": 35,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "paper_12.jpg",
+     "expected": "paper",
+     "top": "cardboard",
+     "conf": 60,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "paper_13.jpg",
+     "expected": "paper",
+     "top": "cardboard",
+     "conf": 46,
+     "context": "Grass",
+     "pass": false
+    },
+    {
+     "file": "paper_7.jpg",
+     "expected": "paper",
+     "top": "paper",
+     "conf": 44,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "plastic_2.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 51,
+     "context": "Street",
+     "pass": true
+    },
+    {
+     "file": "plastic_3.jpg",
+     "expected": "plastic",
+     "top": "plastic",
+     "conf": 43,
+     "context": "Beach",
+     "pass": true
+    },
+    {
+     "file": "plastic_4.jpg",
+     "expected": "plastic",
+     "top": "cardboard",
+     "conf": 19,
+     "context": "Beach",
+     "pass": false
+    },
+    {
+     "file": "cardboard_3.png",
+     "expected": "cardboard",
+     "top": "plastic",
+     "conf": 59,
+     "context": "Beach",
+     "pass": false
+    }
+   ]
+  }
+ }
+}
