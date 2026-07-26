@@ -37,7 +37,8 @@ const FLOW = [
   ["s9", "modeling"],
   ["s10", "modeling"],
   ["s11", "modeling"],
-  ["s12", "demo"],
+  ["s12", "modeling"],
+  ["s13", "demo"],
 ];
 const FLOW_PAGE = Object.fromEntries(FLOW);
 const WORDS = ["Localize.", "Verify.", "Fuse.", "Route it right."];
@@ -242,7 +243,7 @@ function activatePage(page) {
   if (page === "modeling") startEvidenceCounts();
 }
 
-// Pages can hold several .pres-section flow steps (e.g. "modeling" holds s5-s11);
+// Pages can hold several .pres-section flow steps (e.g. "modeling" holds s5-s12);
 // show only the current step so Next/Prev jump to a fresh page instead of
 // scrolling through the rest of that page's sections.
 function showOnlySection(page, sectionId) {
@@ -309,6 +310,81 @@ window.addEventListener("keydown", (event) => {
     window.location.hash = FLOW[currentFlowIndex - 1][0];
   }
 });
+
+/* ------------------------------------------------------- theme & speaker notes */
+
+const themeToggle = document.getElementById("themeToggle");
+const notesToggle = document.getElementById("notesToggle");
+const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
+
+function store(key, value) {
+  try {
+    window.localStorage.setItem(key, value);
+  } catch (err) {
+    /* private mode: the choice just does not survive a reload */
+  }
+}
+
+function applyTheme(theme) {
+  document.documentElement.dataset.theme = theme;
+  if (themeToggle) {
+    themeToggle.setAttribute(
+      "aria-label",
+      theme === "dark" ? "Switch to light theme" : "Switch to dark theme"
+    );
+  }
+}
+
+if (themeToggle) {
+  // The inline <head> script already resolved the starting theme; only react to clicks.
+  applyTheme(document.documentElement.dataset.theme || "light");
+  themeToggle.addEventListener("click", () => {
+    const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
+    applyTheme(next);
+    store("ww-theme", next);
+    showToast(next === "dark" ? "Dark theme" : "Light theme");
+  });
+}
+
+// Keep following the system until the visitor picks a side.
+systemDark.addEventListener("change", (event) => {
+  let saved = null;
+  try {
+    saved = window.localStorage.getItem("ww-theme");
+  } catch (err) {
+    saved = null;
+  }
+  if (!saved) applyTheme(event.matches ? "dark" : "light");
+});
+
+// Narrative is visible by default (the presenter reads it on screen); the
+// toggle hides it for a clean audience view.
+function applyNarrative(open) {
+  document.body.classList.toggle("narrative-hidden", !open);
+  if (notesToggle) {
+    notesToggle.setAttribute("aria-pressed", String(open));
+    notesToggle.setAttribute(
+      "aria-label",
+      open ? "Hide speaker narrative" : "Show speaker narrative"
+    );
+  }
+}
+
+if (notesToggle) {
+  let narrativeOpen = true;
+  try {
+    narrativeOpen = window.localStorage.getItem("ww-narrative") !== "0";
+  } catch (err) {
+    narrativeOpen = true;
+  }
+  applyNarrative(narrativeOpen);
+  notesToggle.addEventListener("click", () => {
+    narrativeOpen = notesToggle.getAttribute("aria-pressed") !== "true";
+    applyNarrative(narrativeOpen);
+    store("ww-narrative", narrativeOpen ? "1" : "0");
+    showToast(narrativeOpen ? "Speaker narrative shown" : "Speaker narrative hidden");
+  });
+}
 
 /* ---------------------------------------------------------------- lightbox */
 
@@ -996,7 +1072,7 @@ function countUp(el, target, decimals, duration, formatter) {
 }
 
 function startHeroCounts() {
-  countUp(document.querySelector("#heroAcc"), 93.77, 2, 1100, (v) => `${v.toFixed(2)}%`);
+  countUp(document.querySelector("#heroAcc"), 92.93, 2, 1100, (v) => `${v.toFixed(2)}%`);
   countUp(document.querySelector("#heroClasses"), 7, 0, 900, (v) => `${Math.round(v)}`);
   countUp(document.querySelector("#heroBoxes"), 81, 0, 1100, (v) => `${Math.round(v)}k`);
 }
@@ -1005,10 +1081,10 @@ let evidenceCounted = false;
 function startEvidenceCounts() {
   if (evidenceCounted) return;
   evidenceCounted = true;
-  countUp(document.querySelector("#correctMetric"), 93.77, 2, 1100, (v) => `${v.toFixed(2)}%`);
+  countUp(document.querySelector("#correctMetric"), 92.93, 2, 1100, (v) => `${v.toFixed(2)}%`);
   countUp(document.querySelector("#riskMetric"), 74.8, 1, 1100, (v) => `${v.toFixed(1)}%`);
   countUp(document.querySelector("#scanMetric"), 2406, 0, 1200, (v) => Math.round(v).toLocaleString());
-  countUp(document.querySelector("#domainMetric"), 39.8, 1, 1100, (v) => `${v.toFixed(1)}%`);
+  countUp(document.querySelector("#domainMetric"), 39.0, 1, 1100, (v) => `${v.toFixed(1)}%`);
   // YOLO26m clean-val numbers (runs/audits/detector_clean_val_yolo26m_final100.json).
   // Keep in sync with the static values in index.html - these animations overwrite them.
   countUp(document.querySelector("#yoloPrecision"), 83.4, 1, 1100, (v) => `${v.toFixed(1)}%`);
@@ -1088,6 +1164,485 @@ function startHeroDemoLoop() {
   run();
 }
 
+/* ---------------------------------------------------- figure type badges */
+
+const FIG_TYPES = [
+  [/^cm_/, "\u{1F9E9}", "confusion matrix"],
+  [/^train_yolo26m_labels/, "\u{1F5BC}", "label grid"],
+  [/^(train_|metric_)/, "\u{1F4C8}", "training curves"],
+  [/^heat_/, "\u{1F525}", "heatmap"],
+  [/^(cmp_|eda_|ml_)/, "\u{1F4CA}", "chart"],
+  [/^(wf_|workflow_)/, "\u{1F5FA}", "diagram"],
+  [/^(result_|app_screenshot|audit_)/, "\u{1F4F7}", "result photo"],
+];
+
+function injectFigBadges() {
+  document.querySelectorAll("figure.fig > img").forEach((img) => {
+    const name = (img.getAttribute("src") || "").split("/").pop();
+    const hit = FIG_TYPES.find(([re]) => re.test(name));
+    if (!hit) return;
+    const badge = document.createElement("span");
+    badge.className = "fig-type";
+    badge.setAttribute("aria-hidden", "true");
+    badge.textContent = `${hit[1]} ${hit[2]}`;
+    img.closest("figure").prepend(badge);
+  });
+}
+
+/* --------------------------------------------- new training round (s10) */
+
+const NM_CLASS_SHORT = ["Pla", "Gla", "Met", "Pap", "Car", "Org", "BG"];
+const NM_SWEEP_COLORS = {
+  yolo26m: "#047857",
+  yolov8m: "#d0a31f",
+  yolo11m: "#2d72d9",
+  rtdetr_l: "#7c3aed",
+  fasterrcnn: "#d04437",
+  retinanet: "#0e7490",
+  fcos: "#6b7280",
+};
+
+function nmEl(tag, className, html) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (html !== undefined) node.innerHTML = html;
+  return node;
+}
+
+function nmEscape(text) {
+  return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+const nmVizObserver =
+  "IntersectionObserver" in window
+    ? new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add("go");
+            entry.target.querySelectorAll("[data-w]").forEach((bar) => {
+              bar.style.width = bar.dataset.w;
+            });
+            nmVizObserver.unobserve(entry.target);
+          });
+        },
+        { threshold: 0.25 },
+      )
+    : null;
+
+function nmObserve(card) {
+  if (!card) return;
+  if (nmVizObserver && !reduceMotion) {
+    nmVizObserver.observe(card);
+  } else {
+    card.classList.add("go");
+    card.querySelectorAll("[data-w]").forEach((bar) => {
+      bar.style.width = bar.dataset.w;
+    });
+  }
+}
+
+/* horizontal bar boards ---------------------------------------------- */
+
+function nmBarRow({ name, sub, bars, value, chip, deployed }) {
+  const row = nmEl("div", `bar-row${deployed ? " is-deployed" : ""}`);
+  const label = nmEl("div", "bar-name", `${name}${sub ? `<small>${sub}</small>` : ""}`);
+  const track = nmEl("div", "bar-track");
+  bars.forEach(({ w, muted }) => {
+    const bar = nmEl("span", `bar${muted ? " muted" : ""}`);
+    bar.dataset.w = `${Math.max(0, w)}%`;
+    track.append(bar);
+  });
+  const val = nmEl("div", "bar-val", `<span class="val-num">${value}</span>${chip ? `<span class="lat-chip">${chip}</span>` : ""}`);
+  row.append(label, track, val);
+  return row;
+}
+
+function nmRenderSweepBars(data) {
+  const host = document.getElementById("nmSweepBars");
+  if (!host) return;
+  const board = nmEl("div", "bar-board");
+  const models = Object.entries(data.detector_sweep.models).sort(
+    (a, b) => b[1].test.map50 - a[1].test.map50,
+  );
+  models.forEach(([id, m]) => {
+    board.append(
+      nmBarRow({
+        name: m.nice,
+        sub: `${m.group} · ${m.train_hours.toFixed(1)} h`,
+        bars: [
+          { w: (m.val.map50 / 0.8) * 100, muted: true },
+          { w: (m.test.map50 / 0.8) * 100 },
+        ],
+        value: `${(m.test.map50 * 100).toFixed(1)}%`,
+        chip: `val ${(m.val.map50 * 100).toFixed(1)}%`,
+        deployed: id === "yolo26m",
+      }),
+    );
+  });
+  host.append(
+    board,
+    nmEl(
+      "div",
+      "board-legend",
+      `<span><i style="background:var(--accent)"></i>test mAP50 (unseen sessions)</span>
+       <span><i style="background:color-mix(in srgb, var(--info) 55%, var(--track-bg))"></i>validation mAP50</span>
+       <span>bars scaled to 80%</span>`,
+    ),
+  );
+  nmObserve(host.closest(".viz-card"));
+}
+
+function nmRenderBoard(data) {
+  const host = document.getElementById("nmBoard");
+  if (!host) return;
+  const board = nmEl("div", "bar-board");
+  const rows = [...data.stage1, { ...data.deployed, deployed: true }].sort(
+    (a, b) => b.test_accuracy - a.test_accuracy,
+  );
+  const scale = (v) => ((v - 0.75) / 0.25) * 100;
+  rows.forEach((m) => {
+    board.append(
+      nmBarRow({
+        name: m.nice,
+        sub: m.train_seconds ? `head trained in ${m.train_seconds.toFixed(0)} s` : "",
+        bars: [
+          { w: scale(m.val_accuracy), muted: true },
+          { w: scale(m.test_accuracy) },
+        ],
+        value: `${(m.test_accuracy * 100).toFixed(1)}%`,
+        chip: `${m.latency_ms.toFixed(1)} ms/crop`,
+        deployed: Boolean(m.deployed),
+      }),
+    );
+  });
+  host.append(
+    board,
+    nmEl(
+      "div",
+      "board-legend",
+      `<span><i style="background:var(--accent)"></i>test accuracy</span>
+       <span><i style="background:color-mix(in srgb, var(--info) 55%, var(--track-bg))"></i>validation accuracy</span>
+       <span>2,696 quarantined test crops · latency = median CPU ms per crop</span>`,
+    ),
+  );
+  nmObserve(host.closest(".viz-card"));
+}
+
+/* per-class F1 heatmap ------------------------------------------------- */
+
+function nmHeatColor(cell, rate, strongAt = 0.88) {
+  const p = Math.max(4, Math.min(85, ((rate - 0.7) / 0.3) * 85));
+  cell.style.background = `color-mix(in srgb, var(--accent) ${p}%, var(--surface-2))`;
+  if (rate >= strongAt) cell.classList.add("strong-cell");
+}
+
+function nmRenderHeat(data) {
+  const host = document.getElementById("nmHeat");
+  if (!host) return;
+  const models = [...data.stage1, data.deployed].sort((a, b) => b.test_macro_f1 - a.test_macro_f1);
+  const grid = nmEl("div", "hm-grid");
+  grid.style.gridTemplateColumns = `minmax(110px, auto) repeat(${data.classes.length}, 1fr)`;
+  grid.append(nmEl("span", "hm-lab col"));
+  NM_CLASS_SHORT.forEach((c) => grid.append(nmEl("span", "hm-lab col", c)));
+  let idx = 0;
+  models.forEach((m) => {
+    grid.append(nmEl("span", "hm-lab", m.nice));
+    data.classes.forEach((cls) => {
+      const f1 = m.per_class[cls] ? m.per_class[cls].f1 : 0;
+      const cell = nmEl("span", "hm-cell", (f1 * 100).toFixed(1));
+      cell.title = `${m.nice} · ${cls}: F1 ${(f1 * 100).toFixed(2)}%`;
+      nmHeatColor(cell, f1);
+      cell.style.transitionDelay = `${(idx += 1) * 12}ms`;
+      grid.append(cell);
+    });
+  });
+  host.append(grid);
+  nmObserve(host.closest(".viz-card"));
+}
+
+/* confusion matrix explorer -------------------------------------------- */
+
+function nmRenderCm(host, model, classes) {
+  host.replaceChildren();
+  host.append(
+    nmEl(
+      "div",
+      "cm-meta",
+      `<span>test accuracy <strong>${(model.test_accuracy * 100).toFixed(2)}%</strong></span>
+       <span>macro F1 <strong>${(model.test_macro_f1 * 100).toFixed(2)}%</strong></span>
+       <span>CPU <strong>${model.latency_ms.toFixed(1)} ms/crop</strong></span>`,
+    ),
+  );
+  const grid = nmEl("div", "hm-grid");
+  grid.style.gridTemplateColumns = `minmax(46px, auto) repeat(${classes.length}, 1fr)`;
+  grid.append(nmEl("span", "hm-lab col", "true ↓"));
+  NM_CLASS_SHORT.forEach((c) => grid.append(nmEl("span", "hm-lab col", c)));
+  model.cm.forEach((row, r) => {
+    const total = row.reduce((a, b) => a + b, 0) || 1;
+    grid.append(nmEl("span", "hm-lab", NM_CLASS_SHORT[r]));
+    row.forEach((count, c) => {
+      const rate = count / total;
+      const cell = nmEl("span", "hm-cell", String(count));
+      cell.title = `${classes[r]} → ${classes[c]}: ${count} (${(rate * 100).toFixed(1)}%)`;
+      if (r === c) {
+        cell.style.background = `color-mix(in srgb, var(--accent) ${Math.round(rate * 85)}%, var(--surface-2))`;
+        if (rate >= 0.8) cell.classList.add("strong-cell");
+      } else {
+        const p = Math.min(80, Math.round(rate * 260));
+        cell.style.background = p < 3
+          ? "var(--surface-2)"
+          : `color-mix(in srgb, var(--danger) ${p}%, var(--surface-2))`;
+        if (p >= 55) cell.classList.add("strong-cell");
+      }
+      cell.style.transitionDelay = reduceMotion ? "0ms" : `${(r * classes.length + c) * 9}ms`;
+      grid.append(cell);
+    });
+  });
+  host.append(grid);
+  requestAnimationFrame(() =>
+    requestAnimationFrame(() => grid.querySelectorAll(".hm-cell").forEach((c) => c.classList.add("go"))),
+  );
+}
+
+function nmRenderCmExplorer(data) {
+  const tabs = document.getElementById("nmCmTabs");
+  const host = document.getElementById("nmCm");
+  if (!tabs || !host) return;
+  data.stage1.forEach((model, i) => {
+    const tab = nmEl(
+      "button",
+      "viz-tab",
+      `${model.nice} <small>${(model.test_accuracy * 100).toFixed(1)}%</small>`,
+    );
+    tab.type = "button";
+    tab.setAttribute("role", "tab");
+    tab.setAttribute("aria-selected", String(i === 0));
+    tab.addEventListener("click", () => {
+      tabs.querySelectorAll(".viz-tab").forEach((t) => t.setAttribute("aria-selected", "false"));
+      tab.setAttribute("aria-selected", "true");
+      nmRenderCm(host, model, data.classes);
+    });
+    tabs.append(tab);
+  });
+  nmRenderCm(host, data.stage1[0], data.classes);
+  nmObserve(host.closest(".viz-card"));
+}
+
+/* svg line charts ------------------------------------------------------- */
+
+function nmLineChart({ width = 680, height = 330, margin, xDomain, yDomain, yTicks, xTicks, series }) {
+  const m = margin || { l: 46, r: 118, t: 12, b: 30 };
+  const iw = width - m.l - m.r;
+  const ih = height - m.t - m.b;
+  const sx = (x) => m.l + ((x - xDomain[0]) / (xDomain[1] - xDomain[0])) * iw;
+  const sy = (y) => m.t + ih - ((y - yDomain[0]) / (yDomain[1] - yDomain[0])) * ih;
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svg.setAttribute("viewBox", `0 0 ${width} ${height}`);
+  svg.setAttribute("class", "chart-svg");
+  let inner = "";
+  yTicks.forEach((t) => {
+    inner += `<line class="grid" x1="${m.l}" y1="${sy(t)}" x2="${m.l + iw}" y2="${sy(t)}"></line>`;
+    inner += `<text class="tick-lab" x="${m.l - 8}" y="${sy(t) + 4}" text-anchor="end">${t}</text>`;
+  });
+  xTicks.forEach((t) => {
+    inner += `<text class="tick-lab" x="${sx(t)}" y="${height - 8}" text-anchor="middle">${t}</text>`;
+  });
+  inner += `<line class="axis" x1="${m.l}" y1="${m.t}" x2="${m.l}" y2="${m.t + ih}"></line>`;
+  inner += `<line class="axis" x1="${m.l}" y1="${m.t + ih}" x2="${m.l + iw}" y2="${m.t + ih}"></line>`;
+  svg.innerHTML = inner;
+  const labelled = [];
+  series.forEach(({ xs, ys, color, label, dashed, delay }, i) => {
+    const d = xs.map((x, j) => `${j ? "L" : "M"}${sx(x).toFixed(1)} ${sy(ys[j]).toFixed(1)}`).join(" ");
+    const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+    path.setAttribute("d", d);
+    path.setAttribute("class", `series${dashed ? " dashed" : " draw"}`);
+    path.setAttribute("stroke", color);
+    if (!dashed) path.style.setProperty("--delay", `${delay !== undefined ? delay : i * 0.22}s`);
+    svg.append(path);
+    const lastX = sx(xs[xs.length - 1]);
+    const lastY = sy(ys[ys.length - 1]);
+    if (label) {
+      const dot = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      dot.setAttribute("cx", lastX);
+      dot.setAttribute("cy", lastY);
+      dot.setAttribute("r", 4);
+      dot.setAttribute("fill", color);
+      dot.setAttribute("class", "end-dot");
+      dot.style.setProperty("--delay", `${i * 0.22}s`);
+      const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+      text.setAttribute("x", lastX + 9);
+      text.setAttribute("fill", color);
+      text.setAttribute("class", "end-lab");
+      text.style.setProperty("--delay", `${i * 0.22}s`);
+      text.textContent = label;
+      svg.append(dot, text);
+      labelled.push({ text, y: lastY + 4 });
+    }
+  });
+  // push overlapping end labels apart (min 14px vertical separation)
+  labelled.sort((a, b) => a.y - b.y);
+  labelled.forEach((entry, i) => {
+    if (i > 0 && entry.y < labelled[i - 1].y + 14) entry.y = labelled[i - 1].y + 14;
+    entry.text.setAttribute("y", entry.y);
+  });
+  return svg;
+}
+
+function nmFinalizePathLengths(svg) {
+  svg.querySelectorAll("path.series.draw").forEach((path) => {
+    const len = Math.ceil(path.getTotalLength());
+    path.style.setProperty("--len", String(len));
+  });
+}
+
+function nmRenderSweepCurves(data) {
+  const host = document.getElementById("nmSweepCurves");
+  if (!host) return;
+  const curves = data.detector_sweep.curves;
+  const series = Object.entries(curves).map(([id, c]) => ({
+    xs: c.epoch,
+    ys: c.map50,
+    color: NM_SWEEP_COLORS[id] || "#6b7280",
+    label: `${data.detector_sweep.models[id].nice} ${(c.map50[c.map50.length - 1] * 100).toFixed(0)}%`,
+  }));
+  const svg = nmLineChart({
+    xDomain: [1, 30],
+    yDomain: [0, 0.8],
+    yTicks: [0.2, 0.4, 0.6, 0.8],
+    xTicks: [5, 10, 15, 20, 25, 30],
+    series,
+  });
+  host.append(svg);
+  nmFinalizePathLengths(svg);
+  nmObserve(host.closest(".viz-card"));
+}
+
+function nmRenderTorchCurves(data) {
+  const host = document.getElementById("nmTorchCurves");
+  if (!host) return;
+  const tc = data.torch_comparison;
+  const colors = { resnet50: "#d04437", mobilenetv2: "#2d72d9" };
+  const series = [];
+  ["resnet50", "mobilenetv2"].forEach((id, i) => {
+    const h = tc[id].history;
+    const xs = h.val_accuracy.map((_, j) => j + 1);
+    series.push({ xs, ys: h.accuracy, color: colors[id], dashed: true });
+    series.push({
+      xs,
+      ys: h.val_accuracy,
+      color: colors[id],
+      label: `${tc[id].model_name} ${(tc[id].accuracy * 100).toFixed(1)}%`,
+      delay: i * 0.25,
+    });
+  });
+  const svg = nmLineChart({
+    height: 300,
+    xDomain: [1, 15],
+    yDomain: [0.7, 1.0],
+    yTicks: [0.7, 0.8, 0.9, 1.0],
+    xTicks: [1, 3, 6, 9, 12, 15],
+    series,
+  });
+  const chips = nmEl("div", "stat-chips");
+  ["resnet50", "mobilenetv2"].forEach((id) => {
+    const m = tc[id];
+    chips.append(
+      nmEl(
+        "span",
+        "stat-chip",
+        `<i style="display:inline-block;width:10px;height:10px;border-radius:3px;background:${colors[id]}"></i>
+         ${m.model_name} <strong>${(m.parameters / 1e6).toFixed(1)}M params</strong>
+         <strong>${m.size_mb.toFixed(1)} MB</strong>
+         <strong>${m.avg_latency_ms.toFixed(1)} ms</strong>
+         <strong>best val-loss @ ep ${m.best_epoch_val_loss}</strong>`,
+      ),
+    );
+  });
+  host.append(chips, svg);
+  nmFinalizePathLengths(svg);
+  nmObserve(host.closest(".viz-card"));
+}
+
+/* raw log viewer --------------------------------------------------------- */
+
+const NM_LOGS = [
+  { label: "Stage-2 backbone sweep", url: "assets/data/stage1_train.log" },
+  { label: "RT-DETR-l training", url: "assets/data/rtdetr_train.log" },
+  { label: "Torch retrain pair", url: "assets/data/torch_cmp.log" },
+];
+const nmLogCache = {};
+
+function nmHighlightLog(text) {
+  return nmEscape(text)
+    .split("\n")
+    .map((line) => {
+      if (/^===|Test accuracy|macro[_ ]?F1|\bDONE\b|\bSTART\b|best model|saved/i.test(line)) {
+        return `<span class="log-hl">${line}</span>`;
+      }
+      if (/^\[INFO\]/.test(line)) return `<span class="log-dim">${line}</span>`;
+      return line;
+    })
+    .join("\n");
+}
+
+function nmShowLog(host, url) {
+  if (nmLogCache[url]) {
+    host.innerHTML = nmLogCache[url];
+    return;
+  }
+  host.textContent = "Loading log…";
+  fetch(url)
+    .then((res) => (res.ok ? res.text() : Promise.reject(new Error(String(res.status)))))
+    .then((text) => {
+      nmLogCache[url] = nmHighlightLog(text);
+      host.innerHTML = nmLogCache[url];
+    })
+    .catch(() => {
+      host.textContent = `Log unavailable offline — see ${url} in the repository.`;
+    });
+}
+
+function nmRenderLogs() {
+  const tabs = document.getElementById("nmLogTabs");
+  const host = document.getElementById("nmLog");
+  if (!tabs || !host) return;
+  NM_LOGS.forEach((log, i) => {
+    const tab = nmEl("button", "viz-tab", log.label);
+    tab.type = "button";
+    tab.setAttribute("role", "tab");
+    tab.setAttribute("aria-selected", String(i === 0));
+    tab.addEventListener("click", () => {
+      tabs.querySelectorAll(".viz-tab").forEach((t) => t.setAttribute("aria-selected", "false"));
+      tab.setAttribute("aria-selected", "true");
+      nmShowLog(host, log.url);
+    });
+    tabs.append(tab);
+  });
+  nmShowLog(host, NM_LOGS[0].url);
+}
+
+function initNewModels() {
+  if (!document.getElementById("s10")) return;
+  nmRenderLogs(); // independent of the metrics JSON
+  fetch("assets/data/new_models.json")
+    .then((res) => (res.ok ? res.json() : Promise.reject(new Error(String(res.status)))))
+    .then((data) => {
+      nmRenderSweepBars(data);
+      nmRenderSweepCurves(data);
+      nmRenderBoard(data);
+      nmRenderHeat(data);
+      nmRenderCmExplorer(data);
+      nmRenderTorchCurves(data);
+    })
+    .catch((err) => {
+      document.querySelectorAll("#s10 .viz-body").forEach((body) => {
+        body.textContent = "Chart data unavailable (assets/data/new_models.json failed to load).";
+      });
+      console.error("new_models.json", err);
+    });
+}
+
 /* ---------------------------------------------------------------- init */
 
 setModelStatus("pending", "Upload image");
@@ -1098,3 +1653,5 @@ handleHashChange();
 startTypewriter();
 startHeroCounts();
 startHeroDemoLoop();
+injectFigBadges();
+initNewModels();

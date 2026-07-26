@@ -26,6 +26,8 @@ rf_*/
 temp_*/
 data/
 ml/
+# the web app's chart data is small JSON/logs, not dataset files
+!web/assets/data/
 
 
 # OS / editor
@@ -48,3 +50,6 @@ Thumbs.db
 
 # Retrained Stage-2 comparison checkpoints (regenerable via scripts/train_comparison_models_torch.py)
 runs/dl/comparison_models_torch/*/best.pt
+
+.vercel
+.env*

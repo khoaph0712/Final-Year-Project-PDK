@@ -1,0 +1,1137 @@
+=== START resnet50 (resnet50.a1_in1k) 10:51:55 ===
+  * plastic     : raw  1855 ->  1800
+  * glass       : raw  1501 ->  1800 augmented
+  * metal       : raw  1736 ->  1800 augmented
+  * paper       : raw  1548 ->  1800 augmented
+  * cardboard   : raw  1517 ->  1800 augmented
+  * organic     : raw  1806 ->  1800
+  * Background  : raw  1200 ->  1800 augmented
+[INFO] train/val/test: 12600/2680/2696
+[INFO] device: cuda
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+C:\FYP\.venv311\Lib\site-packages\huggingface_hub\file_download.py:139: UserWarning: `huggingface_hub` cache-system uses symlinks by default to efficiently store duplicated files but your machine does not support them in C:\Users\PC\.cache\huggingface\hub\models--timm--resnet50.a1_in1k. Caching files will still work but in a degraded version that might require more space on your disk. This warning can be disabled by setting the `HF_HUB_DISABLE_SYMLINKS_WARNING` environment variable. For more details, see https://huggingface.co/docs/huggingface_hub/how-to-cache#limitations.
+To support symlinks on Windows, you either need to activate Developer Mode or to run Python as an administrator. In order to activate developer mode, see this article: https://docs.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development
+  warnings.warn(message)
+[INFO] resnet50.a1_in1k features 0/12600
+[INFO] resnet50.a1_in1k features 1280/12600
+[INFO] resnet50.a1_in1k features 2560/12600
+[INFO] resnet50.a1_in1k features 3840/12600
+[INFO] resnet50.a1_in1k features 5120/12600
+[INFO] resnet50.a1_in1k features 6400/12600
+[INFO] resnet50.a1_in1k features 7680/12600
+[INFO] resnet50.a1_in1k features 8960/12600
+[INFO] resnet50.a1_in1k features 10240/12600
+[INFO] resnet50.a1_in1k features 11520/12600
+[INFO] resnet50.a1_in1k features 0/2680
+[INFO] resnet50.a1_in1k features 1280/2680
+[INFO] resnet50.a1_in1k features 2560/2680
+[INFO] resnet50.a1_in1k features 0/2696
+[INFO] resnet50.a1_in1k features 1280/2696
+[INFO] resnet50.a1_in1k features 2560/2696
+  - train features: 0/12600
+  - train features: 500/12600
+  - train features: 1000/12600
+  - train features: 1500/12600
+  - train features: 2000/12600
+  - train features: 2500/12600
+  - train features: 3000/12600
+  - train features: 3500/12600
+  - train features: 4000/12600
+  - train features: 4500/12600
+  - train features: 5000/12600
+  - train features: 5500/12600
+  - train features: 6000/12600
+  - train features: 6500/12600
+  - train features: 7000/12600
+  - train features: 7500/12600
+  - train features: 8000/12600
+  - train features: 8500/12600
+  - train features: 9000/12600
+  - train features: 9500/12600
+  - train features: 10000/12600
+  - train features: 10500/12600
+  - train features: 11000/12600
+  - train features: 11500/12600
+  - train features: 12000/12600
+  - train features: 12500/12600
+  - val features: 0/2680
+  - val features: 500/2680
+  - val features: 1000/2680
+  - val features: 1500/2680
+  - val features: 2000/2680
+  - val features: 2500/2680
+  - test features: 0/2696
+  - test features: 500/2696
+  - test features: 1000/2696
+  - test features: 1500/2696
+  - test features: 2000/2696
+  - test features: 2500/2696
+Iteration 1, loss = 0.48025065
+Validation score: 0.912698
+Iteration 2, loss = 0.06676370
+Validation score: 0.931217
+Iteration 3, loss = 0.01502664
+Validation score: 0.930556
+Iteration 4, loss = 0.00691746
+Validation score: 0.936508
+Iteration 5, loss = 0.00275147
+Validation score: 0.935185
+Iteration 6, loss = 0.00182963
+Validation score: 0.935185
+Iteration 7, loss = 0.00153715
+Validation score: 0.934524
+Iteration 8, loss = 0.00146134
+Validation score: 0.937169
+Iteration 9, loss = 0.00163845
+Validation score: 0.935185
+Iteration 10, loss = 0.00101253
+Validation score: 0.933862
+Iteration 11, loss = 0.00095489
+Validation score: 0.935185
+Iteration 12, loss = 0.00088108
+Validation score: 0.933862
+Iteration 13, loss = 0.00084495
+Validation score: 0.936508
+Iteration 14, loss = 0.00099442
+Validation score: 0.934524
+Iteration 15, loss = 0.00077864
+Validation score: 0.932540
+Iteration 16, loss = 0.00104311
+Validation score: 0.936508
+Iteration 17, loss = 0.00103087
+Validation score: 0.933862
+Iteration 18, loss = 0.00101910
+Validation score: 0.934524
+Iteration 19, loss = 0.00093691
+Validation score: 0.935185
+Validation score did not improve more than tol=0.000100 for 10 consecutive epochs. Stopping.
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+{
+  "data": "C:\\FYP\\data\\hard_case_classifier_v1\\data.yaml",
+  "model": "resnet50.a1_in1k frozen + 637 features + MLP head",
+  "train_samples": 12600,
+  "val_samples": 2680,
+  "test_samples": 2696,
+  "feature_dim": 2685,
+  "train_seconds": 25.41,
+  "splits": {
+    "val": {
+      "accuracy": 0.9212686567164179,
+      "macro_f1": 0.9223196567200268,
+      "weighted_f1": 0.9210315139076973,
+      "classification_report": {
+        "plastic": {
+          "precision": 0.8979118329466357,
+          "recall": 0.8775510204081632,
+          "f1-score": 0.8876146788990825,
+          "support": 441.0
+        },
+        "glass": {
+          "precision": 0.9118457300275482,
+          "recall": 0.9118457300275482,
+          "f1-score": 0.9118457300275482,
+          "support": 363.0
+        },
+        "metal": {
+          "precision": 0.9095354523227384,
+          "recall": 0.8942307692307693,
+          "f1-score": 0.9018181818181819,
+          "support": 416.0
+        },
+        "paper": {
+          "precision": 0.9139784946236559,
+          "recall": 0.9042553191489362,
+          "f1-score": 0.9090909090909091,
+          "support": 376.0
+        },
+        "cardboard": {
+          "precision": 0.9302949061662198,
+          "recall": 0.9378378378378378,
+          "f1-score": 0.9340511440107672,
+          "support": 370.0
+        },
+        "organic": {
+          "precision": 0.9463869463869464,
+          "recall": 0.9806763285024155,
+          "f1-score": 0.963226571767497,
+          "support": 414.0
+        },
+        "Background": {
+          "precision": 0.9438943894389439,
+          "recall": 0.9533333333333334,
+          "f1-score": 0.9485903814262023,
+          "support": 300.0
+        },
+        "accuracy": 0.9212686567164179,
+        "macro avg": {
+          "precision": 0.9219782502732412,
+          "recall": 0.9228186197841433,
+          "f1-score": 0.9223196567200268,
+          "support": 2680.0
+        },
+        "weighted avg": {
+          "precision": 0.9209639583550748,
+          "recall": 0.9212686567164179,
+          "f1-score": 0.9210315139076973,
+          "support": 2680.0
+        }
+      }
+    },
+    "test": {
+      "accuracy": 0.922106824925816,
+      "macro_f1": 0.9233284302282981,
+      "weighted_f1": 0.9218841840041403,
+      "classification_report": {
+        "plastic": {
+          "precision": 0.9038461538461539,
+          "recall": 0.8847058823529412,
+          "f1-score": 0.8941736028537456,
+          "support": 425.0
+        },
+        "glass": {
+          "precision": 0.9067796610169492,
+          "recall": 0.901685393258427,
+          "f1-score": 0.9042253521126761,
+          "support": 356.0
+        },
+        "metal": {
+          "precision": 0.8861607142857143,
+          "recall": 0.906392694063927,
+          "f1-score": 0.8961625282167043,
+          "support": 438.0
+        },
+        "paper": {
+          "precision": 0.9371428571428572,
+          "recall": 0.8723404255319149,
+          "f1-score": 0.9035812672176309,
+          "support": 376.0
+        },
+        "cardboard": {
+          "precision": 0.9123711340206185,
+          "recall": 0.946524064171123,
+          "f1-score": 0.9291338582677166,
+          "support": 374.0
+        },
+        "organic": {
+          "precision": 0.9523809523809523,
+          "recall": 0.9836065573770492,
+          "f1-score": 0.967741935483871,
+          "support": 427.0
+        },
+        "Background": {
+          "precision": 0.9698996655518395,
+          "recall": 0.9666666666666667,
+          "f1-score": 0.9682804674457429,
+          "support": 300.0
+        },
+        "accuracy": 0.922106824925816,
+        "macro avg": {
+          "precision": 0.9240830197492979,
+          "recall": 0.9231316690602928,
+          "f1-score": 0.9233284302282981,
+          "support": 2696.0
+        },
+        "weighted avg": {
+          "precision": 0.9222239066414823,
+          "recall": 0.922106824925816,
+          "f1-score": 0.9218841840041403,
+          "support": 2696.0
+        }
+      }
+    }
+  },
+  "latency_cpu": {
+    "current_convnext_637": {
+      "images": 120,
+      "mean_ms": 59.60171916667605,
+      "median_ms": 49.29885000092327,
+      "p95_ms": 76.17292499890027
+    },
+    "candidate_resnet50_637_mlp": {
+      "images": 120,
+      "mean_ms": 55.02770416681718,
+      "median_ms": 49.840000001495355,
+      "p95_ms": 65.33737500212737
+    }
+  }
+}
+=== DONE resnet50 10:58:45 ===
+=== START mobilenetv3_large (mobilenetv3_large_100.ra_in1k) 10:58:45 ===
+  * plastic     : raw  1855 ->  1800
+  * glass       : raw  1501 ->  1800 augmented
+  * metal       : raw  1736 ->  1800 augmented
+  * paper       : raw  1548 ->  1800 augmented
+  * cardboard   : raw  1517 ->  1800 augmented
+  * organic     : raw  1806 ->  1800
+  * Background  : raw  1200 ->  1800 augmented
+[INFO] train/val/test: 12600/2680/2696
+[INFO] device: cuda
+C:\FYP\.venv311\Lib\site-packages\huggingface_hub\file_download.py:139: UserWarning: `huggingface_hub` cache-system uses symlinks by default to efficiently store duplicated files but your machine does not support them in C:\Users\PC\.cache\huggingface\hub\models--timm--mobilenetv3_large_100.ra_in1k. Caching files will still work but in a degraded version that might require more space on your disk. This warning can be disabled by setting the `HF_HUB_DISABLE_SYMLINKS_WARNING` environment variable. For more details, see https://huggingface.co/docs/huggingface_hub/how-to-cache#limitations.
+To support symlinks on Windows, you either need to activate Developer Mode or to run Python as an administrator. In order to activate developer mode, see this article: https://docs.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development
+  warnings.warn(message)
+[INFO] mobilenetv3_large_100.ra_in1k features 0/12600
+[INFO] mobilenetv3_large_100.ra_in1k features 1280/12600
+[INFO] mobilenetv3_large_100.ra_in1k features 2560/12600
+[INFO] mobilenetv3_large_100.ra_in1k features 3840/12600
+[INFO] mobilenetv3_large_100.ra_in1k features 5120/12600
+[INFO] mobilenetv3_large_100.ra_in1k features 6400/12600
+[INFO] mobilenetv3_large_100.ra_in1k features 7680/12600
+[INFO] mobilenetv3_large_100.ra_in1k features 8960/12600
+[INFO] mobilenetv3_large_100.ra_in1k features 10240/12600
+[INFO] mobilenetv3_large_100.ra_in1k features 11520/12600
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+[INFO] mobilenetv3_large_100.ra_in1k features 0/2680
+[INFO] mobilenetv3_large_100.ra_in1k features 1280/2680
+[INFO] mobilenetv3_large_100.ra_in1k features 2560/2680
+[INFO] mobilenetv3_large_100.ra_in1k features 0/2696
+[INFO] mobilenetv3_large_100.ra_in1k features 1280/2696
+[INFO] mobilenetv3_large_100.ra_in1k features 2560/2696
+  - train features: 0/12600
+  - train features: 500/12600
+  - train features: 1000/12600
+  - train features: 1500/12600
+  - train features: 2000/12600
+  - train features: 2500/12600
+  - train features: 3000/12600
+  - train features: 3500/12600
+  - train features: 4000/12600
+  - train features: 4500/12600
+  - train features: 5000/12600
+  - train features: 5500/12600
+  - train features: 6000/12600
+  - train features: 6500/12600
+  - train features: 7000/12600
+  - train features: 7500/12600
+  - train features: 8000/12600
+  - train features: 8500/12600
+  - train features: 9000/12600
+  - train features: 9500/12600
+  - train features: 10000/12600
+  - train features: 10500/12600
+  - train features: 11000/12600
+  - train features: 11500/12600
+  - train features: 12000/12600
+  - train features: 12500/12600
+  - val features: 0/2680
+  - val features: 500/2680
+  - val features: 1000/2680
+  - val features: 1500/2680
+  - val features: 2000/2680
+  - val features: 2500/2680
+  - test features: 0/2696
+  - test features: 500/2696
+  - test features: 1000/2696
+  - test features: 1500/2696
+  - test features: 2000/2696
+  - test features: 2500/2696
+Iteration 1, loss = 0.53310040
+Validation score: 0.915344
+Iteration 2, loss = 0.09563288
+Validation score: 0.935185
+Iteration 3, loss = 0.02487621
+Validation score: 0.935847
+Iteration 4, loss = 0.00917987
+Validation score: 0.940476
+Iteration 5, loss = 0.00495303
+Validation score: 0.940476
+Iteration 6, loss = 0.00422161
+Validation score: 0.941138
+Iteration 7, loss = 0.00327004
+Validation score: 0.937831
+Iteration 8, loss = 0.00181375
+Validation score: 0.939153
+Iteration 9, loss = 0.00237195
+Validation score: 0.940476
+Iteration 10, loss = 0.00119068
+Validation score: 0.939815
+Iteration 11, loss = 0.00213590
+Validation score: 0.941799
+Iteration 12, loss = 0.00125881
+Validation score: 0.938492
+Iteration 13, loss = 0.00094470
+Validation score: 0.940476
+Iteration 14, loss = 0.00101649
+Validation score: 0.939815
+Iteration 15, loss = 0.00086091
+Validation score: 0.939815
+Iteration 16, loss = 0.00088769
+Validation score: 0.939815
+Iteration 17, loss = 0.00082574
+Validation score: 0.939153
+Iteration 18, loss = 0.00092246
+Validation score: 0.939153
+Iteration 19, loss = 0.00078298
+Validation score: 0.939815
+Iteration 20, loss = 0.00073033
+Validation score: 0.939153
+Iteration 21, loss = 0.00067969
+Validation score: 0.939815
+Iteration 22, loss = 0.00069845
+Validation score: 0.941138
+Validation score did not improve more than tol=0.000100 for 10 consecutive epochs. Stopping.
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+{
+  "data": "C:\\FYP\\data\\hard_case_classifier_v1\\data.yaml",
+  "model": "mobilenetv3_large_100.ra_in1k frozen + 637 features + MLP head",
+  "train_samples": 12600,
+  "val_samples": 2680,
+  "test_samples": 2696,
+  "feature_dim": 1917,
+  "train_seconds": 22.45,
+  "splits": {
+    "val": {
+      "accuracy": 0.9167910447761194,
+      "macro_f1": 0.9169981906577804,
+      "weighted_f1": 0.9165384275971575,
+      "classification_report": {
+        "plastic": {
+          "precision": 0.8898876404494382,
+          "recall": 0.8979591836734694,
+          "f1-score": 0.8939051918735892,
+          "support": 441.0
+        },
+        "glass": {
+          "precision": 0.9250720461095101,
+          "recall": 0.8842975206611571,
+          "f1-score": 0.9042253521126761,
+          "support": 363.0
+        },
+        "metal": {
+          "precision": 0.9168765743073047,
+          "recall": 0.875,
+          "f1-score": 0.8954489544895449,
+          "support": 416.0
+        },
+        "paper": {
+          "precision": 0.8970976253298153,
+          "recall": 0.9042553191489362,
+          "f1-score": 0.9006622516556292,
+          "support": 376.0
+        },
+        "cardboard": {
+          "precision": 0.9139784946236559,
+          "recall": 0.918918918918919,
+          "f1-score": 0.9164420485175202,
+          "support": 370.0
+        },
+        "organic": {
+          "precision": 0.9623529411764706,
+          "recall": 0.9879227053140096,
+          "f1-score": 0.9749702026221693,
+          "support": 414.0
+        },
+        "Background": {
+          "precision": 0.9111111111111111,
+          "recall": 0.9566666666666667,
+          "f1-score": 0.9333333333333333,
+          "support": 300.0
+        },
+        "accuracy": 0.9167910447761194,
+        "macro avg": {
+          "precision": 0.9166252047296152,
+          "recall": 0.9178600449118797,
+          "f1-score": 0.9169981906577804,
+          "support": 2680.0
+        },
+        "weighted avg": {
+          "precision": 0.9167501709712494,
+          "recall": 0.9167910447761194,
+          "f1-score": 0.9165384275971575,
+          "support": 2680.0
+        }
+      }
+    },
+    "test": {
+      "accuracy": 0.9206231454005934,
+      "macro_f1": 0.9210940748355912,
+      "weighted_f1": 0.9204358906322208,
+      "classification_report": {
+        "plastic": {
+          "precision": 0.8917050691244239,
+          "recall": 0.9105882352941177,
+          "f1-score": 0.9010477299185099,
+          "support": 425.0
+        },
+        "glass": {
+          "precision": 0.9279279279279279,
+          "recall": 0.8679775280898876,
+          "f1-score": 0.8969521044992743,
+          "support": 356.0
+        },
+        "metal": {
+          "precision": 0.8903803131991052,
+          "recall": 0.908675799086758,
+          "f1-score": 0.8994350282485876,
+          "support": 438.0
+        },
+        "paper": {
+          "precision": 0.925,
+          "recall": 0.8856382978723404,
+          "f1-score": 0.904891304347826,
+          "support": 376.0
+        },
+        "cardboard": {
+          "precision": 0.9090909090909091,
+          "recall": 0.9358288770053476,
+          "f1-score": 0.922266139657444,
+          "support": 374.0
+        },
+        "organic": {
+          "precision": 0.9546485260770975,
+          "recall": 0.9859484777517564,
+          "f1-score": 0.9700460829493087,
+          "support": 427.0
+        },
+        "Background": {
+          "precision": 0.9594594594594594,
+          "recall": 0.9466666666666667,
+          "f1-score": 0.9530201342281879,
+          "support": 300.0
+        },
+        "accuracy": 0.9206231454005934,
+        "macro avg": {
+          "precision": 0.9226017435541319,
+          "recall": 0.9201891259666963,
+          "f1-score": 0.9210940748355912,
+          "support": 2696.0
+        },
+        "weighted avg": {
+          "precision": 0.9208369185364202,
+          "recall": 0.9206231454005934,
+          "f1-score": 0.9204358906322208,
+          "support": 2696.0
+        }
+      }
+    }
+  },
+  "latency_cpu": {
+    "current_convnext_637": {
+      "images": 120,
+      "mean_ms": 59.29858416678447,
+      "median_ms": 49.25079999884474,
+      "p95_ms": 76.50561500067852
+    },
+    "candidate_mobilenetv3_large_637_mlp": {
+      "images": 120,
+      "mean_ms": 24.38535583317692,
+      "median_ms": 18.535049999627518,
+      "p95_ms": 33.696209998561244
+    }
+  }
+}
+=== DONE mobilenetv3_large 11:03:28 ===
+=== START vit_small (vit_small_patch16_224.augreg_in21k_ft_in1k) 11:03:28 ===
+  * plastic     : raw  1855 ->  1800
+  * glass       : raw  1501 ->  1800 augmented
+  * metal       : raw  1736 ->  1800 augmented
+  * paper       : raw  1548 ->  1800 augmented
+  * cardboard   : raw  1517 ->  1800 augmented
+  * organic     : raw  1806 ->  1800
+  * Background  : raw  1200 ->  1800 augmented
+[INFO] train/val/test: 12600/2680/2696
+[INFO] device: cuda
+Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+C:\FYP\.venv311\Lib\site-packages\huggingface_hub\file_download.py:139: UserWarning: `huggingface_hub` cache-system uses symlinks by default to efficiently store duplicated files but your machine does not support them in C:\Users\PC\.cache\huggingface\hub\models--timm--vit_small_patch16_224.augreg_in21k_ft_in1k. Caching files will still work but in a degraded version that might require more space on your disk. This warning can be disabled by setting the `HF_HUB_DISABLE_SYMLINKS_WARNING` environment variable. For more details, see https://huggingface.co/docs/huggingface_hub/how-to-cache#limitations.
+To support symlinks on Windows, you either need to activate Developer Mode or to run Python as an administrator. In order to activate developer mode, see this article: https://docs.microsoft.com/en-us/windows/apps/get-started/enable-your-device-for-development
+  warnings.warn(message)
+[INFO] vit_small_patch16_224.augreg_in21k_ft_in1k features 0/12600
+[INFO] vit_small_patch16_224.augreg_in21k_ft_in1k features 1280/12600
+[INFO] vit_small_patch16_224.augreg_in21k_ft_in1k features 2560/12600
+[INFO] vit_small_patch16_224.augreg_in21k_ft_in1k features 3840/12600
+[INFO] vit_small_patch16_224.augreg_in21k_ft_in1k features 5120/12600
+[INFO] vit_small_patch16_224.augreg_in21k_ft_in1k features 6400/12600
+[INFO] vit_small_patch16_224.augreg_in21k_ft_in1k features 7680/12600
+[INFO] vit_small_patch16_224.augreg_in21k_ft_in1k features 8960/12600
+[INFO] vit_small_patch16_224.augreg_in21k_ft_in1k features 10240/12600
+[INFO] vit_small_patch16_224.augreg_in21k_ft_in1k features 11520/12600
+[INFO] vit_small_patch16_224.augreg_in21k_ft_in1k features 0/2680
+[INFO] vit_small_patch16_224.augreg_in21k_ft_in1k features 1280/2680
+[INFO] vit_small_patch16_224.augreg_in21k_ft_in1k features 2560/2680
+[INFO] vit_small_patch16_224.augreg_in21k_ft_in1k features 0/2696
+[INFO] vit_small_patch16_224.augreg_in21k_ft_in1k features 1280/2696
+[INFO] vit_small_patch16_224.augreg_in21k_ft_in1k features 2560/2696
+  - train features: 0/12600
+  - train features: 500/12600
+  - train features: 1000/12600
+  - train features: 1500/12600
+  - train features: 2000/12600
+  - train features: 2500/12600
+  - train features: 3000/12600
+  - train features: 3500/12600
+  - train features: 4000/12600
+  - train features: 4500/12600
+  - train features: 5000/12600
+  - train features: 5500/12600
+  - train features: 6000/12600
+  - train features: 6500/12600
+  - train features: 7000/12600
+  - train features: 7500/12600
+  - train features: 8000/12600
+  - train features: 8500/12600
+  - train features: 9000/12600
+  - train features: 9500/12600
+  - train features: 10000/12600
+  - train features: 10500/12600
+  - train features: 11000/12600
+  - train features: 11500/12600
+  - train features: 12000/12600
+  - train features: 12500/12600
+  - val features: 0/2680
+  - val features: 500/2680
+  - val features: 1000/2680
+  - val features: 1500/2680
+  - val features: 2000/2680
+  - val features: 2500/2680
+  - test features: 0/2696
+  - test features: 500/2696
+  - test features: 1000/2696
+  - test features: 1500/2696
+  - test features: 2000/2696
+  - test features: 2500/2696
+Iteration 1, loss = 0.62173575
+Validation score: 0.886905
+Iteration 2, loss = 0.15405677
+Validation score: 0.905423
+Iteration 3, loss = 0.06089241
+Validation score: 0.908069
+Iteration 4, loss = 0.02348348
+Validation score: 0.914021
+Iteration 5, loss = 0.00967289
+Validation score: 0.923280
+Iteration 6, loss = 0.00568507
+Validation score: 0.919312
+Iteration 7, loss = 0.00428464
+Validation score: 0.920635
+Iteration 8, loss = 0.00317696
+Validation score: 0.925265
+Iteration 9, loss = 0.00255172
+Validation score: 0.924603
+Iteration 10, loss = 0.00205606
+Validation score: 0.922619
+Iteration 11, loss = 0.00202032
+Validation score: 0.923942
+Iteration 12, loss = 0.00182718
+Validation score: 0.922619
+Iteration 13, loss = 0.00177553
+Validation score: 0.923280
+Iteration 14, loss = 0.00137858
+Validation score: 0.925265
+Iteration 15, loss = 0.00133424
+Validation score: 0.925265
+Iteration 16, loss = 0.00120193
+Validation score: 0.925265
+Iteration 17, loss = 0.00124466
+Validation score: 0.925265
+Iteration 18, loss = 0.00155822
+Validation score: 0.922619
+Iteration 19, loss = 0.00129229
+Validation score: 0.924603
+Validation score did not improve more than tol=0.000100 for 10 consecutive epochs. Stopping.
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+  - _latency features: 0/1
+{
+  "data": "C:\\FYP\\data\\hard_case_classifier_v1\\data.yaml",
+  "model": "vit_small_patch16_224.augreg_in21k_ft_in1k frozen + 637 features + MLP head",
+  "train_samples": 12600,
+  "val_samples": 2680,
+  "test_samples": 2696,
+  "feature_dim": 1021,
+  "train_seconds": 11.66,
+  "splits": {
+    "val": {
+      "accuracy": 0.9235074626865671,
+      "macro_f1": 0.9239922135019418,
+      "weighted_f1": 0.9233050425944449,
+      "classification_report": {
+        "plastic": {
+          "precision": 0.8972602739726028,
+          "recall": 0.891156462585034,
+          "f1-score": 0.89419795221843,
+          "support": 441.0
+        },
+        "glass": {
+          "precision": 0.9460227272727273,
+          "recall": 0.9173553719008265,
+          "f1-score": 0.9314685314685315,
+          "support": 363.0
+        },
+        "metal": {
+          "precision": 0.9117647058823529,
+          "recall": 0.8942307692307693,
+          "f1-score": 0.9029126213592233,
+          "support": 416.0
+        },
+        "paper": {
+          "precision": 0.9164420485175202,
+          "recall": 0.9042553191489362,
+          "f1-score": 0.9103078982597055,
+          "support": 376.0
+        },
+        "cardboard": {
+          "precision": 0.9195710455764075,
+          "recall": 0.927027027027027,
+          "f1-score": 0.9232839838492598,
+          "support": 370.0
+        },
+        "organic": {
+          "precision": 0.9534883720930233,
+          "recall": 0.9903381642512077,
+          "f1-score": 0.9715639810426541,
+          "support": 414.0
+        },
+        "Background": {
+          "precision": 0.922077922077922,
+          "recall": 0.9466666666666667,
+          "f1-score": 0.9342105263157895,
+          "support": 300.0
+        },
+        "accuracy": 0.9235074626865671,
+        "macro avg": {
+          "precision": 0.9238038707703652,
+          "recall": 0.9244328258300667,
+          "f1-score": 0.9239922135019418,
+          "support": 2680.0
+        },
+        "weighted avg": {
+          "precision": 0.9233519433748967,
+          "recall": 0.9235074626865671,
+          "f1-score": 0.9233050425944449,
+          "support": 2680.0
+        }
+      }
+    },
+    "test": {
+      "accuracy": 0.9217359050445104,
+      "macro_f1": 0.9217244691555538,
+      "weighted_f1": 0.9214879445365767,
+      "classification_report": {
+        "plastic": {
+          "precision": 0.9047619047619048,
+          "recall": 0.8941176470588236,
+          "f1-score": 0.8994082840236687,
+          "support": 425.0
+        },
+        "glass": {
+          "precision": 0.9101123595505618,
+          "recall": 0.9101123595505618,
+          "f1-score": 0.9101123595505618,
+          "support": 356.0
+        },
+        "metal": {
+          "precision": 0.903370786516854,
+          "recall": 0.9178082191780822,
+          "f1-score": 0.9105322763306908,
+          "support": 438.0
+        },
+        "paper": {
+          "precision": 0.9235127478753541,
+          "recall": 0.8670212765957447,
+          "f1-score": 0.8943758573388203,
+          "support": 376.0
+        },
+        "cardboard": {
+          "precision": 0.9142857142857143,
+          "recall": 0.9411764705882353,
+          "f1-score": 0.927536231884058,
+          "support": 374.0
+        },
+        "organic": {
+          "precision": 0.9524886877828054,
+          "recall": 0.9859484777517564,
+          "f1-score": 0.9689298043728424,
+          "support": 427.0
+        },
+        "Background": {
+          "precision": 0.9491525423728814,
+          "recall": 0.9333333333333333,
+          "f1-score": 0.9411764705882353,
+          "support": 300.0
+        },
+        "accuracy": 0.9217359050445104,
+        "macro avg": {
+          "precision": 0.922526391878011,
+          "recall": 0.9213596834366482,
+          "f1-score": 0.9217244691555538,
+          "support": 2696.0
+        },
+        "weighted avg": {
+          "precision": 0.921677409776448,
+          "recall": 0.9217359050445104,
+          "f1-score": 0.9214879445365767,
+          "support": 2696.0
+        }
+      }
+    }
+  },
+  "latency_cpu": {
+    "current_convnext_637": {
+      "images": 120,
+      "mean_ms": 53.93992500006183,
+      "median_ms": 47.58559999936551,
+      "p95_ms": 73.7846250003713
+    },
+    "candidate_vit_small_637_mlp": {
+      "images": 120,
+      "mean_ms": 44.15562833331327,
+      "median_ms": 43.02400000051421,
+      "p95_ms": 58.098890000837855
+    }
+  }
+}
+=== DONE vit_small 11:08:27 ===

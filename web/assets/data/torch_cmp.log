@@ -1,0 +1,84 @@
+[INFO] device=cuda
+[INFO] Classification layout detected at C:\FYP\data\merged_dataset_v5\train. Loading crops directly from class subfolders...
+
+--- Balancing statistics (train) ---
+  * plastic     : Raw  2000 -> Undersampled to  1000
+  * glass       : Raw  2000 -> Undersampled to  1000
+  * metal       : Raw  2000 -> Undersampled to  1000
+  * paper       : Raw  2000 -> Undersampled to  1000
+  * cardboard   : Raw  2000 -> Undersampled to  1000
+  * organic     : Raw  2000 -> Undersampled to  1000
+  * Background  : Raw  2000 -> Undersampled to  1000
+[INFO] Classification layout detected at C:\FYP\data\merged_dataset_v5\test. Loading crops directly from class subfolders...
+
+--- Balancing statistics (test) ---
+  * plastic     : Raw   600 -> Undersampled to   300
+  * glass       : Raw   600 -> Undersampled to   300
+  * metal       : Raw   600 -> Undersampled to   300
+  * paper       : Raw   600 -> Undersampled to   300
+  * cardboard   : Raw   600 -> Undersampled to   300
+  * organic     : Raw   600 -> Undersampled to   300
+  * Background  : Raw   600 -> Undersampled to   300
+[INFO] train=7000 test=2100
+
+=== resnet50 ===
+epoch 1/15  loss 0.6513 acc 0.7963 | val_loss 0.3049 val_acc 0.8967
+epoch 2/15  loss 0.2769 acc 0.9094 | val_loss 0.3006 val_acc 0.8986
+epoch 3/15  loss 0.1616 acc 0.9507 | val_loss 0.2606 val_acc 0.9176
+epoch 4/15  loss 0.1093 acc 0.9647 | val_loss 0.2778 val_acc 0.9148
+epoch 5/15  loss 0.0957 acc 0.9696 | val_loss 0.3389 val_acc 0.9081
+epoch 6/15  loss 0.0774 acc 0.9759 | val_loss 0.3284 val_acc 0.9138
+epoch 7/15  loss 0.0684 acc 0.9790 | val_loss 0.3156 val_acc 0.9181
+epoch 8/15  loss 0.0524 acc 0.9843 | val_loss 0.3038 val_acc 0.9224
+epoch 9/15  loss 0.0504 acc 0.9857 | val_loss 0.3607 val_acc 0.9152
+epoch 10/15  loss 0.0384 acc 0.9874 | val_loss 0.3368 val_acc 0.9143
+epoch 11/15  loss 0.0372 acc 0.9889 | val_loss 0.3154 val_acc 0.9195
+epoch 12/15  loss 0.0385 acc 0.9874 | val_loss 0.3535 val_acc 0.9162
+epoch 13/15  loss 0.0312 acc 0.9909 | val_loss 0.3418 val_acc 0.9162
+epoch 14/15  loss 0.0428 acc 0.9881 | val_loss 0.3740 val_acc 0.9124
+epoch 15/15  loss 0.0523 acc 0.9841 | val_loss 0.3058 val_acc 0.9200
+
+=== mobilenetv2 ===
+Downloading: "https://download.pytorch.org/models/mobilenet_v2-b0353104.pth" to C:\Users\PC/.cache\torch\hub\checkpoints\mobilenet_v2-b0353104.pth
+  0%|          | 0.00/13.6M [00:00<?, ?B/s] 13%|#2        | 1.75M/13.6M [00:00<00:00, 17.2MB/s] 30%|##9       | 4.00M/13.6M [00:00<00:00, 20.5MB/s] 44%|####4     | 6.00M/13.6M [00:00<00:00, 20.3MB/s] 60%|#####9    | 8.12M/13.6M [00:00<00:00, 20.6MB/s] 75%|#######4  | 10.1M/13.6M [00:00<00:00, 19.8MB/s] 89%|########9 | 12.1M/13.6M [00:00<00:00, 18.3MB/s]100%|##########| 13.6M/13.6M [00:00<00:00, 19.0MB/s]
+epoch 1/15  loss 0.8238 acc 0.7349 | val_loss 0.4198 val_acc 0.8481
+epoch 2/15  loss 0.3927 acc 0.8700 | val_loss 0.3477 val_acc 0.8771
+epoch 3/15  loss 0.2857 acc 0.9083 | val_loss 0.3142 val_acc 0.8914
+epoch 4/15  loss 0.2086 acc 0.9329 | val_loss 0.3281 val_acc 0.8862
+epoch 5/15  loss 0.1610 acc 0.9466 | val_loss 0.3017 val_acc 0.9029
+epoch 6/15  loss 0.1180 acc 0.9606 | val_loss 0.2883 val_acc 0.9038
+epoch 7/15  loss 0.0977 acc 0.9680 | val_loss 0.2993 val_acc 0.9124
+epoch 8/15  loss 0.0805 acc 0.9731 | val_loss 0.3208 val_acc 0.9076
+epoch 9/15  loss 0.0570 acc 0.9807 | val_loss 0.3328 val_acc 0.9071
+epoch 10/15  loss 0.0594 acc 0.9810 | val_loss 0.3178 val_acc 0.9143
+epoch 11/15  loss 0.0507 acc 0.9843 | val_loss 0.3534 val_acc 0.9057
+epoch 12/15  loss 0.0404 acc 0.9867 | val_loss 0.3363 val_acc 0.9081
+epoch 13/15  loss 0.0405 acc 0.9877 | val_loss 0.3685 val_acc 0.9067
+epoch 14/15  loss 0.0414 acc 0.9856 | val_loss 0.3748 val_acc 0.9076
+epoch 15/15  loss 0.0348 acc 0.9873 | val_loss 0.3521 val_acc 0.9067
+{
+  "resnet50": {
+    "model_name": "resnet50",
+    "parameters": 23771207,
+    "size_mb": 90.95650863647461,
+    "accuracy": 0.9223809523809524,
+    "loss": 0.26063577708034286,
+    "avg_latency_ms": 8.739686012268066,
+    "training_time_sec": 1075.8549783229828,
+    "epochs": 15,
+    "best_epoch_val_loss": 3,
+    "best_epoch_val_acc": 8
+  },
+  "mobilenetv2": {
+    "model_name": "mobilenetv2",
+    "parameters": 2388743,
+    "size_mb": 9.316705703735352,
+    "accuracy": 0.9142857142857143,
+    "loss": 0.28826625472023376,
+    "avg_latency_ms": 9.179320335388184,
+    "training_time_sec": 567.4886002540588,
+    "epochs": 15,
+    "best_epoch_val_loss": 6,
+    "best_epoch_val_acc": 10
+  }
+}
