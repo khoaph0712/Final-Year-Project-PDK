@@ -345,25 +345,37 @@ def patch_torchvision_nms() -> None:
         torchvision.ops.nms = nms
 
 
-def infer_context(image_bgr: Any) -> str:
+def infer_context(image_bgr: Any, exclude_boxes: list | None = None) -> str:
     import cv2
     import numpy as np
 
     hsv = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2HSV)
-    total = max(1, image_bgr.shape[0] * image_bgr.shape[1])
+    h, w = image_bgr.shape[:2]
 
-    green = cv2.inRange(hsv, np.array([35, 40, 40]), np.array([85, 255, 255]))
-    sand = cv2.inRange(hsv, np.array([10, SAND_SAT_MIN, 80]), np.array([28, 150, 255]))
-    water = cv2.inRange(hsv, np.array([90, 30, 50]), np.array([130, 255, 255]))
+    # Score the background, not the litter item itself - a close-up crop is mostly the
+    # detected object, and tan/brown litter (cardboard, banana peel, rust) matches the
+    # "sand" hue just as well as an actual beach, which used to tag most photos "Beach"
+    # regardless of the real scene.
+    bg_mask = np.ones((h, w), dtype=bool)
+    for x1, y1, x2, y2 in exclude_boxes or []:
+        bg_mask[max(0, int(y1)):min(h, int(y2)), max(0, int(x1)):min(w, int(x2))] = False
+    total = max(1, int(np.sum(bg_mask)))
 
-    green_pct = float(np.sum(green > 0) / total)
-    beach_pct = float((np.sum(sand > 0) + np.sum(water > 0)) / total)
+    green = cv2.inRange(hsv, np.array([35, 40, 40]), np.array([85, 255, 255])) > 0
+    sand = cv2.inRange(hsv, np.array([10, SAND_SAT_MIN, 80]), np.array([28, 150, 255])) > 0
+    water = cv2.inRange(hsv, np.array([90, 30, 50]), np.array([130, 255, 255])) > 0
+
+    green_pct = float(np.sum(green & bg_mask) / total)
+    sand_pct = float(np.sum(sand & bg_mask) / total)
+    water_pct = float(np.sum(water & bg_mask) / total)
 
     if green_pct >= 0.25:
         return "Grass"
-    if beach_pct >= 0.20:
+    # Water hue (cyan/blue) also matches blue paint, tarps, and bins - a real beach needs a
+    # visible sand expanse AND a water band together, not just one blue or tan surface.
+    if sand_pct >= 0.30 and water_pct >= 0.12:
         return "Beach"
-    if float(np.mean(hsv[:, :, 2])) < 95:
+    if float(np.mean(hsv[:, :, 2][bg_mask])) < 95:
         return "Indoor"
     return "Street"
 
@@ -504,7 +516,6 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
 
     height, width = image.shape[:2]
     empty_cues = scene_empty_cues(image)
-    context = infer_context(image)
 
     # Removed 2026-07-16 (audit): a "recovery" re-predict at conf=0.05 when the primary pass
     # found zero boxes was provably a no-op after F13 lowered YOLO_CONF to 0.04 (a stricter
@@ -571,6 +582,10 @@ def predict_image(image_bytes: bytes) -> dict[str, Any]:
                 "yoloScore": yolo_score,
             }
         )
+
+    context = infer_context(
+        image, exclude_boxes=[(r["x1"], r["y1"], r["x2"], r["y2"]) for r in crop_records]
+    )
 
     verified_crop_count = min(MAX_CROP_VERIFICATIONS, len(crop_records))
     if verified_crop_count > 0:
