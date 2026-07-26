@@ -22,25 +22,12 @@ const classColors = {
   Background: "#6b7280",
 };
 
-const PAGES = ["home", "data", "eda", "modeling", "demo"];
-
-// Presentation flow: section id -> page. Order matters (arrow-key navigation).
-const FLOW = [
-  ["s1", "home"],
-  ["s2", "data"],
-  ["s3", "data"],
-  ["s4", "eda"],
-  ["s5", "modeling"],
-  ["s6", "modeling"],
-  ["s7", "modeling"],
-  ["s8", "modeling"],
-  ["s9", "modeling"],
-  ["s10", "modeling"],
-  ["s11", "modeling"],
-  ["s12", "modeling"],
-  ["s13", "demo"],
-];
-const FLOW_PAGE = Object.fromEntries(FLOW);
+// Chapter order for arrow keys, the flow rail, and scroll-spy. The whole
+// presentation is one continuous scroll; "pages" survive only as anchor
+// aliases so old links (#demo, #data) keep working.
+const FLOW = ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11", "s12", "s13"];
+const PAGE_ANCHORS = { home: "s1", data: "s2", eda: "s4", modeling: "s5", demo: "s13", scan: "scan-live" };
+const PAGE_OF = { s1: "home", s2: "data", s3: "data", s4: "eda", s13: "demo" }; // others: modeling
 const WORDS = ["Localize.", "Verify.", "Fuse.", "Route it right."];
 
 const HERO_DEMO_BOXES = [
@@ -229,68 +216,76 @@ function setPreviewImage(imageSrc) {
 
 /* ---------------------------------------------------------------- routing */
 
-const pageEls = Object.fromEntries(PAGES.map((p) => [p, document.querySelector(`main[data-page="${p}"]`)]));
 const navLinks = Array.from(document.querySelectorAll("[data-page-link]"));
-
-function activatePage(page) {
-  PAGES.forEach((p) => {
-    if (pageEls[p]) pageEls[p].hidden = p !== page;
-  });
-  navLinks.forEach((a) => {
-    const target = a.getAttribute("href").replace("#", "");
-    a.classList.toggle("active", target === page);
-  });
-  if (page === "modeling") startEvidenceCounts();
-}
-
-// Pages can hold several .pres-section flow steps (e.g. "modeling" holds s5-s12);
-// show only the current step so Next/Prev jump to a fresh page instead of
-// scrolling through the rest of that page's sections.
-function showOnlySection(page, sectionId) {
-  const pageEl = pageEls[page];
-  if (!pageEl) return;
-  pageEl.querySelectorAll(".pres-section").forEach((sec) => {
-    sec.hidden = sec.id !== sectionId;
-  });
-}
 
 let currentFlowIndex = 0;
 
 function updateFlowRail() {
   document.querySelectorAll(".flow-rail a").forEach((dot, i) => {
-    dot.classList.toggle("active", i === currentFlowIndex);
+    const on = i === currentFlowIndex;
+    dot.classList.toggle("active", on);
+    if (on) dot.setAttribute("aria-current", "true");
+    else dot.removeAttribute("aria-current");
   });
 }
 
-function goToSection(sectionId) {
-  const page = FLOW_PAGE[sectionId];
-  if (!page) return false;
-  activatePage(page);
-  showOnlySection(page, sectionId);
-  currentFlowIndex = FLOW.findIndex(([id]) => id === sectionId);
+function setCurrentSection(sectionId) {
+  const i = FLOW.indexOf(sectionId);
+  if (i === -1) return;
+  currentFlowIndex = i;
   updateFlowRail();
-  window.scrollTo({ top: 0 });
-  return true;
+  const page = PAGE_OF[sectionId] || "modeling";
+  navLinks.forEach((a) => {
+    const on = a.getAttribute("href").replace("#", "") === page;
+    a.classList.toggle("active", on);
+    if (on) a.setAttribute("aria-current", "true");
+    else a.removeAttribute("aria-current");
+  });
 }
 
+// One chapter on screen at a time: each chapter is its own scroll story, and
+// the end-of-chapter card / arrow keys / rail dots are the stops between them.
+let chapterNavigated = false;
+
+function showChapter(sectionId, scrollTarget) {
+  if (!FLOW.includes(sectionId)) sectionId = "s1";
+  FLOW.forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.hidden = id !== sectionId;
+  });
+  setCurrentSection(sectionId);
+  const target = scrollTarget && document.getElementById(scrollTarget);
+  if (target) {
+    requestAnimationFrame(() =>
+      target.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" }),
+    );
+  } else {
+    window.scrollTo({ top: 0 });
+  }
+  const sec = document.getElementById(sectionId);
+  if (sec) {
+    if (chapterNavigated) {
+      // move keyboard/SR focus with the chapter, but not on initial load
+      sec.setAttribute("tabindex", "-1");
+      sec.focus({ preventScroll: true });
+    }
+    if (!reduceMotion) {
+      sec.classList.remove("chapter-enter");
+      void sec.offsetWidth; // restart the entrance animation
+      sec.classList.add("chapter-enter");
+    }
+  }
+  chapterNavigated = true;
+}
+
+// Old page-name hashes (#demo, #data, #scan) map to their first chapter.
 function handleHashChange() {
   const hash = (window.location.hash || "").replace("#", "");
-  if (hash === "scan-live") {
-    activatePage("demo");
-    const el = document.getElementById("scan-live");
-    if (el) requestAnimationFrame(() => el.scrollIntoView({ behavior: reduceMotion ? "auto" : "smooth", block: "start" }));
+  if (hash === "scan-live" || hash === "scan") {
+    showChapter("s13", "scan-live");
     return;
   }
-  if (goToSection(hash)) return;
-  const page = PAGES.includes(hash) ? hash : "home";
-  activatePage(page);
-  const first = FLOW.find(([, p]) => p === page);
-  if (first) {
-    currentFlowIndex = FLOW.indexOf(first);
-    updateFlowRail();
-    showOnlySection(page, first[0]);
-  }
-  window.scrollTo({ top: 0 });
+  showChapter(PAGE_ANCHORS[hash] || hash || "s1");
 }
 
 /* ------------------------------------------------- presentation controls */
@@ -304,17 +299,18 @@ window.addEventListener("keydown", (event) => {
     if (event.key === "Escape" || event.key === "ArrowLeft" || event.key === "ArrowRight") closeLightbox();
     return;
   }
-  if (event.key === "ArrowRight" && currentFlowIndex < FLOW.length - 1) {
-    window.location.hash = FLOW[currentFlowIndex + 1][0];
-  } else if (event.key === "ArrowLeft" && currentFlowIndex > 0) {
-    window.location.hash = FLOW[currentFlowIndex - 1][0];
-  }
+  // buttons and the chart tab explorers own their arrow keys
+  if (tag === "BUTTON" || (event.target && event.target.closest && event.target.closest('[role="tablist"]'))) return;
+  const step = event.key === "ArrowRight" ? 1 : event.key === "ArrowLeft" ? -1 : 0;
+  if (!step) return;
+  const next = currentFlowIndex + step;
+  if (next < 0 || next >= FLOW.length) return;
+  window.location.hash = FLOW[next];
 });
 
-/* ------------------------------------------------------- theme & speaker notes */
+/* ------------------------------------------------------------------ theme */
 
 const themeToggle = document.getElementById("themeToggle");
-const notesToggle = document.getElementById("notesToggle");
 const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
 
 function store(key, value) {
@@ -357,61 +353,60 @@ systemDark.addEventListener("change", (event) => {
   if (!saved) applyTheme(event.matches ? "dark" : "light");
 });
 
-// Narrative is visible by default (the presenter reads it on screen); the
-// toggle hides it for a clean audience view.
-function applyNarrative(open) {
-  document.body.classList.toggle("narrative-hidden", !open);
-  if (notesToggle) {
-    notesToggle.setAttribute("aria-pressed", String(open));
-    notesToggle.setAttribute(
-      "aria-label",
-      open ? "Hide speaker narrative" : "Show speaker narrative"
-    );
-  }
-}
-
-if (notesToggle) {
-  let narrativeOpen = true;
-  try {
-    narrativeOpen = window.localStorage.getItem("ww-narrative") !== "0";
-  } catch (err) {
-    narrativeOpen = true;
-  }
-  applyNarrative(narrativeOpen);
-  notesToggle.addEventListener("click", () => {
-    narrativeOpen = notesToggle.getAttribute("aria-pressed") !== "true";
-    applyNarrative(narrativeOpen);
-    store("ww-narrative", narrativeOpen ? "1" : "0");
-    showToast(narrativeOpen ? "Speaker narrative shown" : "Speaker narrative hidden");
-  });
-}
-
 /* ---------------------------------------------------------------- lightbox */
 
 const lightbox = document.getElementById("lightbox");
 const lightboxImg = document.getElementById("lightboxImg");
 const lightboxCaption = document.getElementById("lightboxCaption");
 
+let lightboxReturnFocus = null;
+
 function closeLightbox() {
   lightbox.hidden = true;
   document.body.classList.remove("no-scroll");
+  if (lightboxReturnFocus) {
+    lightboxReturnFocus.focus({ preventScroll: true });
+    lightboxReturnFocus = null;
+  }
+}
+
+function openLightbox(img) {
+  lightboxImg.src = img.src;
+  lightboxImg.alt = img.alt;
+  const caption = img.closest("figure").querySelector("figcaption");
+  lightboxCaption.innerHTML = caption ? caption.innerHTML : "";
+  lightbox.hidden = false;
+  document.body.classList.add("no-scroll");
+  lightboxReturnFocus = img;
+  const closeBtn = document.getElementById("lightboxClose");
+  if (closeBtn) closeBtn.focus({ preventScroll: true });
 }
 
 if (lightbox) {
   document.querySelectorAll("figure.fig img").forEach((img) => {
-    img.addEventListener("click", () => {
-      lightboxImg.src = img.src;
-      lightboxImg.alt = img.alt;
-      const caption = img.closest("figure").querySelector("figcaption");
-      lightboxCaption.innerHTML = caption ? caption.innerHTML : "";
-      lightbox.hidden = false;
-      document.body.classList.add("no-scroll");
+    img.tabIndex = 0;
+    img.setAttribute("role", "button");
+    img.addEventListener("click", () => openLightbox(img));
+    img.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openLightbox(img);
+      }
     });
   });
+  // the close button's click bubbles here too
   lightbox.addEventListener("click", closeLightbox);
 }
 
 window.addEventListener("hashchange", handleHashChange);
+
+// Alias links (#demo, #data, ...) have no matching element id, so a click that
+// does not change the hash fires no hashchange event; re-run the routing by
+// hand. Delegated so it also covers the dynamic "Go to scanner" tile.
+document.addEventListener("click", (event) => {
+  const link = event.target.closest && event.target.closest("[data-page-link]");
+  if (link && link.getAttribute("href") === window.location.hash) handleHashChange();
+});
 
 /* ---------------------------------------------------------------- history */
 
@@ -481,7 +476,8 @@ function restoreHistoryRecord(record) {
     skipHistory: true,
   });
   updateStagePills(5, false);
-  window.location.hash = "scan";
+  if (window.location.hash === "#scan") handleHashChange();
+  else window.location.hash = "scan";
   showToast("History scan restored");
 }
 
@@ -1014,6 +1010,52 @@ if ("IntersectionObserver" in window) {
   document.querySelectorAll(".reveal-on-scroll").forEach((node) => revealObserver.observe(node));
 }
 
+/* --------------------------------------------- scroll story: steps + progress */
+
+// Story paragraphs brighten as they cross the middle of the viewport.
+// body.story-js gates the dimmed base state, so no JS (or reduced motion)
+// means fully readable static text.
+function initStorySteps() {
+  const steps = document.querySelectorAll(".scene-story p");
+  if (!steps.length || !("IntersectionObserver" in window) || reduceMotion) return;
+  document.body.classList.add("story-js");
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        entry.target.classList.toggle("is-active", entry.isIntersecting);
+      });
+    },
+    { rootMargin: "-15% 0px -28% 0px" },
+  );
+  steps.forEach((p) => io.observe(p));
+  // ponytail: paragraphs near a chapter's end may never reach the IO band on
+  // tall viewports — brighten the visible chapter's steps at scroll bottom
+  const brightenTail = () => {
+    if (window.innerHeight + window.scrollY < document.documentElement.scrollHeight - 2) return;
+    steps.forEach((p) => {
+      const chapter = p.closest(".pres-section");
+      if (!chapter || !chapter.hidden) p.classList.add("is-active");
+    });
+  };
+  window.addEventListener("scroll", brightenTail, { passive: true });
+}
+
+function initScrollProgress() {
+  const bar = document.createElement("div");
+  bar.className = "scroll-progress";
+  bar.setAttribute("aria-hidden", "true");
+  bar.innerHTML = "<span></span>";
+  document.body.append(bar);
+  const fill = bar.firstElementChild;
+  const update = () => {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    fill.style.transform = `scaleX(${max > 0 ? Math.min(1, window.scrollY / max) : 0})`;
+  };
+  window.addEventListener("scroll", update, { passive: true });
+  window.addEventListener("resize", update);
+  update();
+}
+
 window.addEventListener("resize", syncImageBounds);
 elements.previewImage.addEventListener("load", syncImageBounds);
 
@@ -1082,7 +1124,7 @@ function startEvidenceCounts() {
   if (evidenceCounted) return;
   evidenceCounted = true;
   countUp(document.querySelector("#correctMetric"), 92.93, 2, 1100, (v) => `${v.toFixed(2)}%`);
-  countUp(document.querySelector("#riskMetric"), 74.8, 1, 1100, (v) => `${v.toFixed(1)}%`);
+  countUp(document.querySelector("#riskMetric"), 74.9, 1, 1100, (v) => `${v.toFixed(1)}%`);
   countUp(document.querySelector("#scanMetric"), 2406, 0, 1200, (v) => Math.round(v).toLocaleString());
   countUp(document.querySelector("#domainMetric"), 39.0, 1, 1100, (v) => `${v.toFixed(1)}%`);
   // YOLO26m clean-val numbers (runs/audits/detector_clean_val_yolo26m_final100.json).
@@ -1090,6 +1132,27 @@ function startEvidenceCounts() {
   countUp(document.querySelector("#yoloPrecision"), 83.4, 1, 1100, (v) => `${v.toFixed(1)}%`);
   countUp(document.querySelector("#yoloRecall"), 67.2, 1, 1100, (v) => `${v.toFixed(1)}%`);
   countUp(document.querySelector("#yoloMap5095"), 57.0, 1, 1100, (v) => `${v.toFixed(1)}%`);
+}
+
+// fire the metric count-ups when the s7 metric cards scroll into view
+function initEvidenceCounts() {
+  const host = document.querySelector("#s7 .metrics");
+  if (!host) return;
+  if (!("IntersectionObserver" in window)) {
+    startEvidenceCounts();
+    return;
+  }
+  const io = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        startEvidenceCounts();
+        io.disconnect();
+      });
+    },
+    { threshold: 0.3 },
+  );
+  io.observe(host);
 }
 
 /* ---------------------------------------------------------------- hero: demo loop */
@@ -1409,6 +1472,7 @@ function nmRenderCmExplorer(data) {
   const tabs = document.getElementById("nmCmTabs");
   const host = document.getElementById("nmCm");
   if (!tabs || !host) return;
+  host.setAttribute("role", "tabpanel");
   data.stage1.forEach((model, i) => {
     const tab = nmEl(
       "button",
@@ -1416,7 +1480,9 @@ function nmRenderCmExplorer(data) {
       `${model.nice} <small>${(model.test_accuracy * 100).toFixed(1)}%</small>`,
     );
     tab.type = "button";
+    tab.id = `nmCmTab${i}`;
     tab.setAttribute("role", "tab");
+    tab.setAttribute("aria-controls", "nmCm");
     tab.setAttribute("aria-selected", String(i === 0));
     tab.addEventListener("click", () => {
       tabs.querySelectorAll(".viz-tab").forEach((t) => t.setAttribute("aria-selected", "false"));
@@ -1607,10 +1673,13 @@ function nmRenderLogs() {
   const tabs = document.getElementById("nmLogTabs");
   const host = document.getElementById("nmLog");
   if (!tabs || !host) return;
+  host.setAttribute("role", "tabpanel");
   NM_LOGS.forEach((log, i) => {
     const tab = nmEl("button", "viz-tab", log.label);
     tab.type = "button";
+    tab.id = `nmLogTab${i}`;
     tab.setAttribute("role", "tab");
+    tab.setAttribute("aria-controls", "nmLog");
     tab.setAttribute("aria-selected", String(i === 0));
     tab.addEventListener("click", () => {
       tabs.querySelectorAll(".viz-tab").forEach((t) => t.setAttribute("aria-selected", "false"));
@@ -1655,3 +1724,6 @@ startHeroCounts();
 startHeroDemoLoop();
 injectFigBadges();
 initNewModels();
+initStorySteps();
+initScrollProgress();
+initEvidenceCounts();
