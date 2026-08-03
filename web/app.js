@@ -25,9 +25,9 @@ const classColors = {
 // Chapter order for arrow keys, the flow rail, and scroll-spy. The whole
 // presentation is one continuous scroll; "pages" survive only as anchor
 // aliases so old links (#demo, #data) keep working.
-const FLOW = ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11", "s12", "s13"];
-const PAGE_ANCHORS = { home: "s1", data: "s2", eda: "s4", modeling: "s5", demo: "s13", scan: "scan-live" };
-const PAGE_OF = { s1: "home", s2: "data", s3: "data", s4: "eda", s13: "demo" }; // others: modeling
+const FLOW = ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8", "s9", "s10", "s11", "s12", "s13", "s14"];
+const PAGE_ANCHORS = { home: "s1", data: "s2", eda: "s3", prep: "s4", modeling: "s6", demo: "s14", scan: "scan-live" };
+const PAGE_OF = { s1: "home", s2: "data", s3: "eda", s4: "prep", s5: "prep", s14: "demo" }; // others: modeling
 const WORDS = ["Localize.", "Verify.", "Fuse.", "Route it right."];
 
 const HERO_DEMO_BOXES = [
@@ -282,7 +282,7 @@ function showChapter(sectionId, scrollTarget) {
 function handleHashChange() {
   const hash = (window.location.hash || "").replace("#", "");
   if (hash === "scan-live" || hash === "scan") {
-    showChapter("s13", "scan-live");
+    showChapter("s14", "scan-live");
     return;
   }
   showChapter(PAGE_ANCHORS[hash] || hash || "s1");
