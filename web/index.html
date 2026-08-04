@@ -144,30 +144,30 @@
         </div>
 
         <div class="section-heading">
-          <h2>The problem, the goal, the system</h2>
+          <h2>Project scope</h2>
           <p>
             Manual waste sorting is slow and error-prone, and recycling streams are easily
             contaminated. WasteWise localizes each waste object in a photo, verifies its material,
-            and routes it to the correct bin, with an honest, audited account of what works
-            and what does not.
+            and routes it to the correct bin &mdash; but only inside the boundary drawn below.
+            What the project deliberately does <em>not</em> attempt is stated as plainly as what it does.
           </p>
         </div>
 
         <div class="teasers">
           <div class="teaser">
-            <span class="kicker">Objective 1</span>
-            <strong>Detect &amp; classify waste in real photos</strong>
-            <p>Localize every object with YOLO26m, then verify the material of each crop across 7 classes with a dedicated classifier.</p>
+            <span class="kicker">In scope</span>
+            <strong>Six materials, still images</strong>
+            <p>Plastic, glass, metal, paper, cardboard, and organic, localized then material-verified in single photographs. Stage 2 adds a seventh class, Background, whose only job is to veto false-alarm boxes.</p>
           </div>
           <div class="teaser dark">
-            <span class="kicker accent-light">Objective 2</span>
-            <strong>Evaluate honestly</strong>
-            <p>Audit the evaluation sets with perceptual hashing, quarantine leaked images, and report only clean-test numbers.</p>
+            <span class="kicker accent-light">Out of scope</span>
+            <strong>Video streams and contamination state</strong>
+            <p>Still-image input only &mdash; no video-stream processing. Clean-versus-dirty contamination is never learned: a conservative rule-based gate was tried, evaluated, and removed (Failure F17).</p>
           </div>
           <div class="teaser">
-            <span class="kicker tone-warn">Objective 3</span>
-            <strong>Explainable evidence</strong>
-            <p>Keep a classical ML branch on 637 handcrafted features beside the deep pipeline, so every decision has an interpretable baseline.</p>
+            <span class="kicker tone-warn">Known scope limit</span>
+            <strong>Taxonomy inherited, not designed</strong>
+            <p>The six classes came from the source datasets, not from waste-management practice. Polymer type decides whether a plastic item is recyclable and one plastic class collapses that distinction, so five of six classes route to one Recycling bin &mdash; which is why bin-routing accuracy turns out to be a degenerate metric.</p>
           </div>
         </div>
 
