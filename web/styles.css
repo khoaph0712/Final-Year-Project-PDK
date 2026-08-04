@@ -1086,6 +1086,7 @@ section { scroll-margin-top: 112px; }
   .evidence-card.span-7 { grid-column: span 7; }
   .evidence-card.span-5 { grid-column: span 5; }
   .evidence-card.span-4 { grid-column: span 4; }
+  .evidence-card.span-full { grid-column: 1 / -1; }
 }
 
 /* ---------------------------------------------------------------- presentation */

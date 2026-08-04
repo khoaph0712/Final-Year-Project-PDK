@@ -1481,6 +1481,25 @@
             <p>Four rejected classifiers, same crops, same split, so the choice is defensible.</p>
           </div>
 
+          <div class="evidence-grid">
+            <article class="evidence-card span-full reveal-on-scroll">
+              <div class="panel-heading">
+                <span>Accuracy is not the only axis</span>
+                <strong>identical data and split, one size basis</strong>
+              </div>
+              <h3>The most accurate of the three is also 5.7&times; smaller than the largest.</h3>
+              <p>
+                MobileNetV2 91.4% (2,388,743 params, 9.6&nbsp;MB) &middot; ResNet50 92.2%
+                (23,771,207 params, 95.1&nbsp;MB) &middot; EfficientNetB0 94.3% (4,214,442
+                params, 16.8&nbsp;MB). Sizes are FP32 weight sizes derived from the parameter
+                count, so all three sit on one basis. That combination is what made
+                EfficientNetB0 the reasonable choice for CPU-served deployment before the
+                ConvNeXt hybrid replaced it. These are pre-audit figures on a shared test set,
+                kept for relative architecture comparison only.
+              </p>
+            </article>
+          </div>
+
           <div class="story-flow">
             <div class="scene">
 <div class="scene-media">
@@ -1526,8 +1545,9 @@
                 0.05 while validation loss bottoms out at <strong>epoch 3</strong> and then drifts
                 back up: everything after epoch 3 is memorization, not learning. Validation accuracy
                 stays flat near 92% (best 92.2%), so the model is comfortably past underfitting and
-                into mild overfitting. It reaches that accuracy with 23.8M parameters, the
-                accuracy-per-parameter argument against it made in Model Comparison.
+                into mild overfitting. It reaches that accuracy with 23.8M parameters against
+                EfficientNetB0&rsquo;s 4.2M &mdash; the accuracy-per-parameter argument against
+                it, in the card above.
               </figcaption>
               
             </figure>
@@ -1594,26 +1614,14 @@
           </div>
 
           <div class="section-heading">
-            <h3>D &middot; The torch retrain pair, with confusion matrices</h3>
-            <p>The 15-epoch ResNet50 / MobileNetV2 runs above, completed with their matrices.</p>
-          </div>
-
-          <div class="viz-card reveal-on-scroll">
-            <div class="viz-head">
-              <strong>Fig 8.12. Validation accuracy per epoch, both retrains.</strong>
-              <span class="fig-type" aria-hidden="true">&#128200; live chart</span>
-            </div>
-            <div class="viz-body" id="nmTorchCurves"></div>
-            <p class="viz-caption">Solid: validation accuracy. Dashed: train accuracy. ResNet50&rsquo;s
-              best validation loss lands at epoch 3, MobileNetV2&rsquo;s at epoch 6 &mdash; the
-              memorization story told by the curves in subsection C above, replotted from
-              <code>training_history.csv</code>.</p>
+            <h3>D &middot; The same two retrains, as confusion matrices</h3>
+            <p>Fig 8.8 and Fig 8.9 gave their curves; these are their error structures. No new run, no second comparison.</p>
           </div>
 
           <div class="fig-grid">
             <figure class="fig reveal-on-scroll ar-square">
               <img src="assets/figures/cm_torch_resnet50.png" alt="ResNet50 retrain confusion matrix" loading="lazy" />
-              <figcaption><strong>Fig 8.13. ResNet50 retrain confusion matrix.</strong>
+              <figcaption><strong>Fig 8.12. ResNet50 retrain confusion matrix.</strong>
                 <em class="fig-talk">92.2% accuracy, 23.8M parameters, 91&nbsp;MB on disk.</em>
                 Balanced-crop test confusion for the 15-epoch ResNet50 retrain. Strong diagonal;
                 the usual paper&ndash;cardboard trade.
@@ -1621,7 +1629,7 @@
             </figure>
             <figure class="fig reveal-on-scroll ar-square">
               <img src="assets/figures/cm_torch_mobilenetv2.png" alt="MobileNetV2 retrain confusion matrix" loading="lazy" />
-              <figcaption><strong>Fig 8.14. MobileNetV2 retrain confusion matrix.</strong>
+              <figcaption><strong>Fig 8.13. MobileNetV2 retrain confusion matrix.</strong>
                 <em class="fig-talk">91.4% accuracy from a tenth of the parameters (2.4M, 9.3&nbsp;MB).</em>
                 Near-identical error structure at a fraction of the size &mdash; the efficiency
                 argument in matrix form.
@@ -1789,55 +1797,25 @@
         <section class="pres-section" id="s10">
           <header class="chapter-head" data-num="10">
           <p class="kicker"><span class="flow-num">10 / 14</span> Model Comparison</p>
-          <h2 class="page-title">Every model that was trained, on one board.</h2>
+          <h2 class="page-title">Two matched-budget campaigns the earlier chapters could not run.</h2>
           <p class="page-intro">
-            The two tracks meet here. Anything trained anywhere in this project is brought
-            forward into this chapter so the comparisons are in one place instead of
-            scattered: classical against deep, deep against deep, and the two later
-            benchmark campaigns &mdash; a <strong>matched-budget detector sweep</strong> over
-            seven architectures (YOLO26m, YOLOv8m, YOLO11m, RT-DETR-l, Faster R-CNN,
-            RetinaNet, FCOS) at the same 30-epoch budget, and a <strong>Stage-2 backbone
-            rematch</strong> putting six frozen backbones against the deployed classifier on
-            the leakage-quarantined hard-case split. Every live chart below renders from the
-            run artifacts in <code>runs/dl/</code>.
+            Nothing here repeats the ML or DL chapters. Each model was reported once, in its
+            own track: the classical family in the Machine Learning chapter, the detector and
+            every rejected classifier in the Deep Learning chapter. What this chapter adds is
+            the two questions neither track can answer on its own, because both need models
+            trained side by side under one identical budget &mdash; a
+            <strong>matched-budget detector sweep</strong> over seven architectures (YOLO26m,
+            YOLOv8m, YOLO11m, RT-DETR-l, Faster R-CNN, RetinaNet, FCOS) at the same 30-epoch
+            budget, and a <strong>Stage-2 backbone rematch</strong> putting six frozen backbones
+            against the deployed classifier on one split. One summary figure opens the chapter,
+            then the two campaigns. Every live chart renders from the run artifacts in
+            <code>runs/dl/</code>.
           </p>
           </header>
 
           <div class="section-heading">
-            <h3>A &middot; Classical against deep</h3>
-            <p>Same crop benchmark, both tracks, one axis.</p>
-          </div>
-
-          <div class="evidence-grid">
-            <article class="evidence-card span-7 reveal-on-scroll">
-              <div class="panel-heading">
-                <span>Deep architecture shoot-out</span>
-                <strong>same data, same split</strong>
-              </div>
-              <h3>EfficientNetB0: 94.3% at 16.8&nbsp;MB vs ResNet50's 92.2% at 95.1&nbsp;MB.</h3>
-              <p>
-                MobileNetV2 91.4% (9.6&nbsp;MB, 2.4M params) &middot; ResNet50 92.2% (95.1&nbsp;MB,
-                23.8M params) &middot; EfficientNetB0 94.3% (16.8&nbsp;MB, 4.2M params). Sizes are
-                FP32 weights derived from the parameter count, so the three are compared on one
-                basis. Compound scaling wins the accuracy-per-megabyte race. These figures predate the leakage
-                audit; the audited successor is the deployed ConvNeXt at 93.77% on clean
-                ground-truth crops (88.88% on the detector&rsquo;s own crops).
-              </p>
-            </article>
-            <article class="evidence-card span-5 dark reveal-on-scroll">
-              <div class="panel-heading">
-                <span>Classical ML baseline</span>
-                <strong>explainable evidence</strong>
-              </div>
-              <h3>67.4%: XGBoost on 637 handcrafted features.</h3>
-              <p>
-                Macro-F1 0.6506 on the balanced six-class benchmark
-                (<code>runs/ml/feature_ml_lecturer_6class_4k</code>). The full ranking and the
-                confusion matrices are in the ML track chapter. Carried forward here so the
-                ~26-point gap to the deployed deep classifier sits next to the deep numbers it
-                is being compared against, rather than three chapters away.
-              </p>
-            </article>
+            <h3>A &middot; The one place both tracks appear together</h3>
+            <p>Read once and move on &mdash; every bar here is discussed in full in its own chapter.</p>
           </div>
 
           <div class="story-flow">
@@ -1855,7 +1833,7 @@
                 comparators on the pre-audit balanced crop benchmark, and the deployed hybrid on
                 the leakage-quarantined clean test.
               </figcaption>
-              
+
             </figure>
 </div>
 <div class="scene-story">
