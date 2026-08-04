@@ -645,18 +645,21 @@
             <div class="scene">
 <div class="scene-media">
 <figure class="fig span-full tall reveal-on-scroll">
-              <img src="assets/figures/wf_dfd.png" alt="Data flow diagram of preprocessing" loading="lazy" />
-              <figcaption><strong>Fig 4.1. Preprocessing data flow.</strong>
-                <em class="fig-talk">The whole pipeline as a flow: raw archives in, one clean dataset out.</em>
-                The path from raw source archives to training-ready data: format conversion to YOLO
-                labels, class mapping to the 7-material vocabulary, dedup and validity filtering,
-                dominant-class re-splitting, and per-class balancing caps.
+              <img src="assets/figures/wf_dfd.png" alt="Level-1 data flow diagram of the deployed pipeline" loading="lazy" />
+              <figcaption><strong>Fig 4.1. System data flow, Level 1.</strong>
+                <em class="fig-talk">Before the per-image steps: where does a preprocessed crop actually go?</em>
+                A photo enters as an external-entity input and flows through Localise Objects
+                (YOLO26m), Classify Crops (ConvNeXt&nbsp;+&nbsp;637 features), Fuse Scores, and
+                Route to Bin, returning a bin route and confidence. Data stores D1&ndash;D4 record
+                the offline dependencies: model weights, the training datasets that produced them,
+                and the audit manifests that define each clean split, plus the browser-local scan
+                history.
               </figcaption>
-              
+
             </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">Six archives in, one dataset out. Every arrow here is a step that had to be defended.</p><p>Start with the dominant-class re-split box &mdash; the least obvious step, and the one that matters most. Images are split by their dominant class rather than randomly, so a multi-object photo cannot land in train and have its rare class evaluated in test. Random splitting on a detection dataset silently correlates the splits. This is the same family of mistake as the leakage found in the EDA chapter &mdash; caught here by design rather than by audit.</p><p><strong>What does &ldquo;validity filtering&rdquo; remove?</strong> Label rows outside image bounds, zero-area and degenerate boxes, and exact-duplicate files. Near-duplicates survive this stage &mdash; which is precisely why the perceptual-hash audit was still needed afterwards.</p>
+<p class="story-lead">This is the map the rest of the chapter zooms into: every preprocessing rule below exists to feed clean crops into box 1.0 and box 2.0.</p><p>Notice D2 and D4 are drawn as two separate stores, not one. D2 Training Datasets is the raw corpus a model was trained on; D4 Audit Manifests is the leakage-quarantine record that defines which images a <em>clean</em> evaluation split may contain. Keeping them separate means the clean-split definition can be tightened after an audit without retraining anything &mdash; which is exactly what happened when the 43% leakage figure in the previous chapter was found.</p><p><strong>Why does only &ldquo;bin route + confidence&rdquo; return to the user, not the intermediate probabilities?</strong> Per-class material probabilities and the fused distribution are internal to boxes 2.0 and 3.0; they are logged to D3 Scan History for audit, but the user-facing contract stays a single routing decision.</p>
 </div>
 </div>
             <div class="scene flip">
