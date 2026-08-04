@@ -84,8 +84,8 @@
         <a href="#s6" title="6. Model Pipeline"><span></span></a>
         <a href="#s7" title="7. Machine Learning Models"><span></span></a>
         <a href="#s8" title="8. Deep Learning Models"><span></span></a>
-        <a href="#s9" title="9. Evaluation Metrics"><span></span></a>
-        <a href="#s10" title="10. Model Comparison"><span></span></a>
+        <a href="#s9" title="9. Model Comparison"><span></span></a>
+        <a href="#s10" title="10. Evaluation Metrics"><span></span></a>
         <a href="#s11" title="11. Experimental Results"><span></span></a>
         <a href="#s12" title="12. Discussion"><span></span></a>
         <a href="#s13" title="13. Conclusion &amp; Future Work"><span></span></a>
@@ -231,8 +231,8 @@
           <li><a href="#s6"><span>06</span>Model Pipeline</a></li>
           <li><a href="#s7"><span>07</span>Machine Learning Models</a></li>
           <li><a href="#s8"><span>08</span>Deep Learning Models</a></li>
-          <li><a href="#s9"><span>09</span>Evaluation Metrics</a></li>
-          <li><a href="#s10"><span>10</span>Model Comparison</a></li>
+          <li><a href="#s9"><span>09</span>Model Comparison</a></li>
+          <li><a href="#s10"><span>10</span>Evaluation Metrics</a></li>
           <li><a href="#s11"><span>11</span>Experimental Results</a></li>
           <li><a href="#s12"><span>12</span>Discussion</a></li>
           <li><a href="#s13"><span>13</span>Conclusion &amp; Future Work</a></li>
@@ -1078,6 +1078,26 @@
             <p><strong>The Background veto is the load-bearing wall.</strong> The Deep Learning chapter&rsquo;s detector confusion matrix shows the detector&rsquo;s errors are misses and false alarms, not material mix-ups &mdash; a second stage that re-judges every crop, plus a Background class that can veto, is aimed at exactly that error profile.</p>
           </div>
 
+          <div class="callout tone-info reveal-on-scroll">
+            <span class="callout-icon" aria-hidden="true">i</span>
+            <p><strong>How every model after this point is scored.</strong> Fixing the
+              measuring stick before any model appears is what makes the next four chapters
+              comparable. Localisation is matched to ground truth by intersection over union at
+              0.50, greedily and one-to-one: a matched pair is a true positive, an unmatched
+              prediction a false positive, an unmatched ground-truth box a false negative, and
+              precision, recall and F1 follow from those three counts. Average precision is the
+              area under a class&rsquo;s precision-recall curve, <strong>mAP50</strong> averages it
+              over the six materials, and <strong>mAP50-95</strong> averages again over ten IoU
+              thresholds from 0.50 to 0.95, which penalises loose boxes that mAP50 alone accepts.
+              Classification uses accuracy and <strong>macro-F1</strong>, the unweighted mean
+              across classes, so a small class cannot be carried by a large one. Every model is
+              scored twice wherever leakage was possible &mdash; once on the original split, once
+              on the quarantined clean split &mdash; and only the clean number is claimed. One
+              limitation bounds all of it: each model was trained once, with no seed sweep, so
+              every figure is a single-run point estimate. Gaps under roughly one percentage
+              point are reported as ties and never used to support a claim.</p>
+          </div>
+
           <div class="story-flow">
             <div class="scene">
 <div class="scene-media">
@@ -1642,7 +1662,7 @@
             <a class="chapter-next-card" href="#s9">
               <span class="chapter-next-copy">
                 <span class="chapter-next-kicker">09 / 14 &middot; Next chapter</span>
-                <strong>Evaluation Metrics</strong>
+                <strong>Model Comparison</strong>
               </span>
               <span class="chapter-next-arrow" aria-hidden="true">&rarr;</span>
             </a>
@@ -1651,13 +1671,214 @@
 
         <section class="pres-section" id="s9">
           <header class="chapter-head" data-num="09">
-          <p class="kicker"><span class="flow-num">09 / 14</span> Evaluation Metrics</p>
-          <h2 class="page-title">Every number below is tied to a report in the repository.</h2>
+          <p class="kicker"><span class="flow-num">09 / 14</span> Model Comparison</p>
+          <h2 class="page-title">Two matched-budget campaigns the earlier chapters could not run.</h2>
           <p class="page-intro">
-            Classification is scored with accuracy and macro-F1 on the quarantined clean
-            test set; detection with precision, recall, mAP50, and mAP50-95 on the clean
-            validation split. The evaluation sets were audited with perceptual hashing
-            before any of these numbers were measured.
+            Nothing here repeats the ML or DL chapters. Each model was reported once, in its
+            own track: the classical family in the Machine Learning chapter, the detector and
+            every rejected classifier in the Deep Learning chapter. What this chapter adds is
+            the two questions neither track can answer on its own, because both need models
+            trained side by side under one identical budget &mdash; a
+            <strong>matched-budget detector sweep</strong> over seven architectures (YOLO26m,
+            YOLOv8m, YOLO11m, RT-DETR-l, Faster R-CNN, RetinaNet, FCOS) at the same 30-epoch
+            budget, and a <strong>Stage-2 backbone rematch</strong> putting six frozen backbones
+            against the deployed classifier on one split. One summary figure opens the chapter,
+            then the two campaigns. Every live chart renders from the run artifacts in
+            <code>runs/dl/</code>.
+          </p>
+          </header>
+
+          <div class="section-heading">
+            <h3>A &middot; The one place both tracks appear together</h3>
+            <p>Read once and move on &mdash; every bar here is discussed in full in its own chapter.</p>
+          </div>
+
+          <div class="story-flow">
+            <div class="scene flip">
+<div class="scene-media">
+<figure class="fig reveal-on-scroll">
+              <img src="assets/figures/cmp_ml_vs_dl.png" alt="ML vs DL comparison chart" loading="lazy" />
+              <figcaption><strong>Fig 9.1. Classical ML vs deep baseline.</strong>
+                <em class="fig-talk">Whole classical family against the deep baseline, side by side.</em>
+                Every classifier trained in the project on one axis. The tree ensembles
+                (XGBoost 67.4%, RF 63.2%, ExtraTrees 63.1%) beat the linear models and the
+                from-scratch tiny CNN (48.1%), but all of them trail the transfer-learned deep
+                models. Bar colour marks the measurement basis, because these are not all the
+                same split: classical on the six-class handcrafted benchmark, the deep
+                comparators on the pre-audit balanced crop benchmark, and the deployed hybrid on
+                the leakage-quarantined clean test.
+              </figcaption>
+
+            </figure>
+</div>
+<div class="scene-story">
+<p class="story-lead">The whole classical family against the deep baseline, on one axis.</p><p>Look at the gap between the best tree ensemble and the transfer-learned deep models &mdash; then at the from-scratch CNN sitting <em>below</em> the trees. The ordering is the interesting part, not the winner. Hand-designed features with a tree ensemble beat a neural network trained from scratch on the same data. Deep learning only pulls ahead once pretrained weights are involved. So the real dividing line in this chart is not classical against deep &mdash; it is <strong>with prior knowledge against without</strong>.</p><p><strong>Why is the deployed system deep anyway?</strong> Roughly 26 points of accuracy. And the hybrid keeps the handcrafted features in the loop, so the interpretable evidence is not discarded.</p>
+</div>
+</div>
+          </div>
+
+          <div class="section-heading">
+            <h3>B &middot; Seven detectors, one budget</h3>
+            <p>Same merged dataset, same 30 epochs, wildly different outcomes.</p>
+          </div>
+
+          <div class="callout tone-info reveal-on-scroll">
+            <span class="callout-icon" aria-hidden="true">i</span>
+            <p><strong>The whole round in one sentence.</strong> RT-DETR-l tops the detector sweep
+              (56.2% test mAP50, +8.0 points over YOLO26m) but costs 2&times; the training time;
+              Swin-Tiny and ConvNeXtV2 edge the deployed classifier by +0.7 points at a
+              12&ndash;30% CPU-latency premium in matched-session measurements; MobileNetV3-L
+              gives up 1.8 points but runs roughly <strong>2.7&times; faster</strong>. Nothing was
+              promoted: the deployed pair still holds the best accuracy-per-millisecond trade,
+              and that is the honest reading of both boards.</p>
+          </div>
+
+          <div class="viz-card reveal-on-scroll">
+            <div class="viz-head">
+              <strong>Fig 9.2. Detector sweep: validation vs test mAP50.</strong>
+              <span class="fig-type" aria-hidden="true">&#128202; live chart</span>
+            </div>
+            <div class="viz-body" id="nmSweepBars" role="img" aria-label="Grouped bar chart of validation and test mAP50 for seven detector architectures"></div>
+            <p class="viz-caption">Validation (muted) and unseen-session test (solid) mAP50 for each
+              architecture, trained on the merged six-source detection dataset (TACO, TrashNet,
+              WaDaBa, GINI, Roboflow, PlastOPol &mdash; the Dataset chapter) and tested on its held-out
+              unseen-session split. Source: <code>sweep_seven_architecture_metrics.json</code>.</p>
+          </div>
+
+          <div class="scene-story story-block">
+<p class="story-lead">Two stories in one chart: who wins, and how far every bar falls from validation to test.</p><p>Before naming any winner, look at the gap between each model&rsquo;s pale bar and solid bar. Every architecture drops <strong>15&ndash;24 points</strong> from validation to the unseen-session test set. That gap is a property of the dataset&rsquo;s domain shift, not of any model, and no architecture in the sweep closes it. Within that ceiling, RT-DETR-l is the clear winner at <strong>56.2%</strong> test mAP50 &mdash; eight points over the deployed YOLO26m at the same budget.</p><p><strong>Why is YOLO26m still the deployed detector?</strong> The sweep is a 30-epoch matched-budget comparison; the production model is a 100-epoch retrain tuned to a field-recall operating point, and RT-DETR-l costs 3.2 training hours against YOLO26m&rsquo;s 1.6 for the same 30 epochs. RT-DETR is the strongest candidate for a future promotion &mdash; not evidence the current choice was wrong.</p>
+</div>
+
+          <div class="viz-card reveal-on-scroll">
+            <div class="viz-head">
+              <strong>Fig 9.3. Training curves: mAP50 per epoch, four Ultralytics-family runs.</strong>
+              <span class="fig-type" aria-hidden="true">&#128200; live chart</span>
+            </div>
+            <div class="viz-body" id="nmSweepCurves"></div>
+            <p class="viz-caption">Per-epoch validation mAP50 for the four runs with curve logs
+              (torchvision runs log only final metrics). The draw-in animation replays the
+              30-epoch schedule.</p>
+          </div>
+
+          <div class="callout tone-warn reveal-on-scroll">
+            <span class="callout-icon" aria-hidden="true">!</span>
+            <p><strong>The per-class floor is the real finding.</strong> On the merged dataset&rsquo;s
+              unseen-session test split, Glass AP collapses for every architecture
+              (0.03&ndash;0.29) and Organic never passes 0.18. On the validation split the same
+              pattern reduces to Organic alone: it is the worst class for all seven
+              architectures without exception, from 0.253 mAP50-95 for FCOS to 0.346 for
+              YOLO11m, against 0.36&ndash;0.66 for every other class. Seven architectures, one
+              shared failure: that is a dataset property. More field-condition Glass and Organic
+              examples &mdash; TACO- and PlastOPol-style captures &mdash; would move these
+              numbers; another architecture will not.</p>
+          </div>
+
+          <div class="section-heading">
+            <h3>C &middot; Six backbones vs the deployed classifier</h3>
+            <p>Same 637 handcrafted features, same MLP head, same quarantined split &mdash; only the frozen backbone changes.</p>
+          </div>
+
+          <div class="viz-card reveal-on-scroll">
+            <div class="viz-head">
+              <strong>Fig 9.4. Stage-2 rematch leaderboard: test accuracy and CPU latency.</strong>
+              <span class="fig-type" aria-hidden="true">&#128202; live chart</span>
+            </div>
+            <div class="viz-body" id="nmBoard"></div>
+            <p class="viz-caption">Test accuracy on the 2,696-crop hard-case split; the
+              chip is median CPU latency per crop (each candidate from its own benchmark session;
+              the deployed row is the median across all six sessions, which individually measured
+              47.6&ndash;58.7&nbsp;ms). The highlighted row is the deployed ConvNeXt-Tiny + 637
+              model measured on the same split, so all seven rows are directly comparable. Bars
+              start at 75%. The written report&rsquo;s Table 21 tabulates the same runs on the
+              <em>mean</em> latency basis rather than the median (Swin-Tiny 65.8&nbsp;ms,
+              ConvNeXtV2-Tiny 68.5, EfficientNetV2-S 66.6, ResNet50 55.0, ViT-S/16 44.2,
+              MobileNetV3-L 24.4, deployed 59.3) and quotes the deployed model at 93.77% on the
+              leakage-quarantined clean crops instead of 93.88% on this split.</p>
+          </div>
+
+          <div class="scene-story story-block">
+<p class="story-lead">The deployed model survives its own rematch &mdash; and the two challengers that beat it pay for the privilege.</p><p>Find the deployed row first, then the two rows above it. Swin-Tiny and ConvNeXtV2 win by seven-tenths of a point, but both pay for it in CPU latency: measured against the deployed model in each candidate&rsquo;s own benchmark session, Swin-Tiny costs <strong>+7&nbsp;ms (+12%)</strong> and ConvNeXtV2 <strong>+15&nbsp;ms (+30%)</strong> per crop, for a margin inside day-to-day noise. MobileNetV3-L is the interesting one: <strong>92.1%</strong> at <strong>18.5&nbsp;ms</strong> median, roughly 2.7&times; faster than production &mdash; 2.4&times; on the report&rsquo;s mean basis, and either way the obvious pick if this ever moves on-device for 1.7 points of accuracy.</p><p><strong>What about EfficientNetV2-S at 80.2%?</strong> It is uniformly weak across all seven classes on both validation and test, so it is not a bad split or a broken run. Its frozen features simply separate this domain poorly without fine-tuning; the benchmark freezes every backbone on purpose, and this is the failure mode that policy exposes.</p>
+</div>
+
+          <div class="viz-card reveal-on-scroll">
+            <div class="viz-head">
+              <strong>Fig 9.5. Per-class F1 heatmap, all seven models.</strong>
+              <span class="fig-type" aria-hidden="true">&#128293; live heatmap</span>
+            </div>
+            <div class="viz-body" id="nmHeat"></div>
+            <p class="viz-caption">Test-split F1 per class. Organic is nearly every model&rsquo;s
+              best class (ResNet50&rsquo;s is Background, by 0.06 points); Plastic and Paper are
+              the contested ones. EfficientNetV2-S is weak everywhere at once, which rules out a
+              single-class explanation.</p>
+          </div>
+
+          <div class="viz-card reveal-on-scroll">
+            <div class="viz-head">
+              <strong>Fig 9.6. Confusion matrices, recomputed from the stored test features.</strong>
+              <span class="fig-type" aria-hidden="true">&#129513; live matrix</span>
+            </div>
+            <div class="viz-tabs" id="nmCmTabs" role="tablist" aria-label="Choose a model's confusion matrix"></div>
+            <div class="viz-body" id="nmCm"></div>
+            <p class="viz-caption">Rows are true classes, columns are predictions; each cell shows
+              the raw count, colour shows the row-normalized rate (green diagonal = correct, red
+              off-diagonal = confusion). Every matrix was verified to reproduce its run&rsquo;s
+              reported accuracy to four decimals.</p>
+          </div>
+
+          <div class="scene-story story-block">
+<p class="story-lead">Six matrices, one shared shape: strong diagonals, and the same two leaks the deployed model has.</p><p>Whichever model is selected, find the Plastic&rarr;Background cell, then the Paper&harr;Cardboard pair. The error structure barely changes across backbones. Plastic leaking into Background and Paper trading with Cardboard are the two residual confusions in every matrix &mdash; the same pair the deployed model shows in the Deep Learning chapter. Swapping the backbone changes how often those cells fire, not <em>which</em> cells fire. More evidence the remaining errors live in the data, not the architecture.</p><p><strong>How were these matrices produced when the runs only saved metrics?</strong> The benchmark caches every test crop&rsquo;s features, so the saved MLP head was re-run over the cached features and the predictions cross-checked against each run&rsquo;s logged accuracy before rendering.</p>
+</div>
+
+          <div class="section-heading">
+            <h3>D &middot; The raw training logs</h3>
+            <p>Unedited logs from the new runs, served straight from the repository.</p>
+          </div>
+
+          <div class="viz-card reveal-on-scroll">
+            <div class="viz-head">
+              <strong>Fig 9.7. Training logs.</strong>
+              <span class="fig-type" aria-hidden="true">&#128220; raw log</span>
+            </div>
+            <div class="viz-tabs" id="nmLogTabs" role="tablist" aria-label="Choose a training log"></div>
+            <pre class="log-view" id="nmLog" tabindex="0">Loading log&hellip;</pre>
+            <p class="viz-caption">Three logs, served as-is from the repository: the Stage-2
+              backbone sweep runner (<code>runs/dl/_stage1_extra_logs/train.log</code>), the
+              RT-DETR-l training log (<code>runs/rtdetr_train_cleaned.txt</code>), and the torch
+              retrain pair (<code>runs/torch_cmp.log</code>). Epoch summaries and final metrics
+              are highlighted.</p>
+          </div>
+
+          <div class="callout tone-success reveal-on-scroll">
+            <span class="callout-icon" aria-hidden="true">&#10003;</span>
+            <p><strong>What this round actually decided.</strong> Keep ConvNeXt-Tiny + 637 in
+              production; shortlist RT-DETR-l for the next detector promotion once a
+              field-operating-point comparison is run; keep MobileNetV3-L as the on-device
+              fallback. Three concrete decisions, all made on same-split, same-budget evidence.</p>
+          </div>
+
+          <nav class="chapter-next" aria-label="Chapter navigation">
+            <a class="chapter-prev" href="#s8">&larr; Deep Learning Models</a>
+            <a class="chapter-next-card" href="#s10">
+              <span class="chapter-next-copy">
+                <span class="chapter-next-kicker">10 / 14 &middot; Next chapter</span>
+                <strong>Evaluation Metrics</strong>
+              </span>
+              <span class="chapter-next-arrow" aria-hidden="true">&rarr;</span>
+            </a>
+          </nav>
+        </section>
+        <section class="pres-section" id="s10">
+          <header class="chapter-head" data-num="10">
+          <p class="kicker"><span class="flow-num">10 / 14</span> Evaluation Metrics</p>
+          <h2 class="page-title">The chosen models, measured in full.</h2>
+          <p class="page-intro">
+            The comparisons are finished; this chapter evaluates what they selected. Classification
+            is scored with accuracy and macro-F1 on the quarantined clean test set; detection with
+            precision, recall, mAP50, and mAP50-95 on the clean validation split, as defined in the
+            Model Pipeline chapter. The evaluation sets were audited with perceptual hashing before
+            any of these numbers were measured. Every number below is tied to a report in the
+            repository, and every one of them is a single point on a curve that the figures then
+            show in full.
           </p>
           </header>
 
@@ -1712,7 +1933,7 @@
 <div class="scene-media">
 <figure class="fig reveal-on-scroll">
               <img src="assets/figures/metric_boxpr_curve.png" alt="Precision-recall curve" loading="lazy" />
-              <figcaption><strong>Fig 9.1. Precision&ndash;recall curve.</strong>
+              <figcaption><strong>Fig 10.1. Precision&ndash;recall curve.</strong>
                 <em class="fig-talk">The four cards above are single points; this is the full surface they were picked from.</em>
                 Per-class and mean PR curves for the detector. The area under each curve is that
                 class's AP; the confidence threshold picks the live operating point along it.
@@ -1728,7 +1949,7 @@
 <div class="scene-media">
 <figure class="fig reveal-on-scroll">
               <img src="assets/figures/metric_boxf1_curve.png" alt="F1-confidence curve" loading="lazy" />
-              <figcaption><strong>Fig 9.2. F1&ndash;confidence curve.</strong>
+              <figcaption><strong>Fig 10.2. F1&ndash;confidence curve.</strong>
                 <em class="fig-talk">And here's why the threshold sits off the peak, on purpose.</em>
                 F1 as a function of the confidence threshold. The deployed threshold sits near the
                 curve's peak, lowered deliberately for the field domain, trading a little
@@ -1738,14 +1959,14 @@
             </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">And here is why the deployed threshold deliberately sits off the peak.</p><p>Find the peak of the F1 curve, then look slightly to its left &mdash; that is where the system actually runs. Peak F1 is only the right answer if a false positive and a false negative cost the same. For this application they do not. A missed bottle is waste that never gets sorted; a false alarm is a box the user glances at and dismisses. So the threshold is lowered on purpose, buying recall with precision.</p><p><strong>Is that post-hoc justification?</strong> No &mdash; it is measured. The sweep in Fig 9.3 shows the exact recall gained at each threshold, in both domains, and the choice was made from that table.</p>
+<p class="story-lead">And here is why the deployed threshold deliberately sits off the peak.</p><p>Find the peak of the F1 curve, then look slightly to its left &mdash; that is where the system actually runs. Peak F1 is only the right answer if a false positive and a false negative cost the same. For this application they do not. A missed bottle is waste that never gets sorted; a false alarm is a box the user glances at and dismisses. So the threshold is lowered on purpose, buying recall with precision.</p><p><strong>Is that post-hoc justification?</strong> No &mdash; it is measured. The sweep in Fig 10.3 shows the exact recall gained at each threshold, in both domains, and the choice was made from that table.</p>
 </div>
 </div>
             <div class="scene flip">
 <div class="scene-media">
 <figure class="fig span-full reveal-on-scroll ar-square">
               <img src="assets/figures/heat_detector_conf_sweep.png" alt="Heatmap of detector recall against confidence threshold in both domains" loading="lazy" />
-              <figcaption><strong>Fig 9.3. Confidence-threshold sweep, both domains.</strong>
+              <figcaption><strong>Fig 10.3. Confidence-threshold sweep, both domains.</strong>
                 <em class="fig-talk">That threshold choice was not a guess. This is the table it came from.</em>
                 Recall at four confidence thresholds, measured separately for field and studio
                 data and for all boxes versus small boxes only. Dropping the threshold from
@@ -1764,7 +1985,7 @@
 <div class="scene-media">
 <figure class="fig span-full reveal-on-scroll ar-square">
               <img src="assets/figures/heat_classifier_per_class.png" alt="Heatmap of per-class precision, recall and F1 for the deployed classifier" loading="lazy" />
-              <figcaption><strong>Fig 9.4. Per-class precision, recall and F1 (deployed classifier).</strong>
+              <figcaption><strong>Fig 10.4. Per-class precision, recall and F1 (deployed classifier).</strong>
                 <em class="fig-talk">And the classifier's side of the ledger, one row per class.</em>
                 Every per-class score for the ground-truth-crop-trained ConvNeXt + 637-feature
                 baseline on the clean hard-case test split (2,151 crops, 92.93% accuracy,
@@ -1783,206 +2004,7 @@
           </div>
 
           <nav class="chapter-next" aria-label="Chapter navigation">
-            <a class="chapter-prev" href="#s8">&larr; Deep Learning Models</a>
-            <a class="chapter-next-card" href="#s10">
-              <span class="chapter-next-copy">
-                <span class="chapter-next-kicker">10 / 14 &middot; Next chapter</span>
-                <strong>Model Comparison</strong>
-              </span>
-              <span class="chapter-next-arrow" aria-hidden="true">&rarr;</span>
-            </a>
-          </nav>
-        </section>
-
-        <section class="pres-section" id="s10">
-          <header class="chapter-head" data-num="10">
-          <p class="kicker"><span class="flow-num">10 / 14</span> Model Comparison</p>
-          <h2 class="page-title">Two matched-budget campaigns the earlier chapters could not run.</h2>
-          <p class="page-intro">
-            Nothing here repeats the ML or DL chapters. Each model was reported once, in its
-            own track: the classical family in the Machine Learning chapter, the detector and
-            every rejected classifier in the Deep Learning chapter. What this chapter adds is
-            the two questions neither track can answer on its own, because both need models
-            trained side by side under one identical budget &mdash; a
-            <strong>matched-budget detector sweep</strong> over seven architectures (YOLO26m,
-            YOLOv8m, YOLO11m, RT-DETR-l, Faster R-CNN, RetinaNet, FCOS) at the same 30-epoch
-            budget, and a <strong>Stage-2 backbone rematch</strong> putting six frozen backbones
-            against the deployed classifier on one split. One summary figure opens the chapter,
-            then the two campaigns. Every live chart renders from the run artifacts in
-            <code>runs/dl/</code>.
-          </p>
-          </header>
-
-          <div class="section-heading">
-            <h3>A &middot; The one place both tracks appear together</h3>
-            <p>Read once and move on &mdash; every bar here is discussed in full in its own chapter.</p>
-          </div>
-
-          <div class="story-flow">
-            <div class="scene flip">
-<div class="scene-media">
-<figure class="fig reveal-on-scroll">
-              <img src="assets/figures/cmp_ml_vs_dl.png" alt="ML vs DL comparison chart" loading="lazy" />
-              <figcaption><strong>Fig 10.1. Classical ML vs deep baseline.</strong>
-                <em class="fig-talk">Whole classical family against the deep baseline, side by side.</em>
-                Every classifier trained in the project on one axis. The tree ensembles
-                (XGBoost 67.4%, RF 63.2%, ExtraTrees 63.1%) beat the linear models and the
-                from-scratch tiny CNN (48.1%), but all of them trail the transfer-learned deep
-                models. Bar colour marks the measurement basis, because these are not all the
-                same split: classical on the six-class handcrafted benchmark, the deep
-                comparators on the pre-audit balanced crop benchmark, and the deployed hybrid on
-                the leakage-quarantined clean test.
-              </figcaption>
-
-            </figure>
-</div>
-<div class="scene-story">
-<p class="story-lead">The whole classical family against the deep baseline, on one axis.</p><p>Look at the gap between the best tree ensemble and the transfer-learned deep models &mdash; then at the from-scratch CNN sitting <em>below</em> the trees. The ordering is the interesting part, not the winner. Hand-designed features with a tree ensemble beat a neural network trained from scratch on the same data. Deep learning only pulls ahead once pretrained weights are involved. So the real dividing line in this chart is not classical against deep &mdash; it is <strong>with prior knowledge against without</strong>.</p><p><strong>Why is the deployed system deep anyway?</strong> Roughly 26 points of accuracy. And the hybrid keeps the handcrafted features in the loop, so the interpretable evidence is not discarded.</p>
-</div>
-</div>
-          </div>
-
-          <div class="section-heading">
-            <h3>B &middot; Seven detectors, one budget</h3>
-            <p>Same merged dataset, same 30 epochs, wildly different outcomes.</p>
-          </div>
-
-          <div class="callout tone-info reveal-on-scroll">
-            <span class="callout-icon" aria-hidden="true">i</span>
-            <p><strong>The whole round in one sentence.</strong> RT-DETR-l tops the detector sweep
-              (56.2% test mAP50, +8.0 points over YOLO26m) but costs 2&times; the training time;
-              Swin-Tiny and ConvNeXtV2 edge the deployed classifier by +0.7 points at a
-              12&ndash;30% CPU-latency premium in matched-session measurements; MobileNetV3-L
-              gives up 1.8 points but runs roughly <strong>2.7&times; faster</strong>. Nothing was
-              promoted: the deployed pair still holds the best accuracy-per-millisecond trade,
-              and that is the honest reading of both boards.</p>
-          </div>
-
-          <div class="viz-card reveal-on-scroll">
-            <div class="viz-head">
-              <strong>Fig 10.2. Detector sweep: validation vs test mAP50.</strong>
-              <span class="fig-type" aria-hidden="true">&#128202; live chart</span>
-            </div>
-            <div class="viz-body" id="nmSweepBars" role="img" aria-label="Grouped bar chart of validation and test mAP50 for seven detector architectures"></div>
-            <p class="viz-caption">Validation (muted) and unseen-session test (solid) mAP50 for each
-              architecture, trained on the merged six-source detection dataset (TACO, TrashNet,
-              WaDaBa, GINI, Roboflow, PlastOPol &mdash; the Dataset chapter) and tested on its held-out
-              unseen-session split. Source: <code>sweep_seven_architecture_metrics.json</code>.</p>
-          </div>
-
-          <div class="scene-story story-block">
-<p class="story-lead">Two stories in one chart: who wins, and how far every bar falls from validation to test.</p><p>Before naming any winner, look at the gap between each model&rsquo;s pale bar and solid bar. Every architecture drops <strong>15&ndash;24 points</strong> from validation to the unseen-session test set. That gap is a property of the dataset&rsquo;s domain shift, not of any model, and no architecture in the sweep closes it. Within that ceiling, RT-DETR-l is the clear winner at <strong>56.2%</strong> test mAP50 &mdash; eight points over the deployed YOLO26m at the same budget.</p><p><strong>Why is YOLO26m still the deployed detector?</strong> The sweep is a 30-epoch matched-budget comparison; the production model is a 100-epoch retrain tuned to a field-recall operating point, and RT-DETR-l costs 3.2 training hours against YOLO26m&rsquo;s 1.6 for the same 30 epochs. RT-DETR is the strongest candidate for a future promotion &mdash; not evidence the current choice was wrong.</p>
-</div>
-
-          <div class="viz-card reveal-on-scroll">
-            <div class="viz-head">
-              <strong>Fig 10.3. Training curves: mAP50 per epoch, four Ultralytics-family runs.</strong>
-              <span class="fig-type" aria-hidden="true">&#128200; live chart</span>
-            </div>
-            <div class="viz-body" id="nmSweepCurves"></div>
-            <p class="viz-caption">Per-epoch validation mAP50 for the four runs with curve logs
-              (torchvision runs log only final metrics). The draw-in animation replays the
-              30-epoch schedule.</p>
-          </div>
-
-          <div class="callout tone-warn reveal-on-scroll">
-            <span class="callout-icon" aria-hidden="true">!</span>
-            <p><strong>The per-class floor is the real finding.</strong> On the merged dataset&rsquo;s
-              unseen-session test split, Glass AP collapses for every architecture
-              (0.03&ndash;0.29) and Organic never passes 0.18. On the validation split the same
-              pattern reduces to Organic alone: it is the worst class for all seven
-              architectures without exception, from 0.253 mAP50-95 for FCOS to 0.346 for
-              YOLO11m, against 0.36&ndash;0.66 for every other class. Seven architectures, one
-              shared failure: that is a dataset property. More field-condition Glass and Organic
-              examples &mdash; TACO- and PlastOPol-style captures &mdash; would move these
-              numbers; another architecture will not.</p>
-          </div>
-
-          <div class="section-heading">
-            <h3>C &middot; Six backbones vs the deployed classifier</h3>
-            <p>Same 637 handcrafted features, same MLP head, same quarantined split &mdash; only the frozen backbone changes.</p>
-          </div>
-
-          <div class="viz-card reveal-on-scroll">
-            <div class="viz-head">
-              <strong>Fig 10.4. Stage-2 rematch leaderboard: test accuracy and CPU latency.</strong>
-              <span class="fig-type" aria-hidden="true">&#128202; live chart</span>
-            </div>
-            <div class="viz-body" id="nmBoard"></div>
-            <p class="viz-caption">Test accuracy on the 2,696-crop hard-case split; the
-              chip is median CPU latency per crop (each candidate from its own benchmark session;
-              the deployed row is the median across all six sessions, which individually measured
-              47.6&ndash;58.7&nbsp;ms). The highlighted row is the deployed ConvNeXt-Tiny + 637
-              model measured on the same split, so all seven rows are directly comparable. Bars
-              start at 75%. The written report&rsquo;s Table 21 tabulates the same runs on the
-              <em>mean</em> latency basis rather than the median (Swin-Tiny 65.8&nbsp;ms,
-              ConvNeXtV2-Tiny 68.5, EfficientNetV2-S 66.6, ResNet50 55.0, ViT-S/16 44.2,
-              MobileNetV3-L 24.4, deployed 59.3) and quotes the deployed model at 93.77% on the
-              leakage-quarantined clean crops instead of 93.88% on this split.</p>
-          </div>
-
-          <div class="scene-story story-block">
-<p class="story-lead">The deployed model survives its own rematch &mdash; and the two challengers that beat it pay for the privilege.</p><p>Find the deployed row first, then the two rows above it. Swin-Tiny and ConvNeXtV2 win by seven-tenths of a point, but both pay for it in CPU latency: measured against the deployed model in each candidate&rsquo;s own benchmark session, Swin-Tiny costs <strong>+7&nbsp;ms (+12%)</strong> and ConvNeXtV2 <strong>+15&nbsp;ms (+30%)</strong> per crop, for a margin inside day-to-day noise. MobileNetV3-L is the interesting one: <strong>92.1%</strong> at <strong>18.5&nbsp;ms</strong> median, roughly 2.7&times; faster than production &mdash; 2.4&times; on the report&rsquo;s mean basis, and either way the obvious pick if this ever moves on-device for 1.7 points of accuracy.</p><p><strong>What about EfficientNetV2-S at 80.2%?</strong> It is uniformly weak across all seven classes on both validation and test, so it is not a bad split or a broken run. Its frozen features simply separate this domain poorly without fine-tuning; the benchmark freezes every backbone on purpose, and this is the failure mode that policy exposes.</p>
-</div>
-
-          <div class="viz-card reveal-on-scroll">
-            <div class="viz-head">
-              <strong>Fig 10.5. Per-class F1 heatmap, all seven models.</strong>
-              <span class="fig-type" aria-hidden="true">&#128293; live heatmap</span>
-            </div>
-            <div class="viz-body" id="nmHeat"></div>
-            <p class="viz-caption">Test-split F1 per class. Organic is nearly every model&rsquo;s
-              best class (ResNet50&rsquo;s is Background, by 0.06 points); Plastic and Paper are
-              the contested ones. EfficientNetV2-S is weak everywhere at once, which rules out a
-              single-class explanation.</p>
-          </div>
-
-          <div class="viz-card reveal-on-scroll">
-            <div class="viz-head">
-              <strong>Fig 10.6. Confusion matrices, recomputed from the stored test features.</strong>
-              <span class="fig-type" aria-hidden="true">&#129513; live matrix</span>
-            </div>
-            <div class="viz-tabs" id="nmCmTabs" role="tablist" aria-label="Choose a model's confusion matrix"></div>
-            <div class="viz-body" id="nmCm"></div>
-            <p class="viz-caption">Rows are true classes, columns are predictions; each cell shows
-              the raw count, colour shows the row-normalized rate (green diagonal = correct, red
-              off-diagonal = confusion). Every matrix was verified to reproduce its run&rsquo;s
-              reported accuracy to four decimals.</p>
-          </div>
-
-          <div class="scene-story story-block">
-<p class="story-lead">Six matrices, one shared shape: strong diagonals, and the same two leaks the deployed model has.</p><p>Whichever model is selected, find the Plastic&rarr;Background cell, then the Paper&harr;Cardboard pair. The error structure barely changes across backbones. Plastic leaking into Background and Paper trading with Cardboard are the two residual confusions in every matrix &mdash; the same pair the deployed model shows in the Deep Learning chapter. Swapping the backbone changes how often those cells fire, not <em>which</em> cells fire. More evidence the remaining errors live in the data, not the architecture.</p><p><strong>How were these matrices produced when the runs only saved metrics?</strong> The benchmark caches every test crop&rsquo;s features, so the saved MLP head was re-run over the cached features and the predictions cross-checked against each run&rsquo;s logged accuracy before rendering.</p>
-</div>
-
-          <div class="section-heading">
-            <h3>D &middot; The raw training logs</h3>
-            <p>Unedited logs from the new runs, served straight from the repository.</p>
-          </div>
-
-          <div class="viz-card reveal-on-scroll">
-            <div class="viz-head">
-              <strong>Fig 10.7. Training logs.</strong>
-              <span class="fig-type" aria-hidden="true">&#128220; raw log</span>
-            </div>
-            <div class="viz-tabs" id="nmLogTabs" role="tablist" aria-label="Choose a training log"></div>
-            <pre class="log-view" id="nmLog" tabindex="0">Loading log&hellip;</pre>
-            <p class="viz-caption">Three logs, served as-is from the repository: the Stage-2
-              backbone sweep runner (<code>runs/dl/_stage1_extra_logs/train.log</code>), the
-              RT-DETR-l training log (<code>runs/rtdetr_train_cleaned.txt</code>), and the torch
-              retrain pair (<code>runs/torch_cmp.log</code>). Epoch summaries and final metrics
-              are highlighted.</p>
-          </div>
-
-          <div class="callout tone-success reveal-on-scroll">
-            <span class="callout-icon" aria-hidden="true">&#10003;</span>
-            <p><strong>What this round actually decided.</strong> Keep ConvNeXt-Tiny + 637 in
-              production; shortlist RT-DETR-l for the next detector promotion once a
-              field-operating-point comparison is run; keep MobileNetV3-L as the on-device
-              fallback. Three concrete decisions, all made on same-split, same-budget evidence.</p>
-          </div>
-
-          <nav class="chapter-next" aria-label="Chapter navigation">
-            <a class="chapter-prev" href="#s9">&larr; Evaluation Metrics</a>
+            <a class="chapter-prev" href="#s9">&larr; Model Comparison</a>
             <a class="chapter-next-card" href="#s11">
               <span class="chapter-next-copy">
                 <span class="chapter-next-kicker">11 / 14 &middot; Next chapter</span>
@@ -2149,7 +2171,7 @@
           </div>
 
           <nav class="chapter-next" aria-label="Chapter navigation">
-            <a class="chapter-prev" href="#s10">&larr; Model Comparison</a>
+            <a class="chapter-prev" href="#s10">&larr; Evaluation Metrics</a>
             <a class="chapter-next-card" href="#s12">
               <span class="chapter-next-copy">
                 <span class="chapter-next-kicker">12 / 14 &middot; Next chapter</span>

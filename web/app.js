@@ -1136,7 +1136,7 @@ function startEvidenceCounts() {
 
 // fire the metric count-ups when the s7 metric cards scroll into view
 function initEvidenceCounts() {
-  const host = document.querySelector("#s9 .metrics");
+  const host = document.querySelector("#s10 .metrics");
   if (!host) return;
   if (!("IntersectionObserver" in window)) {
     startEvidenceCounts();
@@ -1692,7 +1692,7 @@ function nmRenderLogs() {
 }
 
 function initNewModels() {
-  if (!document.getElementById("s10")) return;
+  if (!document.getElementById("s9")) return;
   nmRenderLogs(); // independent of the metrics JSON
   fetch("assets/data/new_models.json")
     .then((res) => (res.ok ? res.json() : Promise.reject(new Error(String(res.status)))))
@@ -1705,7 +1705,7 @@ function initNewModels() {
       nmRenderTorchCurves(data);
     })
     .catch((err) => {
-      document.querySelectorAll("#s10 .viz-body").forEach((body) => {
+      document.querySelectorAll("#s9 .viz-body").forEach((body) => {
         body.textContent = "Chart data unavailable (assets/data/new_models.json failed to load).";
       });
       console.error("new_models.json", err);
