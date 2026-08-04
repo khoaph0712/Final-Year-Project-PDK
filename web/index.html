@@ -1508,14 +1508,16 @@
                 <strong>identical data and split, one size basis</strong>
               </div>
               <h3>The most accurate of the three is also 5.7&times; smaller than the largest.</h3>
+              <div class="artifact-list">
+                <div class="artifact-row"><span>EfficientNetB0 &middot; 4,214,442 params</span><strong>94.3% &middot; 16.8&nbsp;MB</strong></div>
+                <div class="artifact-row"><span>ResNet50 &middot; 23,771,207 params</span><strong>92.2% &middot; 95.1&nbsp;MB</strong></div>
+                <div class="artifact-row"><span>MobileNetV2 &middot; 2,388,743 params</span><strong>91.4% &middot; 9.6&nbsp;MB</strong></div>
+              </div>
               <p>
-                MobileNetV2 91.4% (2,388,743 params, 9.6&nbsp;MB) &middot; ResNet50 92.2%
-                (23,771,207 params, 95.1&nbsp;MB) &middot; EfficientNetB0 94.3% (4,214,442
-                params, 16.8&nbsp;MB). Sizes are FP32 weight sizes derived from the parameter
-                count, so all three sit on one basis. That combination is what made
-                EfficientNetB0 the reasonable choice for CPU-served deployment before the
-                ConvNeXt hybrid replaced it. These are pre-audit figures on a shared test set,
-                kept for relative architecture comparison only.
+                Sizes are FP32 weight sizes derived from the parameter count, so all three sit on
+                one basis. That combination is what made EfficientNetB0 the reasonable choice for
+                CPU-served deployment before the ConvNeXt hybrid replaced it. These are pre-audit
+                figures on a shared test set, kept for relative architecture comparison only.
               </p>
             </article>
           </div>
