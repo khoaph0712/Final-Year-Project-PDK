@@ -113,7 +113,7 @@
               <a class="btn secondary" href="#demo" data-page-link>Skip to live demo</a>
             </div>
             <div class="hero-counters">
-              <div><strong id="heroAcc">92.93%</strong><span>clean-test accuracy</span></div>
+              <div><strong id="heroAcc">93.77%</strong><span>clean-test accuracy</span></div>
               <div><strong id="heroClasses">7</strong><span>material classes</span></div>
               <div><strong id="heroBoxes">81k</strong><span>boxes trained on</span></div>
             </div>
@@ -266,9 +266,10 @@
             conclusion: TACO has real litter photos but sparse labels, TrashNet has clean
             studio crops but no boxes, WaDaBa resolves plastic subtypes, GINI frames
             garbage-vs-clean scenes, and the Roboflow projects plus PlastOPol supply extra
-            field imagery. Merged, the working dataset holds
+            field imagery. Merged, the generation these charts are drawn from holds
             <strong>31,379 images and 67,385 boxes</strong> (24,668 / 3,298 / 3,413
-            train/valid/test).
+            train/valid/test) &mdash; one of three successive rebuilds, tabulated at the end of
+            this chapter.
           </p>
           </header>
 
@@ -276,10 +277,15 @@
             <span class="callout-icon" aria-hidden="true">i</span>
             <p><strong>Two acquisition regimes, six sources.</strong> TrashNet and WaDaBa
               contribute studio-style imagery; TACO, GINI, the Roboflow projects and
-              PlastOPol contribute real-world scenes. (The classifier&rsquo;s crop benchmarks
-              later add Kaggle Garbage Classification as their studio bucket.) Each source
-              below is described independently, because pooling them first is what hides
-              the studio/field divide that the rest of the site keeps running into.</p>
+              PlastOPol contribute real-world scenes. The written report names the merge inputs
+              at the generation that feeds the deployed models: TACO for field imagery, Kaggle
+              Garbage Classification (Abla, 2021) as the curated studio comparison domain,
+              PlastOPol&rsquo;s 2,418 citizen-science litter photos as the later field-domain
+              expansion, and multiple Roboflow community re-exports of all of the above &mdash;
+              which is precisely what caused the leakage problem in the next chapter. The
+              hard-case classifier crops add RealWaste. Each source below is described
+              independently, because pooling them first is what hides the studio/field divide
+              that the rest of the site keeps running into.</p>
           </div>
 
           <div class="section-heading">
@@ -413,6 +419,42 @@
 </div>
           </div>
 
+          <div class="section-heading">
+            <h3>C &middot; Three rebuilds, not one dataset</h3>
+            <p>The merge above was rebuilt from scratch twice more as quality problems surfaced, so every generation stays independently auditable.</p>
+          </div>
+
+          <div class="evidence-grid">
+            <article class="evidence-card span-7">
+              <div class="panel-heading">
+                <span>Dataset generations</span>
+                <strong>each superseded, none patched in place</strong>
+              </div>
+              <div class="artifact-list">
+                <div class="artifact-row"><span>Gen 1 &middot; <code>merged_dataset_v3</code>, first Roboflow merge</span><strong>114,220 boxes</strong></div>
+                <div class="artifact-row"><span>Gen 2 &middot; <code>tuned_dataset_v1</code>, evidence-based cleaning &mdash; the EDA charts above and in the next chapter are drawn from this generation</span><strong>31,379 images / 67,385 boxes</strong></div>
+                <div class="artifact-row"><span>Gen 3 &middot; <code>super_yolo_dataset</code> (detector, 6 classes)</span><strong>23,929 images / 102,777 boxes</strong></div>
+                <div class="artifact-row"><span>Gen 3 &middot; <code>merged_dataset_v5</code> (classifier, 7 classes incl. Background)</span><strong>29,639 crops</strong></div>
+                <div class="artifact-row"><span>Deployed &middot; <code>yolo26_hardcase_dataset_v1</code> + <code>hard_case_classifier_v1</code></span><strong>current training source</strong></div>
+              </div>
+            </article>
+            <article class="evidence-card span-5 tone-warning">
+              <div class="panel-heading">
+                <span>What the leakage audit cost</span>
+                <strong>split sizes, before &rarr; after</strong>
+              </div>
+              <div class="artifact-list">
+                <div class="artifact-row"><span>Detector validation</span><strong>3,450 &rarr; 2,627</strong></div>
+                <div class="artifact-row"><span>Detector test</span><strong>1,275 &rarr; 899</strong></div>
+                <div class="artifact-row"><span><code>merged_dataset_v5</code> test</span><strong>5,600 &rarr; 3,194</strong></div>
+              </div>
+              <p>Quarantined by <code>build_clean_eval_splits.py</code>, which sets leaked images
+                aside without touching the originals. These are the splits every headline number
+                on this site is measured on &mdash; the mechanism is the next chapter&rsquo;s
+                subject.</p>
+            </article>
+          </div>
+
           <nav class="chapter-next" aria-label="Chapter navigation">
             <a class="chapter-prev" href="#s1">&larr; Introduction</a>
             <a class="chapter-next-card" href="#s3">
@@ -541,7 +583,26 @@
             </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">This is the leak caught in the act &mdash; the most persuasive image in the whole project.</p><p>Pick a pair and confirm with your own eyes: it is the same photograph. One copy sat in train, the other in test. <strong>2,406</strong> images &mdash; 43% of that evaluation set &mdash; were in this state. The model was being tested on photographs it had already been trained on, so it was being rewarded for memorisation. Nothing about the model was broken; the measurement was.</p><p><strong>Was the hash threshold tuned to produce a dramatic number?</strong> No. It was set first and spot-checked visually afterwards &mdash; which is exactly what this figure shows. The direction of the error also matters, and it is the honest one: the audit only ever lowered the reported accuracy.</p>
+<p class="story-lead">This is the leak caught in the act &mdash; the most persuasive image in the whole project.</p><p>Pick a pair and confirm with your own eyes: it is the same photograph. One copy sat in train, the other in test. <strong>2,406</strong> images &mdash; 43% of that evaluation set &mdash; were in this state. The model was being tested on photographs it had already been trained on, so it was being rewarded for memorisation. Nothing about the model was broken; the measurement was.</p><p><strong>Was the hash threshold tuned to produce a dramatic number?</strong> No. It was set first and spot-checked visually afterwards &mdash; which is exactly what this figure shows, and the next figure sweeps the threshold to prove the headline does not depend on it. The direction of the error also matters, and it is the honest one: the audit only ever lowered the reported accuracy.</p>
+</div>
+</div>
+            <div class="scene">
+<div class="scene-media">
+<figure class="fig span-full reveal-on-scroll ar-strip">
+              <img src="assets/figures/eda_leakage_threshold.png" alt="Share of each evaluation split flagged as leaked at Hamming thresholds 0 to 4" loading="lazy" />
+              <figcaption><strong>Fig 3.6. Does the 43% depend on the four-bit threshold?</strong>
+                <em class="fig-talk">The obvious objection to the last figure, answered by sweeping the one number the audit chose.</em>
+                Share of each evaluation split flagged as leaked, as the Hamming-distance
+                threshold moves from 0 to 4 bits out of 64. Recomputed from the audit manifest,
+                which stores the distance of every flagged pair, so no re-hashing was needed. The
+                headline split is already <strong>39.1%</strong> contaminated at distance 0
+                &mdash; byte-different but perceptually identical &mdash; rising only to
+                <strong>43.0%</strong> at the audit&rsquo;s four-bit setting.
+              </figcaption>
+            </figure>
+</div>
+<div class="scene-story">
+<p class="story-lead">A four-bit threshold is a judgement call, and the whole 43% headline rests on it. So here is the sensitivity check.</p><p>Follow the top line from left to right and note how flat it is. At distance 0 the audit is only catching images that are <em>perceptually identical</em> to a training image &mdash; the exact re-encoding artefact a Roboflow re-export produces &mdash; and that alone accounts for 39.1% of the split. Loosening all the way to four bits adds under four points. Any choice in that range yields the same finding, so the headline is a property of the data rather than of the threshold.</p><p><strong>Is that true of every split?</strong> No, and the difference is worth stating. The lower lines climb more steeply across the same range &mdash; the detector&rsquo;s test split moves 22.7% to 32.9% &mdash; so their contamination is genuinely near-duplicate rather than identical, and those figures should be read as threshold-dependent in a way the headline split&rsquo;s is not.</p>
 </div>
 </div>
           </div>
@@ -813,7 +874,8 @@
             <span class="callout-icon" aria-hidden="true">i</span>
             <p><strong>Why handcrafted features at all, next to a deep network?</strong>
               Three reasons, all measurable. They are the interpretable branch&rsquo;s entire
-              input, so its 73.8% is a floor achieved with no learned representation. They
+              input, so its 67.42% on the six-class benchmark is a floor achieved with no
+              learned representation. They
               are concatenated into the deployed hybrid classifier alongside the ConvNeXt
               embedding, so they contribute to the shipped prediction. And they are cheap
               and deterministic: the same crop yields the same 637 numbers on every
@@ -874,7 +936,7 @@
             </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">This is the largest single block &mdash; 324 of 637 features &mdash; so it is worth seeing what it encodes.</p><p>Look at the orientation histogram: the two tallest bars sit at 90&deg; and 110&deg;, with a third at 10&deg;. That is the box&rsquo;s edges, and it is a claim about geometry, not material. Which raises the obvious objection: why spend half the vector on shape when the whole project argues material is surface? Because HOG at a 16&times;16 cell on a 64&times;64 crop is not measuring the object outline. It is measuring local gradient structure within sixteen small tiles &mdash; corrugation, creases, print &mdash; which is texture described in the language of edges.</p><p><strong>Does the evidence back that up?</strong> Yes &mdash; the domain-importance figure at the end of this chapter puts edge/HOG at <strong>36.5%</strong> of the tree ensemble&rsquo;s total feature importance, second only to colour, while the explicit shape block (Hu moments, area, perimeter, circularity) carries <strong>1.4%</strong>. If HOG were tracing outlines it would be measuring the same thing as that shape block, and would score like it. It does not.</p>
+<p class="story-lead">This is the largest single block &mdash; 324 of 637 features &mdash; so it is worth seeing what it encodes.</p><p>Look at the orientation histogram: the two tallest bars sit at 90&deg; and 110&deg;, with a third at 10&deg;. That is the box&rsquo;s edges, and it is a claim about geometry, not material. Which raises the obvious objection: why spend half the vector on shape when the whole project argues material is surface? Because HOG at a 16&times;16 cell on a 64&times;64 crop is not measuring the object outline. It is measuring local gradient structure within sixteen small tiles &mdash; corrugation, creases, print &mdash; which is texture described in the language of edges.</p><p><strong>Does the evidence back that up?</strong> Yes &mdash; the domain-importance figures at the end of this chapter put edge/HOG at <strong>36.5%</strong> of the tree ensemble&rsquo;s total feature importance on the deployed vector (second only to colour) and at <strong>59.6%</strong> on the analysis vector (first outright), while the explicit shape block (Hu moments, area, perimeter, circularity) carries <strong>1.4%</strong>. If HOG were tracing outlines it would be measuring the same thing as that shape block, and would score like it. It does not.</p>
 </div>
 </div>
           </div>
@@ -899,7 +961,7 @@
             </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">The answer is: barely, one at a time. That is the finding, not a disappointment.</p><p>Pick any panel and try to draw a line that separates two classes. There isn&rsquo;t one. Every distribution overlaps every other heavily &mdash; the clearest signal in the whole figure is organic sitting slightly left on <code>grad_mean</code> and <code>grad_std</code>, which just says food waste has softer edges than packaging. This is precisely why the classical branch tops out near 74% while the deep classifier reaches the low nineties: no single handcrafted descriptor is discriminative, so accuracy has to come from combining hundreds of weak ones.</p><p><strong>Then why show a figure that undercuts the branch?</strong> Because the alternative is showing a feature table and letting the audience assume each row is informative. The tree ensembles do genuinely reach 73.8% on these features, and they do it by conditional combination &mdash; which is a much more interesting claim once you have seen how weak the individual axes are.</p>
+<p class="story-lead">The answer is: barely, one at a time. That is the finding, not a disappointment.</p><p>Pick any panel and try to draw a line that separates two classes. There isn&rsquo;t one. Every distribution overlaps every other heavily &mdash; the clearest signal in the whole figure is organic sitting slightly left on <code>grad_mean</code> and <code>grad_std</code>, which just says food waste has softer edges than packaging. This is precisely why the classical branch tops out in the sixties while the deep classifier reaches the low nineties: no single handcrafted descriptor is discriminative, so accuracy has to come from combining hundreds of weak ones.</p><p><strong>Then why show a figure that undercuts the branch?</strong> Because the alternative is showing a feature table and letting the audience assume each row is informative. The tree ensembles do genuinely reach 67.42% on these features, and they do it by conditional combination &mdash; which is a much more interesting claim once you have seen how weak the individual axes are.</p>
 </div>
 </div>
             <div class="scene flip">
@@ -937,6 +999,25 @@
 </div>
 <div class="scene-story">
 <p class="story-lead">Here the classical branch answers a question the deep model cannot: <em>which kind of evidence is it actually using?</em></p><p>Read the four bars against the feature table at the top of this chapter. Colour and HOG together carry <strong>85.7%</strong> of the decision, and shape &mdash; the Hu moments, area, perimeter and circularity &mdash; carries <strong>1.4%</strong>. That is the project&rsquo;s central claim about material recognition, measured rather than asserted: material identity is surface, not silhouette. Which is reassuring for a second reason too, given that crops arrive at arbitrary aspect ratios and get squashed to a square grid &mdash; a model leaning on shape would be leaning on a distortion artefact.</p><p>This is a testable claim, and Grad-CAM in the Experimental Results chapter independently confirms it on the deep side.</p><p><strong>Why keep a classical branch at all?</strong> Because it produces explanations of a kind the deep model cannot. Feature importances are a property of the fitted trees, not a post-hoc reconstruction like a saliency map.</p>
+</div>
+</div>
+            <div class="scene">
+<div class="scene-media">
+<figure class="fig reveal-on-scroll">
+              <img src="assets/figures/ml_domain_importance_report.png" alt="Feature-domain importance on the report's four-block decomposition: spatial, frequency, colour, HOG" loading="lazy" />
+              <figcaption><strong>Fig 5.7. The same question on the other 637-D decomposition.</strong>
+                <em class="fig-talk">And the same measurement on the analysis vector, which is the split the written report tabulates.</em>
+                Random-forest feature importance summed over the four blocks of the analysis
+                vector (report Table 9): HOG (576) <strong>59.6%</strong>, colour (44)
+                <strong>29.2%</strong>, frequency (9) <strong>5.7%</strong>, spatial (8)
+                <strong>5.6%</strong>. Same run, same six-class benchmark as Fig 7.1 &mdash; only
+                the grouping of the 637 dimensions differs from Fig 5.6.
+              </figcaption>
+
+            </figure>
+</div>
+<div class="scene-story">
+<p class="story-lead">Two decompositions, one conclusion &mdash; which is the strongest form the claim can take.</p><p>Read this against Fig 5.6 and note what does <em>not</em> change. On the deployed vector, colour leads at 49.1% with edge/HOG second at 36.5%; on the analysis vector, HOG leads at 59.6% with colour second at 29.2%. The ordering of the top two swaps, because the two vectors spend their 637 dimensions differently &mdash; 324 HOG dimensions against 576. What survives both groupings is the part that matters: gradient structure and colour carry between 86% and 89% of the decision, and the explicitly geometric evidence carries almost none. Spatial statistics get 5.6% here; the shape block gets 1.4% there.</p><p><strong>Why keep both figures rather than picking one?</strong> Because two different partitions of the same feature budget agreeing on the substance is a stronger result than either one alone. A finding that flipped when the grouping changed would be an artefact of the grouping.</p>
 </div>
 </div>
           </div>
@@ -1028,7 +1109,7 @@
             </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">Split that flow in two. First, the deep path &mdash; the one that actually ships.</p><p>Notice the concatenation node where the ConvNeXt embedding meets the <strong>637</strong> handcrafted features. This is a hybrid, not a pure deep model. The learned embedding and the hand-designed colour, FFT, HOG and spatial features feed one head together. The handcrafted half is cheap, deterministic, and encodes exactly the evidence the classical branch showed matters most for material.</p><p><strong>Do the handcrafted features earn their place?</strong> They are the same 637 features the classical branch reaches <strong>73.8%</strong> with on their own, so they carry real signal rather than noise. Keeping the two branches feature-compatible is what makes the classical model an interpretable stand-in for the deep one.</p>
+<p class="story-lead">Split that flow in two. First, the deep path &mdash; the one that actually ships.</p><p>Notice the concatenation node where the ConvNeXt embedding meets the <strong>637</strong> handcrafted features. This is a hybrid, not a pure deep model. The learned embedding and the hand-designed colour, FFT, HOG and spatial features feed one head together. The handcrafted half is cheap, deterministic, and encodes exactly the evidence the classical branch showed matters most for material.</p><p><strong>Do the handcrafted features earn their place?</strong> They are the same 637 features the classical branch reaches <strong>67.42%</strong> with on their own, so they carry real signal rather than noise. Keeping the two branches feature-compatible is what makes the classical model an interpretable stand-in for the deep one.</p>
 </div>
 </div>
             <div class="scene">
@@ -1104,10 +1185,10 @@
             The classical branch is kept as a separate track so it can be tracked on its
             own terms. It sees exactly the crops the deep branch sees, summarized into the
             feature vector of the previous chapter, and is fitted with six model families.
-            The best of them, ExtraTrees, reaches <strong>73.8%</strong> on the balanced
-            crop benchmark &mdash; roughly 20 points behind the deployed deep classifier,
-            fully inspectable, and the branch that discovered the project&rsquo;s
-            domain-shift problem.
+            The best of them, XGBoost, reaches <strong>67.42%</strong> accuracy and
+            0.6506 macro-F1 on the balanced six-class benchmark &mdash; roughly 26 points
+            behind the deployed deep classifier, fully inspectable, and the branch that
+            discovered the project&rsquo;s domain-shift problem.
           </p>
           </header>
 
@@ -1127,9 +1208,12 @@
               <img src="assets/figures/cmp_classical_models.png" alt="Classical model comparison chart" loading="lazy" />
               <figcaption><strong>Fig 7.1. Classical model family, ranked.</strong>
                 <em class="fig-talk">Now the classical family on its own.</em>
-                Accuracy and macro-F1 for six classical models on the balanced 6-class benchmark.
-                Tree ensembles lead; margin- and linear-based models trail on the 637-feature
-                vector.
+                Accuracy and macro-F1 for six classical models on the balanced six-class
+                benchmark (4,000 training crops per class,
+                <code>runs/ml/feature_ml_lecturer_6class_4k</code>). XGBoost leads at 67.42% /
+                0.6506, then ExtraTrees 63.12% and Random Forest 63.17%; the linear and
+                margin-based models trail on the 637-feature vector, down to 51.15% for a
+                single decision tree.
               </figcaption>
               
             </figure>
@@ -1141,17 +1225,20 @@
             <div class="scene flip">
 <div class="scene-media">
 <figure class="fig span-full tall reveal-on-scroll ar-square">
-              <img src="assets/figures/cm_extra_trees.png" alt="ExtraTrees confusion matrix" loading="lazy" />
-              <figcaption><strong>Fig 7.2. Classical baseline confusion (ExtraTrees).</strong>
+              <img src="assets/figures/cm_xgboost.png" alt="XGBoost confusion matrix on the six-class handcrafted-feature benchmark" loading="lazy" />
+              <figcaption><strong>Fig 7.2. Classical baseline confusion (XGBoost).</strong>
                 <em class="fig-talk">The best classical model, class by class.</em>
-                The best classical model on 637 handcrafted features. A clearly weaker diagonal
-                than any deep model, but every split of every tree is inspectable.
+                The strongest classical model on 637 handcrafted features. A clearly weaker
+                diagonal than any deep model, but every split of every tree is inspectable.
+                Glass carries only 200 test crops against 800 for most classes, and its 0.40
+                precision against 0.77 recall is the model over-predicting glass on thin
+                support; paper is the weakest class on recall at 0.46, confused with cardboard.
               </figcaption>
               
             </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">The winner of that ranking, class by class &mdash; and the honest shape of a 73.8% model.</p><p>Notice how much mass sits off the diagonal. Against the deep classifiers in the Model Comparison chapter the gap is roughly 20 points, and it is not close. Stated plainly: accuracy is not what the classical branch is for. What it offers instead is that every decision traces to a named feature and a threshold you can read.</p><p><strong>Is the classical branch just decoration, then?</strong> No, on two counts. It supplies the <strong>637 features</strong> the deployed hybrid actually consumes, and it is the branch that found the domain-shift result at the end of this chapter.</p>
+<p class="story-lead">The winner of that ranking, class by class &mdash; and the honest shape of a 67% model.</p><p>Notice how much mass sits off the diagonal. Against the deep classifiers in the Model Comparison chapter the gap is roughly 26 points, and it is not close. Stated plainly: accuracy is not what the classical branch is for. What it offers instead is that every decision traces to a named feature and a threshold you can read.</p><p><strong>Is the classical branch just decoration, then?</strong> No, on two counts. It supplies the <strong>637 features</strong> the deployed hybrid actually consumes, and it is the branch that found the domain-shift result at the end of this chapter.</p>
 </div>
 </div>
             <div class="scene flip">
@@ -1195,15 +1282,18 @@
               <img src="assets/figures/cmp_pca_model_sweep.png" alt="PCA model sweep accuracy chart" loading="lazy" />
               <figcaption><strong>Fig 7.5. Accuracy vs PCA dimension, per model.</strong>
                 <em class="fig-talk">No: tree ensembles need almost the whole vector to hit their ceiling.</em>
-                Sweeping PCA dimensionality across classical models: accuracy saturates near the
-                full feature vector for tree ensembles, confirming the 637 features are not
-                redundant enough to compress for free.
+                Sweeping PCA dimensionality across classical models on the merged_dataset_v5
+                seven-class cached-feature split (7,000 train / 2,100 test): accuracy saturates
+                near the full feature vector for tree ensembles, confirming the 637 features are
+                not redundant enough to compress for free. ExtraTrees sets the full-637 ceiling
+                on this split at 73.76% (macro-F1 0.7381) &mdash; a different, easier split from
+                the six-class benchmark of Fig 7.1, which is why the two numbers differ.
               </figcaption>
               
             </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">And the answer is no: the tree ensembles need almost the whole vector to reach their ceiling.</p><p>Notice where each curve flattens &mdash; close to the full dimensionality, not at the variance knee. This is the pair of figures that makes the point. Variance concentrates in a few dozen components; <em>accuracy</em> does not. Low-variance components still carry class-discriminative information, so PCA chosen by explained variance would have quietly cost accuracy. Two plots, and the intuitive answer turns out to be the wrong one.</p><p><strong>What does this mean for deployment?</strong> The <strong>637-feature</strong> extraction stays in the pipeline at full width. The compression opportunity was tested and declined on evidence.</p>
+<p class="story-lead">And the answer is no: the tree ensembles need almost the whole vector to reach their ceiling.</p><p>Notice where each curve flattens &mdash; close to the full dimensionality, not at the variance knee. This is the pair of figures that makes the point. Variance concentrates in a few dozen components; <em>accuracy</em> does not. Low-variance components still carry class-discriminative information, so PCA chosen by explained variance would have quietly cost accuracy. Two plots, and the intuitive answer turns out to be the wrong one.</p><p>The cost of compressing is model-specific, which is why no single &ldquo;PCA costs about 2%&rdquo; claim is made. Squeezed from 637 to 128 components &mdash; still 99.90% of the variance &mdash; Linear SVM drops 62.43% &rarr; 59.90%, a loss of 2.52 points, while Logistic Regression drops only 60.33% &rarr; 59.71%, a loss of 0.62.</p><p><strong>What does this mean for deployment?</strong> The <strong>637-feature</strong> extraction stays in the pipeline at full width. The compression opportunity was tested and declined on evidence.</p>
 </div>
 </div>
           </div>
@@ -1498,7 +1588,7 @@
             </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">And last, the floor: what a deep model is worth with no transfer learning at all.</p><p>Look at the final accuracy, <strong>48.1%</strong>, then back up at the 94.3% on the comparison grid. This is the control experiment for the whole deep branch. Same architecture family, same data, same schedule; the only thing removed is the pretrained weights. Nearly half the accuracy goes with them. So the honest claim is not &ldquo;deep learning solves this&rdquo; &mdash; it is &ldquo;ImageNet-scale pretraining solves this, and a 31k-image dataset is nowhere near enough to learn material texture from scratch&rdquo;.</p><p><strong>Would a bigger scratch model close the gap?</strong> Unlikely at this data scale, and the classical branch is the evidence. Tree ensembles on 637 hand-designed features reach <strong>73.8%</strong>, well above any from-scratch network here, because they encode prior knowledge the network would have to learn from data it does not have.</p>
+<p class="story-lead">And last, the floor: what a deep model is worth with no transfer learning at all.</p><p>Look at the final accuracy, <strong>48.1%</strong>, then back up at the 94.3% on the comparison grid. This is the control experiment for the whole deep branch. Same architecture family, same data, same schedule; the only thing removed is the pretrained weights. Nearly half the accuracy goes with them. So the honest claim is not &ldquo;deep learning solves this&rdquo; &mdash; it is &ldquo;ImageNet-scale pretraining solves this, and a 31k-image dataset is nowhere near enough to learn material texture from scratch&rdquo;.</p><p><strong>Would a bigger scratch model close the gap?</strong> Unlikely at this data scale, and the classical branch is the evidence. Tree ensembles on 637 hand-designed features reach <strong>67.42%</strong>, well above any from-scratch network here, because they encode prior knowledge the network would have to learn from data it does not have.</p>
 </div>
 </div>
           </div>
@@ -1566,8 +1656,8 @@
           <section class="metrics" aria-label="Key verified metrics">
             <article class="metric-card tone-success">
               <span>Classifier accuracy, clean test</span>
-              <strong id="correctMetric">92.93%</strong>
-              <i>ConvNeXt + 637-feature classifier, 2,151 quarantined-test images</i>
+              <strong id="correctMetric">93.77%</strong>
+              <i>Deployed ConvNeXt + 637-feature classifier, crop-mix fine-tuned, on clean ground-truth crops (88.88% on the detector&rsquo;s own crops)</i>
             </article>
             <article class="metric-card tone-info">
               <span>Detector mAP50, clean val</span>
@@ -1588,7 +1678,7 @@
 
           <div class="callout tone-warn reveal-on-scroll">
             <span class="callout-icon" aria-hidden="true">!</span>
-            <p><strong>Two baselines, one trap.</strong> 92.93% is clean-test accuracy on quarantined crops; 88.9% is accuracy on the detector&rsquo;s own production crops. Quote the first for model quality and the second for what a user experiences &mdash; mixing them is how numbers get inflated by accident.</p>
+            <p><strong>Three numbers for one classifier, and they are not interchangeable.</strong> 92.93% is the ground-truth-crop-trained baseline on the 2,151-crop clean test split; 93.77% is the deployed crop-mix fine-tune on clean ground-truth crops; 88.88% is that same deployed model on the detector&rsquo;s own production crops. Quote the second for model quality and the third for what a user experiences &mdash; mixing them is how numbers get inflated by accident.</p>
           </div>
 
           <div class="evidence-grid">
@@ -1668,8 +1758,10 @@
               <img src="assets/figures/heat_classifier_per_class.png" alt="Heatmap of per-class precision, recall and F1 for the deployed classifier" loading="lazy" />
               <figcaption><strong>Fig 9.4. Per-class precision, recall and F1 (deployed classifier).</strong>
                 <em class="fig-talk">And the classifier's side of the ledger, one row per class.</em>
-                Every per-class score for the deployed ConvNeXt + 637-feature model on the clean
-                hard-case test split (2,151 crops, 92.93% accuracy, macro-F1 0.929). No class
+                Every per-class score for the ground-truth-crop-trained ConvNeXt + 637-feature
+                baseline on the clean hard-case test split (2,151 crops, 92.93% accuracy,
+                macro-F1 0.929) &mdash; the checkpoint the deployed crop-mix fine-tune is measured
+                against. No class
                 falls below 0.88 on any metric. Organic and Background lead; Metal has the
                 weakest precision (0.884) and Paper the weakest recall (0.882).
               </figcaption>
@@ -1728,8 +1820,8 @@
                 23.8M params) &middot; EfficientNetB0 94.3% (16.8&nbsp;MB, 4.2M params). Sizes are
                 FP32 weights derived from the parameter count, so the three are compared on one
                 basis. Compound scaling wins the accuracy-per-megabyte race. These figures predate the leakage
-                audit; the audited successor is the deployed ConvNeXt at 92.93% on the
-                clean test set.
+                audit; the audited successor is the deployed ConvNeXt at 93.77% on clean
+                ground-truth crops (88.88% on the detector&rsquo;s own crops).
               </p>
             </article>
             <article class="evidence-card span-5 dark reveal-on-scroll">
@@ -1737,12 +1829,13 @@
                 <span>Classical ML baseline</span>
                 <strong>explainable evidence</strong>
               </div>
-              <h3>73.8%: ExtraTrees on 637 handcrafted features.</h3>
+              <h3>67.4%: XGBoost on 637 handcrafted features.</h3>
               <p>
-                The full ranking and the confusion matrices are in the ML track chapter.
-                Carried forward here so the ~20-point gap to the deployed deep classifier
-                sits next to the deep numbers it is being compared against, rather than
-                three chapters away.
+                Macro-F1 0.6506 on the balanced six-class benchmark
+                (<code>runs/ml/feature_ml_lecturer_6class_4k</code>). The full ranking and the
+                confusion matrices are in the ML track chapter. Carried forward here so the
+                ~26-point gap to the deployed deep classifier sits next to the deep numbers it
+                is being compared against, rather than three chapters away.
               </p>
             </article>
           </div>
@@ -1754,15 +1847,19 @@
               <img src="assets/figures/cmp_ml_vs_dl.png" alt="ML vs DL comparison chart" loading="lazy" />
               <figcaption><strong>Fig 10.1. Classical ML vs deep baseline.</strong>
                 <em class="fig-talk">Whole classical family against the deep baseline, side by side.</em>
-                On the same crop benchmark, tree ensembles (ExtraTrees 63.1%, RF 63.2%) clearly beat
-                linear models and the from-scratch tiny CNN (48.1%), but all classical
-                models trail the transfer-learned deep classifiers.
+                Every classifier trained in the project on one axis. The tree ensembles
+                (XGBoost 67.4%, RF 63.2%, ExtraTrees 63.1%) beat the linear models and the
+                from-scratch tiny CNN (48.1%), but all of them trail the transfer-learned deep
+                models. Bar colour marks the measurement basis, because these are not all the
+                same split: classical on the six-class handcrafted benchmark, the deep
+                comparators on the pre-audit balanced crop benchmark, and the deployed hybrid on
+                the leakage-quarantined clean test.
               </figcaption>
               
             </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">The whole classical family against the deep baseline, on one axis.</p><p>Look at the gap between the best tree ensemble and the transfer-learned deep models &mdash; then at the from-scratch CNN sitting <em>below</em> the trees. The ordering is the interesting part, not the winner. Hand-designed features with a tree ensemble beat a neural network trained from scratch on the same data. Deep learning only pulls ahead once pretrained weights are involved. So the real dividing line in this chart is not classical against deep &mdash; it is <strong>with prior knowledge against without</strong>.</p><p><strong>Why is the deployed system deep anyway?</strong> Roughly 20 points of accuracy. And the hybrid keeps the handcrafted features in the loop, so the interpretable evidence is not discarded.</p>
+<p class="story-lead">The whole classical family against the deep baseline, on one axis.</p><p>Look at the gap between the best tree ensemble and the transfer-learned deep models &mdash; then at the from-scratch CNN sitting <em>below</em> the trees. The ordering is the interesting part, not the winner. Hand-designed features with a tree ensemble beat a neural network trained from scratch on the same data. Deep learning only pulls ahead once pretrained weights are involved. So the real dividing line in this chart is not classical against deep &mdash; it is <strong>with prior knowledge against without</strong>.</p><p><strong>Why is the deployed system deep anyway?</strong> Roughly 26 points of accuracy. And the hybrid keeps the handcrafted features in the loop, so the interpretable evidence is not discarded.</p>
 </div>
 </div>
           </div>
@@ -1814,8 +1911,11 @@
             <span class="callout-icon" aria-hidden="true">!</span>
             <p><strong>The per-class floor is the real finding.</strong> On the merged dataset&rsquo;s
               unseen-session test split, Glass AP collapses for every architecture
-              (0.03&ndash;0.29) and Organic never passes 0.18. Seven architectures, one shared
-              failure: that is a dataset property. More field-condition Glass and Organic
+              (0.03&ndash;0.29) and Organic never passes 0.18. On the validation split the same
+              pattern reduces to Organic alone: it is the worst class for all seven
+              architectures without exception, from 0.253 mAP50-95 for FCOS to 0.346 for
+              YOLO11m, against 0.36&ndash;0.66 for every other class. Seven architectures, one
+              shared failure: that is a dataset property. More field-condition Glass and Organic
               examples &mdash; TACO- and PlastOPol-style captures &mdash; would move these
               numbers; another architecture will not.</p>
           </div>
@@ -1831,15 +1931,20 @@
               <span class="fig-type" aria-hidden="true">&#128202; live chart</span>
             </div>
             <div class="viz-body" id="nmBoard"></div>
-            <p class="viz-caption">Test accuracy on the 2,696-crop quarantined hard-case split; the
+            <p class="viz-caption">Test accuracy on the 2,696-crop hard-case split; the
               chip is median CPU latency per crop (each candidate from its own benchmark session;
               the deployed row is the median across all six sessions, which individually measured
               47.6&ndash;58.7&nbsp;ms). The highlighted row is the deployed ConvNeXt-Tiny + 637
-              model measured on the same split. Bars start at 75%.</p>
+              model measured on the same split, so all seven rows are directly comparable. Bars
+              start at 75%. The written report&rsquo;s Table 21 tabulates the same runs on the
+              <em>mean</em> latency basis rather than the median (Swin-Tiny 65.8&nbsp;ms,
+              ConvNeXtV2-Tiny 68.5, EfficientNetV2-S 66.6, ResNet50 55.0, ViT-S/16 44.2,
+              MobileNetV3-L 24.4, deployed 59.3) and quotes the deployed model at 93.77% on the
+              leakage-quarantined clean crops instead of 93.88% on this split.</p>
           </div>
 
           <div class="scene-story story-block">
-<p class="story-lead">The deployed model survives its own rematch &mdash; and the two challengers that beat it pay for the privilege.</p><p>Find the deployed row first, then the two rows above it. Swin-Tiny and ConvNeXtV2 win by seven-tenths of a point, but both pay for it in CPU latency: measured against the deployed model in each candidate&rsquo;s own benchmark session, Swin-Tiny costs <strong>+7&nbsp;ms (+12%)</strong> and ConvNeXtV2 <strong>+15&nbsp;ms (+30%)</strong> per crop, for a margin inside day-to-day noise. MobileNetV3-L is the interesting one: <strong>92.1%</strong> at <strong>18.5&nbsp;ms</strong>, roughly 2.7&times; faster than production &mdash; the obvious pick if this ever moves on-device.</p><p><strong>What about EfficientNetV2-S at 80.2%?</strong> It is uniformly weak across all seven classes on both validation and test, so it is not a bad split or a broken run. Its frozen features simply separate this domain poorly without fine-tuning; the benchmark freezes every backbone on purpose, and this is the failure mode that policy exposes.</p>
+<p class="story-lead">The deployed model survives its own rematch &mdash; and the two challengers that beat it pay for the privilege.</p><p>Find the deployed row first, then the two rows above it. Swin-Tiny and ConvNeXtV2 win by seven-tenths of a point, but both pay for it in CPU latency: measured against the deployed model in each candidate&rsquo;s own benchmark session, Swin-Tiny costs <strong>+7&nbsp;ms (+12%)</strong> and ConvNeXtV2 <strong>+15&nbsp;ms (+30%)</strong> per crop, for a margin inside day-to-day noise. MobileNetV3-L is the interesting one: <strong>92.1%</strong> at <strong>18.5&nbsp;ms</strong> median, roughly 2.7&times; faster than production &mdash; 2.4&times; on the report&rsquo;s mean basis, and either way the obvious pick if this ever moves on-device for 1.7 points of accuracy.</p><p><strong>What about EfficientNetV2-S at 80.2%?</strong> It is uniformly weak across all seven classes on both validation and test, so it is not a bad split or a broken run. Its frozen features simply separate this domain poorly without fine-tuning; the benchmark freezes every backbone on purpose, and this is the failure mode that policy exposes.</p>
 </div>
 
           <div class="viz-card reveal-on-scroll">
@@ -1916,8 +2021,8 @@
           <h2 class="page-title">What the experiments actually changed.</h2>
           <p class="page-intro">
             The headline experiments: fine-tuning the classifier on the detector's own crops lifted
-            production-distribution accuracy from <strong>76.9% to 88.9%</strong> without losing
-            clean-crop accuracy (92.9% &rarr; 92.93%, unchanged within noise). Promoting YOLO26s to a 100-epoch YOLO26m
+            production-distribution accuracy from <strong>76.91% to 88.88%</strong> while
+            clean-crop accuracy also improved (92.93% &rarr; 93.77%). Promoting YOLO26s to a 100-epoch YOLO26m
             retrain lifted field recall from <strong>70.9% to 78.1%</strong> and field small-object
             recall from <strong>58.6% to 68.2%</strong> at the same threshold. Hard-negative mining
             on new field data (PlastOPol) lifted held-out small-object recall from
@@ -1993,7 +2098,7 @@
             </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">Now a different question entirely. Not &ldquo;is it right?&rdquo; but &ldquo;is it right for the right reason?&rdquo;</p><p>Notice the hot region &mdash; and, just as importantly, the cool background around it. This directly answers the worry raised back at Fig 2.5. If the classifier had learned studio backgrounds instead of materials, the heat would sit on the surroundings. It sits on the object surface. This is the deep branch independently agreeing with the classical branch's feature importances in Fig 5.6, which found colour and texture dominant and spatial features negligible.</p><p><strong>How much weight should Grad-CAM carry?</strong> It is supporting evidence, not proof. Saliency maps are known to be reconstructions rather than the model's actual reasoning. It is convincing here because it agrees with a second, independent line of evidence.</p>
+<p class="story-lead">Now a different question entirely. Not &ldquo;is it right?&rdquo; but &ldquo;is it right for the right reason?&rdquo;</p><p>Notice the hot region &mdash; and, just as importantly, the cool background around it. This directly answers the worry raised back at Fig 2.5. If the classifier had learned studio backgrounds instead of materials, the heat would sit on the surroundings. It sits on the object surface. This is the deep branch independently agreeing with the classical branch's feature importances in Fig 5.6 and Fig 5.7, which found colour and gradient structure dominant and explicit geometry negligible on both decompositions of the feature vector.</p><p><strong>How much weight should Grad-CAM carry?</strong> It is supporting evidence, not proof. Saliency maps are known to be reconstructions rather than the model's actual reasoning. It is convincing here because it agrees with a second, independent line of evidence.</p>
 </div>
 </div>
             <div class="scene flip">
@@ -2010,6 +2115,57 @@
 </div>
 <div class="scene-story">
 <p class="story-lead">The same check, now on a field-domain item &mdash; because the studio case alone would prove nothing.</p><p>Notice where the activation concentrates: the specular highlights on the surface and the label region. Plastic and glass are the pair most at risk of being separated by background cues rather than material, since studio glass and studio plastic sit on the same white sweep. Here, on a field photo, the model is keying on highlight structure and label texture &mdash; properties of the object itself.</p><p><strong>Does that generalise to every field image?</strong> No, and the domain confusion matrix in the Deep Learning chapter gives the honest aggregate: <strong>91.3%</strong> on field crops against <strong>96.5%</strong> on studio. The gap is real; this figure explains what the model uses when it gets it right.</p>
+</div>
+</div>
+          </div>
+
+          <div class="section-heading">
+            <h3>The whole pipeline, measured end to end</h3>
+            <p>Not the detector and not the classifier &mdash; the assembled system, including the rules that turn scores into a bin.</p>
+          </div>
+
+          <div class="evidence-grid">
+            <article class="evidence-card span-4 tone-info">
+              <span class="metric-label">Throughput, full pipeline</span>
+              <strong class="big-number">4.20 FPS</strong>
+              <p>238.08&nbsp;ms per image on CPU across a 100-image sweep of the complete deployed
+                path: Stage 1, the adaptive engine, Stage 2, score fusion and routing. The sweep
+                produced 348 YOLO proposals, of which 295 survived Stage 2 verification.</p>
+            </article>
+            <article class="evidence-card span-4 tone-success">
+              <span class="metric-label">Material accuracy, decision layer</span>
+              <strong class="big-number">94.53%</strong>
+              <p>On an independent 1,042-crop set. Macro-recall over the five classes actually
+                present is <strong>84.60%</strong>, about ten points lower, and that is the more
+                honest single figure &mdash; paper and plastic are over 80% of this set.</p>
+            </article>
+            <article class="evidence-card span-4 tone-warning">
+              <span class="metric-label">Bin routing, and why it is a weak metric</span>
+              <strong class="big-number">97.41%</strong>
+              <p>Reported for completeness only. Five of the six materials route to one Recycling
+                bin, so 99.6% of this set is truly Recycling and a constant &ldquo;Recycling&rdquo;
+                predictor beats the pipeline. It measures how rarely the system declines to
+                commit, not routing competence.</p>
+            </article>
+          </div>
+
+          <div class="story-flow">
+            <div class="scene">
+<div class="scene-media">
+<figure class="fig span-full reveal-on-scroll ar-strip">
+              <img src="assets/figures/cmp_decision_ablation.png" alt="Decision-layer ablation across four configurations on the identical 1,042-crop set" loading="lazy" />
+              <figcaption><strong>Fig 11.6. The decision layer, ablated.</strong>
+                <em class="fig-talk">The last stage of the pipeline is rules, not a model &mdash; so it gets measured like everything else.</em>
+                Four decision-layer configurations on the identical 1,042-crop set. The gated
+                baseline on the left ran in production until 2026-07-18; the deployed
+                configuration removes the waste-state gate entirely; the two on the right were
+                measured and rejected. Nine configurations were evaluated in total; these four
+                span the range.
+              </figcaption>
+            </figure>
+</div>
+<div class="scene-story">
+<p class="story-lead">A rule you keep because it feels prudent is still an untested rule. This is what happened when it was tested.</p><p>Compare the second group against the first. Removing the waste-state gate outright is the best configuration on every aggregate metric &mdash; bin routing 97.41% against 96.26%, waste-state 97.98% against 96.74% &mdash; which is the measured basis for deleting the gate rather than tuning it. A conservative rule that fires on uncertainty was costing accuracy, not buying safety.</p><p>Now look at how little the bars differ overall. Across all eight retained gated variants the spread in material accuracy is under one percentage point. That is the honest reading of this whole subsection: the decision layer was never the binding constraint on the system&rsquo;s accuracy. Localisation recall was, and still is.</p><p><strong>Then why show four near-identical bar groups?</strong> Because a negative result is the point. Without this figure, deleting a production rule looks like a hunch. With it, the deletion is the configuration that won on evidence.</p>
 </div>
 </div>
           </div>
@@ -2044,8 +2200,9 @@
                 for the field domain too: lowering the confidence threshold and hard-negative
                 mining on new field data (PlastOPol) lifted held-out field small-object recall
                 from 38.6% to 54.7%, at a small cost to studio mAP50 (72.1% &rarr; 70.9%). Open:
-                on fully unseen capture sessions the detector still drops to 0.444 mAP50; the
-                gap is narrowing with new data, not fully closed.
+                on the fully unseen clean test split the detector still drops to
+                0.482 mAP50 against 0.749 on clean validation; the gap is narrowing with new
+                data, not fully closed.
               </p>
             </article>
             <article class="tone-info reveal-on-scroll">
@@ -2076,7 +2233,7 @@
           </div>
 
           <div class="method-note">
-            <p><strong>Method note.</strong> Metrics on this site come from the leakage-audited evaluation sets. The audit scripts, quarantine manifest, and reports live in the project repository. The Stage-2 architecture shoot-out (EfficientNetB0, ResNet50, MobileNetV2) is measured on the balanced crop benchmark that predates the quarantine, so all three share one test set and stay comparable to each other, but not to the 92.93% clean-test headline.</p>
+            <p><strong>Method note.</strong> Metrics on this site come from the leakage-audited evaluation sets. The audit scripts, quarantine manifest, and reports live in the project repository. The Stage-2 architecture shoot-out (EfficientNetB0, ResNet50, MobileNetV2) is measured on the balanced crop benchmark that predates the quarantine, so all three share one test set and stay comparable to each other, but not to the 93.77% clean-test headline.</p>
           </div>
 
           <nav class="chapter-next" aria-label="Chapter navigation">
@@ -2096,7 +2253,7 @@
           <p class="kicker"><span class="flow-num">13 / 14</span> Conclusion &amp; Future Work</p>
           <h2 class="page-title">A working, honestly-measured waste scanner.</h2>
           <p class="page-intro">
-            The project delivers a deployed two-stage pipeline (92.93% clean-test material
+            The project delivers a deployed two-stage pipeline (93.77% clean-test material
             accuracy, 74.9% detector mAP50) and, just as importantly, a worked example of
             finding and fixing one's own evaluation bug. The classical branch keeps every headline
             claim explainable; the audit trail keeps it honest.
@@ -2109,7 +2266,7 @@
               <h3>What the project established</h3>
               <div class="artifact-list">
                 <div class="artifact-row"><span>Localize-first beats classify-only</span><strong>two-stage design</strong></div>
-                <div class="artifact-row"><span>Train on production crops</span><strong>76.9% &rarr; 88.9%</strong></div>
+                <div class="artifact-row"><span>Train on production crops</span><strong>76.91% &rarr; 88.88%</strong></div>
                 <div class="artifact-row"><span>Audit before you brag</span><strong>2,406 leaks removed</strong></div>
                 <div class="artifact-row"><span>Data beats resolution for small objects</span><strong>38.6% &rarr; 54.7%</strong></div>
               </div>
@@ -2118,7 +2275,7 @@
               <span>Future work</span>
               <h3>Where it goes next</h3>
               <div class="artifact-list">
-                <div class="artifact-row"><span>More field-domain data</span><strong>close the 0.444 mAP50 gap</strong></div>
+                <div class="artifact-row"><span>More field-domain data</span><strong>close the 0.749 &rarr; 0.482 mAP50 gap</strong></div>
                 <div class="artifact-row"><span>Waste-state judgment</span><strong>needs a new dataset</strong></div>
                 <div class="artifact-row"><span>On-device inference</span><strong>TFLite &lt;10&nbsp;MB path</strong></div>
                 <div class="artifact-row"><span>Open-set rejection</span><strong>unknown-material veto</strong></div>

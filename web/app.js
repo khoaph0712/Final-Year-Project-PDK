@@ -1114,7 +1114,7 @@ function countUp(el, target, decimals, duration, formatter) {
 }
 
 function startHeroCounts() {
-  countUp(document.querySelector("#heroAcc"), 92.93, 2, 1100, (v) => `${v.toFixed(2)}%`);
+  countUp(document.querySelector("#heroAcc"), 93.77, 2, 1100, (v) => `${v.toFixed(2)}%`);
   countUp(document.querySelector("#heroClasses"), 7, 0, 900, (v) => `${Math.round(v)}`);
   countUp(document.querySelector("#heroBoxes"), 81, 0, 1100, (v) => `${Math.round(v)}k`);
 }
@@ -1123,7 +1123,7 @@ let evidenceCounted = false;
 function startEvidenceCounts() {
   if (evidenceCounted) return;
   evidenceCounted = true;
-  countUp(document.querySelector("#correctMetric"), 92.93, 2, 1100, (v) => `${v.toFixed(2)}%`);
+  countUp(document.querySelector("#correctMetric"), 93.77, 2, 1100, (v) => `${v.toFixed(2)}%`);
   countUp(document.querySelector("#riskMetric"), 74.9, 1, 1100, (v) => `${v.toFixed(1)}%`);
   countUp(document.querySelector("#scanMetric"), 2406, 0, 1200, (v) => Math.round(v).toLocaleString());
   countUp(document.querySelector("#domainMetric"), 39.0, 1, 1100, (v) => `${v.toFixed(1)}%`);
@@ -1136,7 +1136,7 @@ function startEvidenceCounts() {
 
 // fire the metric count-ups when the s7 metric cards scroll into view
 function initEvidenceCounts() {
-  const host = document.querySelector("#s7 .metrics");
+  const host = document.querySelector("#s9 .metrics");
   if (!host) return;
   if (!("IntersectionObserver" in window)) {
     startEvidenceCounts();
