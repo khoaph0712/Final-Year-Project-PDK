@@ -1229,14 +1229,16 @@ function startHeroDemoLoop() {
 
 /* ---------------------------------------------------- figure type badges */
 
+// Text labels, not emoji. Emoji render differently on every OS, sit outside the
+// page's type system, and put a Twemoji blob next to Instrument Serif.
 const FIG_TYPES = [
-  [/^cm_/, "\u{1F9E9}", "confusion matrix"],
-  [/^train_yolo26m_labels/, "\u{1F5BC}", "label grid"],
-  [/^(train_|metric_)/, "\u{1F4C8}", "training curves"],
-  [/^heat_/, "\u{1F525}", "heatmap"],
-  [/^(cmp_|eda_|ml_)/, "\u{1F4CA}", "chart"],
-  [/^(wf_|workflow_)/, "\u{1F5FA}", "diagram"],
-  [/^(result_|app_screenshot|audit_)/, "\u{1F4F7}", "result photo"],
+  [/^cm_/, "confusion matrix"],
+  [/^train_yolo26m_labels/, "label grid"],
+  [/^(train_|metric_)/, "training curves"],
+  [/^heat_/, "heatmap"],
+  [/^(cmp_|eda_|ml_)/, "chart"],
+  [/^(wf_|workflow_)/, "diagram"],
+  [/^(result_|app_screenshot|audit_)/, "result photo"],
 ];
 
 function injectFigBadges() {
@@ -1246,8 +1248,7 @@ function injectFigBadges() {
     if (!hit) return;
     const badge = document.createElement("span");
     badge.className = "fig-type";
-    badge.setAttribute("aria-hidden", "true");
-    badge.textContent = `${hit[1]} ${hit[2]}`;
+    badge.textContent = hit[1];
     img.closest("figure").prepend(badge);
   });
 }

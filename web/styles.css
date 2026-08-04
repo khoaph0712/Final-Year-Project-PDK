@@ -5,7 +5,7 @@
 
 :root {
   --bg: #f7f6f3;
-  --surface: #ffffff;
+  --surface: #fdfcfa;
   --surface-2: #f4f3f0;
   --track-bg: #f0efeb;
   --ink: #1b1b18;
@@ -40,6 +40,15 @@
   --mono: ui-monospace, Menlo, "Cascadia Mono", Consolas, "SF Mono", monospace;
   --sans: "Space Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --serif: "Instrument Serif", Georgia, serif;
+  /* Fixed surfaces and their ink. These do not flip with the theme: a photo stage
+     stays dark in light mode, and text sitting on the emerald or on the dark brand
+     panel stays white in both. Declared here so no rule below reaches for a raw hex. */
+  --on-dark: #ffffff;
+  --on-dark-2: #e7e5e4;
+  --stage-bg: #17171a;
+  --stage-bg-deep: #111111;
+  --media-mat: #fdfcfa;
+  --log-bg: #0d0d0c;
 }
 
 /* Dark tokens hang off an explicit data-theme so the header toggle can override the
@@ -77,6 +86,47 @@
 html { scroll-behavior: smooth; }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+}
+
+/* clip, not hidden: hidden on the root would kill scroll-behavior and the
+   scroll-margin-top anchoring the chapter navigation depends on. */
+html,
+body { overflow-x: clip; }
+
+/* Every column of figures on this site is a column of evidence - it has to align.
+   Applied at the container so nested spans inherit it. */
+.metrics,
+.about-stats,
+.artifact-list,
+.hm-grid,
+.bar-board,
+.evidence-card,
+.stat-row,
+table { font-variant-numeric: tabular-nums; }
+
+/* One focus ring for every interactive element. Not transitioned - a ring that
+   fades in leaves a keyboard user with no indicator for the length of the fade. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* The 67 figure images are lightbox triggers - role="button", tabindex="0". Chrome
+   does not match :focus-visible on a focused <img>, so they need plain :focus as
+   well or a keyboard user crosses the page with no visible position. Clicking one
+   opens the lightbox and moves focus into it, so the ring never lingers on a
+   pointer interaction. */
+.fig img[tabindex]:focus,
+.fig img[tabindex]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -3px;
 }
 
 body {
@@ -249,7 +299,6 @@ section { scroll-margin-top: 112px; }
 .page-title {
   margin: 0 0 10px;
   font-family: var(--serif);
-  font-style: italic;
   font-weight: 400;
   font-size: clamp(1.8rem, 4.4vw, 2.5rem);
   letter-spacing: -0.01em;
@@ -262,7 +311,6 @@ section { scroll-margin-top: 112px; }
 .section-heading h2 {
   margin: 0 0 8px;
   font-family: var(--serif);
-  font-style: italic;
   font-weight: 400;
   font-size: clamp(1.5rem, 3.8vw, 2.1rem);
   letter-spacing: -0.01em;
@@ -331,7 +379,6 @@ section { scroll-margin-top: 112px; }
 .hero-copy h1 {
   margin: 0 0 18px;
   font-family: var(--serif);
-  font-style: italic;
   font-weight: 400;
   font-size: clamp(2rem, 6.4vw, 3.5rem);
   letter-spacing: -0.01em;
@@ -385,7 +432,7 @@ section { scroll-margin-top: 112px; }
   color: var(--ink-3);
 }
 .hero-demo-head strong { font-size: 0.75rem; text-transform: none; letter-spacing: normal; color: var(--warn); }
-.hero-demo-frame { position: relative; border-radius: 12px; overflow: hidden; background: #111; }
+.hero-demo-frame { position: relative; border-radius: 12px; overflow: hidden; background: var(--stage-bg-deep); }
 .hero-demo-frame img { display: block; width: 100%; height: auto; }
 
 .sweep {
@@ -466,7 +513,7 @@ section { scroll-margin-top: 112px; }
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
 }
 .stage-pills .pill-id { font-family: var(--mono); font-size: 0.69rem; }
-.stage-pills li[data-state="active"] { background: var(--brand-dark); color: #ffffff; border-color: var(--brand-dark); }
+.stage-pills li[data-state="active"] { background: var(--brand-dark); color: var(--on-dark); border-color: var(--brand-dark); }
 .stage-pills li[data-state="done"] { background: var(--accent-soft); color: var(--accent); border-color: var(--accent-soft-border); }
 
 .scanner-grid { display: grid; grid-template-columns: 1fr; gap: 24px; align-items: start; }
@@ -520,7 +567,7 @@ section { scroll-margin-top: 112px; }
   position: relative;
   min-height: 260px;
   border-radius: var(--radius);
-  background: #17171a;
+  background: var(--stage-bg);
   border: 1px solid var(--line);
   overflow: hidden;
   display: grid;
@@ -549,7 +596,7 @@ section { scroll-margin-top: 112px; }
   padding: 1px 7px;
   border-radius: 4px;
   background: var(--box-color, var(--accent));
-  color: #fff;
+  color: var(--on-dark);
   white-space: nowrap;
 }
 .detection-box[data-state="not_waste"] { opacity: 0.55; }
@@ -725,7 +772,7 @@ section { scroll-margin-top: 112px; }
   margin: 32px 0 8px;
 }
 @media (min-width: 760px) {
-  .teasers { grid-template-columns: repeat(3, 1fr); }
+  .teasers { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 .teaser {
   display: block;
@@ -742,7 +789,7 @@ section { scroll-margin-top: 112px; }
 .teaser p { margin: 0; font-size: 0.86rem; color: var(--ink-2); line-height: 1.5; }
 .teaser.dark { background: var(--brand-dark); border-color: var(--brand-dark); }
 .teaser.dark:hover { background: var(--brand-dark-hover); }
-.teaser.dark strong { color: #ffffff; }
+.teaser.dark strong { color: var(--on-dark); }
 .teaser.dark p { color: var(--brand-dark-ink-2); }
 
 /* ---------------------------------------------------------------- pipeline page */
@@ -777,8 +824,8 @@ section { scroll-margin-top: 112px; }
 .history-toolbar { display: flex; gap: 12px; align-items: center; margin-bottom: 24px; }
 
 .history-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
-@media (min-width: 760px) { .history-grid { grid-template-columns: repeat(2, 1fr); } }
-@media (min-width: 1024px) { .history-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 760px) { .history-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1024px) { .history-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 
 .history-tile {
   display: flex;
@@ -796,7 +843,7 @@ section { scroll-margin-top: 112px; }
 }
 .history-tile:hover { border-color: var(--accent); }
 
-.history-tile-image { display: block; width: 100%; height: 150px; background: #17171a; }
+.history-tile-image { display: block; width: 100%; height: 150px; background: var(--stage-bg); }
 .history-tile-image img { width: 100%; height: 100%; object-fit: cover; }
 .history-tile-fallback {
   display: flex;
@@ -830,11 +877,11 @@ section { scroll-margin-top: 112px; }
 
 .metrics {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 16px;
   margin-bottom: 24px;
 }
-@media (min-width: 760px) { .metrics { grid-template-columns: repeat(4, 1fr); } }
+@media (min-width: 760px) { .metrics { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
 .metric-card {
   border: 1px solid var(--line);
@@ -878,10 +925,10 @@ section { scroll-margin-top: 112px; }
 
 .evidence-card.dark {
   background: var(--brand-dark);
-  color: #ffffff;
+  color: var(--on-dark);
   border-color: var(--brand-dark);
 }
-.evidence-card.dark h3 { color: #ffffff; }
+.evidence-card.dark h3 { color: var(--on-dark); }
 .evidence-card.dark p { color: var(--brand-dark-ink-2); }
 .evidence-card.dark .panel-heading { color: var(--brand-dark-ink-3); }
 .evidence-card.dark .panel-heading strong { color: var(--accent-bright); }
@@ -897,10 +944,11 @@ section { scroll-margin-top: 112px; }
   font-family: var(--mono);
   font-size: 0.72rem;
 }
-.artifact-row strong { color: var(--accent); }
+.artifact-row strong { color: var(--accent); font-variant-numeric: tabular-nums; }
 
 .metric-label { display: block; font-size: 0.78rem; font-weight: 600; color: var(--ink-3); margin-bottom: 4px; }
 .big-number {
+  font-variant-numeric: tabular-nums;
   display: block;
   font-size: 2.25rem;
   letter-spacing: -0.03em;
@@ -1007,12 +1055,12 @@ section { scroll-margin-top: 112px; }
   border-radius: var(--radius);
   padding: 28px;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 20px;
   text-align: center;
 }
-@media (min-width: 760px) { .about-stats { grid-template-columns: repeat(4, 1fr); } }
-.about-stats strong { display: block; font-size: 1.9rem; letter-spacing: -0.02em; color: #ffffff; }
+@media (min-width: 760px) { .about-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.about-stats strong { display: block; font-size: 1.9rem; letter-spacing: -0.02em; color: var(--on-dark); }
 .about-stats span { font-size: 0.78rem; color: var(--brand-dark-ink-3); }
 
 /* ---------------------------------------------------------------- footer */
@@ -1184,7 +1232,6 @@ section { scroll-margin-top: 112px; }
 }
 .chapter-next-card strong {
   font-family: var(--serif);
-  font-style: italic;
   font-weight: 400;
   font-size: clamp(1.5rem, 3.8vw, 2.3rem);
   line-height: 1.15;
@@ -1216,7 +1263,6 @@ section { scroll-margin-top: 112px; }
   transform: translateY(-50%);
   z-index: -1;
   font-family: var(--serif);
-  font-style: italic;
   font-size: clamp(8rem, 22vw, 17rem);
   line-height: 1;
   color: transparent;
@@ -1283,7 +1329,7 @@ section { scroll-margin-top: 112px; }
   height: auto;
   max-height: 440px;
   display: block;
-  background: #fff;
+  background: var(--media-mat);
   cursor: zoom-in;
   object-fit: contain;
   padding: 10px;
@@ -1458,18 +1504,18 @@ body.story-js .scene-story p.is-active { opacity: 1; transform: none; }
   max-height: 78vh;
   object-fit: contain;
   border-radius: var(--radius-sm);
-  background: #fff;
+  background: var(--media-mat);
 }
 
 .lightbox figcaption {
   margin-top: 12px;
-  color: #e7e5e4;
+  color: var(--on-dark-2);
   font-size: 0.9rem;
   line-height: 1.5;
   text-align: center;
 }
 
-.lightbox figcaption strong { color: #ffffff; }
+.lightbox figcaption strong { color: var(--on-dark); }
 
 .lightbox-close {
   position: absolute;
@@ -1482,7 +1528,7 @@ body.story-js .scene-story p.is-active { opacity: 1; transform: none; }
   border: 1px solid rgb(255 255 255 / 0.35);
   border-radius: 999px;
   background: rgb(0 0 0 / 0.45);
-  color: #ffffff;
+  color: var(--on-dark);
   font-size: 1.4rem;
   line-height: 1;
   cursor: pointer;
@@ -1526,7 +1572,6 @@ body.no-scroll { overflow: hidden; }
 .section-heading h3 {
   margin: 0 0 8px;
   font-family: var(--serif);
-  font-style: italic;
   font-weight: 400;
   font-size: clamp(1.3rem, 3.2vw, 1.7rem);
   letter-spacing: -0.01em;
@@ -1690,8 +1735,8 @@ code {
 }
 /* dark theme mixes toward LIGHT accent/danger hues, so strong cells need dark
    text there and white text in light theme (which mixes toward dark hues) */
-.hm-cell.strong-cell { color: #ffffff; }
-:root[data-theme="dark"] .hm-cell.strong-cell { color: #131312; }
+.hm-cell.strong-cell { color: var(--on-dark); }
+:root[data-theme="dark"] .hm-cell.strong-cell { color: var(--bg); }
 .go .hm-cell, .hm-cell.go { opacity: 1; transform: scale(1); }
 @media (prefers-reduced-motion: reduce) {
   .hm-cell { opacity: 1; transform: none; transition: none; }
@@ -1770,7 +1815,7 @@ code {
   white-space: pre-wrap;
   word-break: break-word;
 }
-:root[data-theme="dark"] .log-view { background: #0d0d0c; }
+:root[data-theme="dark"] .log-view { background: var(--log-bg); }
 .log-view .log-hl { color: var(--accent-bright); font-weight: 700; }
 .log-view .log-dim { opacity: 0.55; }
 

@@ -154,17 +154,17 @@
         </div>
 
         <div class="teasers">
-          <div class="teaser reveal-on-scroll">
+          <div class="teaser">
             <span class="kicker">Objective 1</span>
             <strong>Detect &amp; classify waste in real photos</strong>
             <p>Localize every object with YOLO26m, then verify the material of each crop across 7 classes with a dedicated classifier.</p>
           </div>
-          <div class="teaser dark reveal-on-scroll">
+          <div class="teaser dark">
             <span class="kicker accent-light">Objective 2</span>
             <strong>Evaluate honestly</strong>
             <p>Audit the evaluation sets with perceptual hashing, quarantine leaked images, and report only clean-test numbers.</p>
           </div>
-          <div class="teaser reveal-on-scroll">
+          <div class="teaser">
             <span class="kicker tone-warn">Objective 3</span>
             <strong>Explainable evidence</strong>
             <p>Keep a classical ML branch on 637 handcrafted features beside the deep pipeline, so every decision has an interpretable baseline.</p>
@@ -186,7 +186,7 @@
           </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">Everything in the next thirteen chapters is a zoom-in on one box of this diagram.</p><p>Look at the two model boxes in the middle. Those are the only two trained components &mdash; everything else is plumbing. And the design decision worth defending is that they are <strong>two models, not one</strong>. A single classifier on a whole photo has to answer &ldquo;what material is this picture?&rdquo;, which is the wrong question when a photo contains four objects of three materials. Localizing first turns one hard question into several easy ones.</p><p><strong>Why not a single end-to-end detector with material classes?</strong> It was tried: that is the YOLO26m detector's own 7-class head. The confusion matrix in the Deep Learning chapter shows its errors are almost entirely background, not material, so a second stage that only judges material on an already-cropped object is the cheaper fix.</p>
+<p class="story-lead">Everything in the next thirteen chapters is a zoom-in on one box of this diagram.</p><p>Look at the two model boxes in the middle. Those are the only two trained components &mdash; everything else is plumbing. And the design decision worth defending is that they are <strong>two models, not one</strong>. A single classifier on a whole photo has to answer &ldquo;what material is this picture?&rdquo;, which is the wrong question when a photo contains four objects of three materials. Localizing first turns one hard question into several easy ones.</p><p><strong>Why not a single end-to-end detector with material classes?</strong> It was tried: that is the YOLO26m detector&rsquo;s own 7-class head. The confusion matrix in the Deep Learning chapter shows its errors are almost entirely background, not material, so a second stage that only judges material on an already-cropped object is the cheaper fix.</p>
 </div>
 </div>
           <div class="scene">
@@ -202,12 +202,12 @@
           </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">And this is the literal screen that architecture turns into. You will see it running in the Live Demo.</p><p>Notice the per-class score list on the right. It is there on purpose: a single top-1 label hides whether the model was confident or barely picked a winner. The confidence meter shows the <em>fused</em> score, not the classifier's raw softmax &mdash; detector confidence and classifier confidence are combined before anything is shown, so the number on screen is the number the routing decision actually used.</p><p><strong>Why show the Background class to a user at all?</strong> Because it is the veto. When Background wins, the system says it found no waste there rather than guessing a material, and users need to see that distinction.</p>
+<p class="story-lead">And this is the literal screen that architecture turns into. You will see it running in the Live Demo.</p><p>Notice the per-class score list on the right. It is there on purpose: a single top-1 label hides whether the model was confident or barely picked a winner. The confidence meter shows the <em>fused</em> score, not the classifier&rsquo;s raw softmax &mdash; detector confidence and classifier confidence are combined before anything is shown, so the number on screen is the number the routing decision actually used.</p><p><strong>Why show the Background class to a user at all?</strong> Because it is the veto. When Background wins, the system says it found no waste there rather than guessing a material, and users need to see that distinction.</p>
 </div>
 </div>
         </div>
 
-        <div class="callout tone-info reveal-on-scroll">
+        <div class="callout tone-info">
           <span class="callout-icon" aria-hidden="true">i</span>
           <p><strong>What this walkthrough deliberately skips.</strong> The use-case and
             entity-relationship diagrams from the written report are not repeated here.
@@ -273,7 +273,7 @@
           </p>
           </header>
 
-          <div class="callout tone-info reveal-on-scroll">
+          <div class="callout tone-info">
             <span class="callout-icon" aria-hidden="true">i</span>
             <p><strong>Two acquisition regimes, six sources.</strong> TrashNet and WaDaBa
               contribute studio-style imagery; TACO, GINI, the Roboflow projects and
@@ -289,7 +289,7 @@
           </div>
 
           <div class="section-heading">
-            <h3>A &middot; Each source on its own</h3>
+            <h3>Each source on its own</h3>
             <p>One dataset per scene: what it holds, and what it cannot give.</p>
           </div>
 
@@ -323,7 +323,7 @@
             </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">Second source: TrashNet &mdash; the exact opposite of TACO in every way that matters.</p><p>Notice how even the bars are. Even coverage is convenient, and that convenience is also the trap. TrashNet's clean single-object photos are what make the classifier's benchmark numbers look good. They are also why a model trained mostly on this source collapses on real photos &mdash; the Machine Learning chapter's domain-transfer heatmap puts a number on exactly that collapse.</p><p><strong>Why keep it at all?</strong> Because it supplies the class balance and the volume the field sources cannot. The fix is not to drop it &mdash; it is to make sure the evaluation set is not dominated by it.</p>
+<p class="story-lead">Second source: TrashNet &mdash; the exact opposite of TACO in every way that matters.</p><p>Notice how even the bars are. Even coverage is convenient, and that convenience is also the trap. TrashNet&rsquo;s clean single-object photos are what make the classifier&rsquo;s benchmark numbers look good. They are also why a model trained mostly on this source collapses on real photos &mdash; the Machine Learning chapter&rsquo;s domain-transfer heatmap puts a number on exactly that collapse.</p><p><strong>Why keep it at all?</strong> Because it supplies the class balance and the volume the field sources cannot. The fix is not to drop it &mdash; it is to make sure the evaluation set is not dominated by it.</p>
 </div>
 </div>
             <div class="scene">
@@ -355,7 +355,7 @@
             </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">Fourth source: WaDaBa &mdash; where a deliberate piece of information was thrown away.</p><p>Look at the polymer subtype bars: WaDaBa labels PET, HDPE, PP and so on separately. In this project they all collapse into one class. That is finer than the target vocabulary, so it was flattened to <strong>Plastic</strong>. Discarding label detail feels wasteful, but a class the other five sources cannot supply examples for would be trained almost entirely on one dataset's studio look &mdash; the domain-confound problem in Fig 2.7.</p><p><strong>Are polymer subtypes future work?</strong> Yes, and a natural extension &mdash; but it needs field photos of labelled polymers, which is a data problem rather than a modelling one.</p>
+<p class="story-lead">Fourth source: WaDaBa &mdash; where a deliberate piece of information was thrown away.</p><p>Look at the polymer subtype bars: WaDaBa labels PET, HDPE, PP and so on separately. In this project they all collapse into one class. That is finer than the target vocabulary, so it was flattened to <strong>Plastic</strong>. Discarding label detail feels wasteful, but a class the other five sources cannot supply examples for would be trained almost entirely on one dataset&rsquo;s studio look &mdash; the domain-confound problem in Fig 2.7.</p><p><strong>Are polymer subtypes future work?</strong> Yes, and a natural extension &mdash; but it needs field photos of labelled polymers, which is a data problem rather than a modelling one.</p>
 </div>
 </div>
             <div class="scene">
@@ -363,7 +363,7 @@
 <figure class="fig span-full tall reveal-on-scroll ar-tall">
               <img src="assets/figures/eda_wadaba_sample_grid.png" alt="WaDaBa sample image grid" loading="lazy" />
               <figcaption><strong>Fig 2.5. WaDaBa sample grid.</strong>
-                <em class="fig-talk">A face on that last point: WaDaBa's studio look, up close.</em>
+                <em class="fig-talk">A face on that last point: WaDaBa&rsquo;s studio look, up close.</em>
                 Representative WaDaBa samples: single objects, controlled background, consistent
                 lighting. Studio-style sources like this are easy to classify but create the
                 domain gap measured later in the EDA and Discussion sections.
@@ -378,7 +378,7 @@
           </div>
 
           <div class="section-heading">
-            <h3>B &middot; Only now, the merge</h3>
+            <h3>Only now, the merge</h3>
             <p>Six independent sources, one YOLO-format dataset with a shared 7-class vocabulary.</p>
           </div>
 
@@ -388,7 +388,7 @@
 <figure class="fig span-full reveal-on-scroll ar-strip">
               <img src="assets/figures/eda_cross_dataset_comparison.png" alt="Cross-dataset comparison chart" loading="lazy" />
               <figcaption><strong>Fig 2.6. Cross-dataset comparison.</strong>
-                <em class="fig-talk">Here's why a merge was necessary at all.</em>
+                <em class="fig-talk">Here&rsquo;s why a merge was necessary at all.</em>
                 Class coverage and image counts across the candidate source datasets. No single
                 source covers all 7 target materials in both studio and field conditions, which is
                 the direct motivation for merging.
@@ -414,13 +414,13 @@
             </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">The most uncomfortable figure in this chapter &mdash; and the reason the six sources above were introduced one at a time.</p><p>Pick any class whose bar is dominated by a single source colour. Where a class comes overwhelmingly from one dataset, the model can score well on that class by recognising the dataset rather than the material. Class identity and acquisition domain are partly entangled, and no amount of class balancing fixes it, because the confound is in the pixels, not the counts.</p><p><strong>What was done about it?</strong> Two things. It motivated a domain-split evaluation rather than a single pooled number &mdash; producing the domain-transfer heatmap in the Machine Learning chapter &mdash; and it is why the deployed classifier was fine-tuned on the detector's own crops, so training and production share a distribution.</p>
+<p class="story-lead">The most uncomfortable figure in this chapter &mdash; and the reason the six sources above were introduced one at a time.</p><p>Pick any class whose bar is dominated by a single source colour. Where a class comes overwhelmingly from one dataset, the model can score well on that class by recognising the dataset rather than the material. Class identity and acquisition domain are partly entangled, and no amount of class balancing fixes it, because the confound is in the pixels, not the counts.</p><p><strong>What was done about it?</strong> Two things. It motivated a domain-split evaluation rather than a single pooled number &mdash; producing the domain-transfer heatmap in the Machine Learning chapter &mdash; and it is why the deployed classifier was fine-tuned on the detector&rsquo;s own crops, so training and production share a distribution.</p>
 </div>
 </div>
           </div>
 
           <div class="section-heading">
-            <h3>C &middot; Three rebuilds, not one dataset</h3>
+            <h3>Three rebuilds, not one dataset</h3>
             <p>The merge above was rebuilt from scratch twice more as quality problems surfaced, so every generation stays independently auditable.</p>
           </div>
 
@@ -485,7 +485,7 @@
           </p>
           </header>
 
-          <div class="callout tone-info reveal-on-scroll">
+          <div class="callout tone-info">
             <span class="callout-icon" aria-hidden="true">i</span>
             <p><strong>Scope note.</strong> Per-source share-of-class percentages belong to
               the previous chapter, where each dataset is introduced on its own terms. Every
@@ -543,7 +543,7 @@
                 <em class="fig-talk">Same story, now broken down by class.</em>
                 Share of boxes below the small-object threshold, per class. Litter-in-context
                 sources push several classes past 50% small boxes, which is why field
-                small-object recall became the project's central metric.
+                small-object recall became the project&rsquo;s central metric.
               </figcaption>
               
             </figure>
@@ -557,7 +557,7 @@
 <figure class="fig span-full tall reveal-on-scroll ar-strip">
               <img src="assets/figures/wf_leakage_audit.png" alt="Leakage audit workflow diagram" loading="lazy" />
               <figcaption><strong>Fig 3.4. Leakage audit workflow.</strong>
-                <em class="fig-talk">And here's the third, most important question: can the test set be trusted?</em>
+                <em class="fig-talk">And here&rsquo;s the third, most important question: can the test set be trusted?</em>
                 The audit pipeline: perceptual-hash every train and test image, cluster near
                 duplicates across splits, quarantine leaked test images, and re-measure every
                 metric on the clean set.
@@ -566,7 +566,7 @@
             </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">Third question &mdash; and the one that changed the project: can the test set be trusted?</p><p>Look at the quarantine step. Nothing is deleted; leaked images are set aside, so the decision stays reversible and inspectable. Exact-duplicate checks had already run during preprocessing and found nothing wrong. Perceptual hashing catches what byte comparison cannot: the same photo re-encoded, resized, or lightly recompressed by a different dataset's export pipeline. On a six-source merge that is not an edge case &mdash; it is the norm.</p><p><strong>Why not just re-split from scratch?</strong> Quarantining preserves the ability to report both numbers side by side. Showing <strong>94.30%</strong> and <strong>91.77%</strong> on the same model is stronger evidence of a clean process than quietly publishing one number.</p>
+<p class="story-lead">Third question &mdash; and the one that changed the project: can the test set be trusted?</p><p>Look at the quarantine step. Nothing is deleted; leaked images are set aside, so the decision stays reversible and inspectable. Exact-duplicate checks had already run during preprocessing and found nothing wrong. Perceptual hashing catches what byte comparison cannot: the same photo re-encoded, resized, or lightly recompressed by a different dataset&rsquo;s export pipeline. On a six-source merge that is not an edge case &mdash; it is the norm.</p><p><strong>Why not just re-split from scratch?</strong> Quarantining preserves the ability to report both numbers side by side. Showing <strong>94.30%</strong> and <strong>91.77%</strong> on the same model is stronger evidence of a clean process than quietly publishing one number.</p>
 </div>
 </div>
             <div class="scene flip">
@@ -664,7 +664,7 @@
 <figure class="fig reveal-on-scroll">
               <img src="assets/figures/eda_balanced_class_distribution.png" alt="Balanced class distribution after preprocessing" loading="lazy" />
               <figcaption><strong>Fig 4.2. Class balance after preprocessing.</strong>
-                <em class="fig-talk">Here's what that balancing pass actually bought.</em>
+                <em class="fig-talk">Here&rsquo;s what that balancing pass actually bought.</em>
                 Per-class box counts after balancing: the six materials sit near parity
                 (roughly 7,100&ndash;9,000 train boxes each), with the smaller catch-all
                 &ldquo;other&rdquo; class kept for background pressure.
@@ -679,7 +679,7 @@
           </div>
 
           <div class="section-heading">
-            <h3>A &middot; Spatial domain</h3>
+            <h3>Spatial domain</h3>
             <p>Operations on the pixel grid itself: crop, gate, resize, grayscale, gradient, mask.</p>
           </div>
 
@@ -739,7 +739,7 @@
           </div>
 
           <div class="section-heading">
-            <h3>B &middot; Frequency domain</h3>
+            <h3>Frequency domain</h3>
             <p>The same crop read as spatial frequencies: 2D FFT, radial bands, band reconstructions.</p>
           </div>
 
@@ -782,7 +782,7 @@
           </div>
 
           <div class="section-heading">
-            <h3>C &middot; What the detector finally trained on</h3>
+            <h3>What the detector finally trained on</h3>
             <p>The output of everything above, as Ultralytics sees it.</p>
           </div>
 
@@ -793,7 +793,7 @@
               <img src="assets/figures/train_yolo26m_labels.jpg" alt="Label statistics of the final detector dataset" loading="lazy" />
               <figcaption><strong>Fig 4.8. Final detector label statistics.</strong>
                 <em class="fig-talk">And this is the exact dataset the deployed detector trained on.</em>
-                Ultralytics label summary for the deployed detector's training set: class
+                Ultralytics label summary for the deployed detector&rsquo;s training set: class
                 frequencies, box placement, and box size distributions. Most boxes are small and
                 centered, a preview of the small-object challenge analyzed in the EDA.
               </figcaption>
@@ -834,7 +834,7 @@
           </header>
 
           <div class="evidence-grid">
-            <article class="evidence-card span-7 reveal-on-scroll">
+            <article class="evidence-card span-7">
               <div class="panel-heading">
                 <span>Deployed vector</span>
                 <strong>custom_feature_extractor.py</strong>
@@ -850,7 +850,7 @@
                 <div class="artifact-row"><span>HOG, 9 blocks &times; 4 cells &times; 9 bins</span><strong>324</strong></div>
               </div>
             </article>
-            <article class="evidence-card span-5 dark reveal-on-scroll">
+            <article class="evidence-card span-5 dark">
               <div class="panel-heading">
                 <span>Analysis vector</span>
                 <strong>feature_ml_analysis.py</strong>
@@ -870,7 +870,7 @@
             </article>
           </div>
 
-          <div class="callout tone-info reveal-on-scroll">
+          <div class="callout tone-info">
             <span class="callout-icon" aria-hidden="true">i</span>
             <p><strong>Why handcrafted features at all, next to a deep network?</strong>
               Three reasons, all measurable. They are the interpretable branch&rsquo;s entire
@@ -883,7 +883,7 @@
           </div>
 
           <div class="section-heading">
-            <h3>A &middot; The histogram blocks</h3>
+            <h3>The histogram blocks</h3>
             <p>Colour, texture and edge: 627 of the 637 features are histogram bins or their descriptors.</p>
           </div>
 
@@ -942,7 +942,7 @@
           </div>
 
           <div class="section-heading">
-            <h3>B &middot; Distributions across classes</h3>
+            <h3>Distributions across classes</h3>
             <p>Do the features actually separate the materials? Histograms over hundreds of real crops.</p>
           </div>
 
@@ -1004,7 +1004,7 @@
             <div class="scene">
 <div class="scene-media">
 <figure class="fig reveal-on-scroll">
-              <img src="assets/figures/ml_domain_importance_report.png" alt="Feature-domain importance on the report's four-block decomposition: spatial, frequency, colour, HOG" loading="lazy" />
+              <img src="assets/figures/ml_domain_importance_report.png" alt="Feature-domain importance on the report&rsquo;s four-block decomposition: spatial, frequency, colour, HOG" loading="lazy" />
               <figcaption><strong>Fig 5.7. The same question on the other 637-D decomposition.</strong>
                 <em class="fig-talk">And the same measurement on the analysis vector, which is the split the written report tabulates.</em>
                 Random-forest feature importance summed over the four blocks of the analysis
@@ -1052,33 +1052,33 @@
           </header>
 
           <div class="step-stack">
-            <article class="step-card reveal-on-scroll">
+            <article class="step-card">
               <span class="step-id">S1</span>
               <div><strong>Upload image</strong><p>A JPG, PNG, or WEBP photo of waste. Saved scans stay in browser history for review and hard-case collection.</p></div>
             </article>
-            <article class="step-card reveal-on-scroll">
+            <article class="step-card">
               <span class="step-id">S2</span>
               <div><strong>Stage 1: YOLO26m localization</strong><p>YOLO26m proposes a box around every candidate object. 100-epoch retrain, promoted from YOLO26s for higher field recall and precision: 74.9% mAP50, 83.4% precision on clean validation.</p></div>
             </article>
-            <article class="step-card reveal-on-scroll">
+            <article class="step-card">
               <span class="step-id">S3</span>
               <div><strong>Crop extraction &amp; size filter</strong><p>Each kept box is cropped with 10&nbsp;px padding; boxes smaller than 24&times;24&nbsp;px are rejected before classification.</p></div>
             </article>
-            <article class="step-card reveal-on-scroll">
+            <article class="step-card">
               <span class="step-id">S4</span>
-              <div><strong>Stage 2: crop verification</strong><p>A ConvNeXt-Tiny + 637-handcrafted-feature classifier re-checks every crop across 7 classes, including a Background veto. Fine-tuned on the detector's own crops so training matches production.</p></div>
+              <div><strong>Stage 2: crop verification</strong><p>A ConvNeXt-Tiny + 637-handcrafted-feature classifier re-checks every crop across 7 classes, including a Background veto. Fine-tuned on the detector&rsquo;s own crops so training matches production.</p></div>
             </article>
-            <article class="step-card reveal-on-scroll">
+            <article class="step-card">
               <span class="step-id">S5</span>
               <div><strong>Score fusion, context prior &amp; bin routing</strong><p>Per-box score fuses detector and classifier confidences, a scene-context prior adjusts the class scores, and the dominant material is routed to its bin by a direct material&rarr;bin lookup.</p></div>
             </article>
           </div>
-          <div class="callout tone-info reveal-on-scroll">
+          <div class="callout tone-info">
             <span class="callout-icon" aria-hidden="true">i</span>
             <p><strong>The Background veto is the load-bearing wall.</strong> The Deep Learning chapter&rsquo;s detector confusion matrix shows the detector&rsquo;s errors are misses and false alarms, not material mix-ups &mdash; a second stage that re-judges every crop, plus a Background class that can veto, is aimed at exactly that error profile.</p>
           </div>
 
-          <div class="callout tone-info reveal-on-scroll">
+          <div class="callout tone-info">
             <span class="callout-icon" aria-hidden="true">i</span>
             <p><strong>How every model after this point is scored.</strong> Fixing the
               measuring stick before any model appears is what makes the next four chapters
@@ -1212,7 +1212,7 @@
           </p>
           </header>
 
-          <div class="callout tone-info reveal-on-scroll">
+          <div class="callout tone-info">
             <span class="callout-icon" aria-hidden="true">i</span>
             <p><strong>Why the ML track is not a loss-curve chapter.</strong> These models
               are fitted on an already-extracted feature matrix, not trained end-to-end on
@@ -1264,7 +1264,7 @@
             <div class="scene flip">
 <div class="scene-media">
 <figure class="fig span-full tall reveal-on-scroll ar-square">
-              <img src="assets/figures/heat_model_dataset.png" alt="Heatmap of every baseline model's accuracy on every benchmark dataset" loading="lazy" />
+              <img src="assets/figures/heat_model_dataset.png" alt="Heatmap of every baseline model&rsquo;s accuracy on every benchmark dataset" loading="lazy" />
               <figcaption><strong>Fig 7.3. Every baseline on every benchmark, one grid.</strong>
                 <em class="fig-talk">Widen the view: the same eight models, now across four different datasets.</em>
                 Accuracy for eight baselines on four benchmarks. Reading down a column ranks the
@@ -1385,7 +1385,7 @@
           </header>
 
           <div class="section-heading">
-            <h3>A &middot; Stage 1 &mdash; the detector</h3>
+            <h3>Stage 1 &mdash; the detector</h3>
             <p>Training curves and the error profile that justifies a second stage.</p>
           </div>
 
@@ -1395,7 +1395,7 @@
 <figure class="fig span-full reveal-on-scroll">
               <img src="assets/figures/train_yolo26m_curves.png" alt="YOLO26m training curves" loading="lazy" />
               <figcaption><strong>Fig 8.1. Deployed detector training curves (YOLO26m, 100 epochs).</strong>
-                <em class="fig-talk">Start with the deployed detector's own curves.</em>
+                <em class="fig-talk">Start with the deployed detector&rsquo;s own curves.</em>
                 Box, classification, and DFL losses fall smoothly on train and validation while
                 precision, recall, mAP50, and mAP50-95 climb. There is no divergence between train and
                 val curves, i.e. no visible overfitting at 100 epochs.
@@ -1412,7 +1412,7 @@
 <figure class="fig reveal-on-scroll">
               <img src="assets/figures/train_yolo26s_curves.png" alt="YOLO26s training curves" loading="lazy" />
               <figcaption><strong>Fig 8.2. Predecessor detector (YOLO26s).</strong>
-                <em class="fig-talk">Here's what it replaced.</em>
+                <em class="fig-talk">Here&rsquo;s what it replaced.</em>
                 The earlier YOLO26s run that YOLO26m replaced. Its curves plateau lower; the
                 promotion decision came from matched-operating-point comparison, not curves alone.
               </figcaption>
@@ -1428,7 +1428,7 @@
 <figure class="fig span-full tall reveal-on-scroll ar-square">
               <img src="assets/figures/cm_yolo26s_normalized.png" alt="Detector confusion matrix, normalized" loading="lazy" />
               <figcaption><strong>Fig 8.3. Detector confusion matrix (normalized).</strong>
-                <em class="fig-talk">And this is the detector's error mode: background, not cross-material mix-ups.</em>
+                <em class="fig-talk">And this is the detector&rsquo;s error mode: background, not cross-material mix-ups.</em>
                 Per-class detection confusion on validation. The strong diagonal shows materials
                 are rarely confused with each other; the main error mode is background
                 (missed objects and false alarms), not cross-material confusion.
@@ -1443,7 +1443,7 @@
           </div>
 
           <div class="section-heading">
-            <h3>B &middot; Stage 2 &mdash; the deployed classifier</h3>
+            <h3>Stage 2 &mdash; the deployed classifier</h3>
             <p>The model actually served, and the domain split its pooled accuracy was hiding.</p>
           </div>
 
@@ -1462,7 +1462,7 @@
 <figure class="fig span-full tall reveal-on-scroll ar-square">
               <img src="assets/figures/cm_convnext_clean_test.png" alt="Confusion matrix of the deployed ConvNeXt classifier on the clean test set" loading="lazy" />
               <figcaption><strong>Fig 8.4. Deployed classifier confusion matrix (ConvNeXt-Tiny + 637 features).</strong>
-                <em class="fig-talk">The detector's errors were background. Here is what the second stage does with what survives.</em>
+                <em class="fig-talk">The detector&rsquo;s errors were background. Here is what the second stage does with what survives.</em>
                 Crop-level confusion for the model actually served in the demo, measured on the
                 leakage-quarantined merged test split (3,194 crops, 92.8% accuracy). Cells show
                 the row-normalized rate above the raw count. The diagonal is strong across all
@@ -1472,7 +1472,7 @@
             </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">Every other classifier confusion matrix in this chapter is a model that was <em>rejected</em>. This is the one that ships.</p><p>Start with the Background column &mdash; specifically the Plastic row's 6% leaking into it, the biggest off-diagonal cell in the grid. The failure that matters is not a material mix-up; it is the veto firing on a real object. Twenty-five plastic crops were called Background, which in production means the item silently does not appear in the results. That is a miss the user cannot see, which makes it worse than a visible wrong label.</p><p><strong>Why is Cardboard the strongest class at 98%?</strong> It has the most distinctive texture of the seven &mdash; corrugated edges and a consistent matte brown &mdash; and it is well represented in both studio and field sources. The classes that suffer are the ones that depend on specular highlights, which lighting destroys.</p>
+<p class="story-lead">Every other classifier confusion matrix in this chapter is a model that was <em>rejected</em>. This is the one that ships.</p><p>Start with the Background column &mdash; specifically the Plastic row&rsquo;s 6% leaking into it, the biggest off-diagonal cell in the grid. The failure that matters is not a material mix-up; it is the veto firing on a real object. Twenty-five plastic crops were called Background, which in production means the item silently does not appear in the results. That is a miss the user cannot see, which makes it worse than a visible wrong label.</p><p><strong>Why is Cardboard the strongest class at 98%?</strong> It has the most distinctive texture of the seven &mdash; corrugated edges and a consistent matte brown &mdash; and it is well represented in both studio and field sources. The classes that suffer are the ones that depend on specular highlights, which lighting destroys.</p>
 </div>
 </div>
             <div class="scene flip">
@@ -1497,12 +1497,12 @@
           </div>
 
           <div class="section-heading">
-            <h3>C &middot; Stage 2 &mdash; the models it beat</h3>
+            <h3>Stage 2 &mdash; the models it beat</h3>
             <p>Four rejected classifiers, same crops, same split, so the choice is defensible.</p>
           </div>
 
           <div class="evidence-grid">
-            <article class="evidence-card span-full reveal-on-scroll">
+            <article class="evidence-card span-full">
               <div class="panel-heading">
                 <span>Accuracy is not the only axis</span>
                 <strong>identical data and split, one size basis</strong>
@@ -1537,7 +1537,7 @@
             </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">Now the classifier era that the leakage audit later corrected. The curves themselves are fine.</p><p>Look at the healthy validation accuracy &mdash; that is exactly the problem. Nothing in these curves signals that anything is wrong. Loss falls, validation tracks, accuracy climbs. Data leakage does not show up as a pathological curve, because from the model's point of view nothing pathological is happening. It is only visible by auditing the images, which is why curve-reading is not a substitute for dataset hygiene.</p><p><strong>Was the model retrained after the audit?</strong> The successor was, on quarantined splits. This run stays visible because it makes the before-and-after comparison concrete.</p>
+<p class="story-lead">Now the classifier era that the leakage audit later corrected. The curves themselves are fine.</p><p>Look at the healthy validation accuracy &mdash; that is exactly the problem. Nothing in these curves signals that anything is wrong. Loss falls, validation tracks, accuracy climbs. Data leakage does not show up as a pathological curve, because from the model&rsquo;s point of view nothing pathological is happening. It is only visible by auditing the images, which is why curve-reading is not a substitute for dataset hygiene.</p><p><strong>Was the model retrained after the audit?</strong> The successor was, on quarantined splits. This run stays visible because it makes the before-and-after comparison concrete.</p>
 </div>
 </div>
             <div class="scene flip">
@@ -1636,7 +1636,7 @@
           </div>
 
           <div class="section-heading">
-            <h3>D &middot; The same two retrains, as confusion matrices</h3>
+            <h3>The same two retrains, as confusion matrices</h3>
             <p>Fig 8.8 and Fig 8.9 gave their curves; these are their error structures. No new run, no second comparison.</p>
           </div>
 
@@ -1691,7 +1691,7 @@
           </header>
 
           <div class="section-heading">
-            <h3>A &middot; The one place both tracks appear together</h3>
+            <h3>The one place both tracks appear together</h3>
             <p>Read once and move on &mdash; every bar here is discussed in full in its own chapter.</p>
           </div>
 
@@ -1720,11 +1720,11 @@
           </div>
 
           <div class="section-heading">
-            <h3>B &middot; Seven detectors, one budget</h3>
+            <h3>Seven detectors, one budget</h3>
             <p>Same merged dataset, same 30 epochs, wildly different outcomes.</p>
           </div>
 
-          <div class="callout tone-info reveal-on-scroll">
+          <div class="callout tone-info">
             <span class="callout-icon" aria-hidden="true">i</span>
             <p><strong>The whole round in one sentence.</strong> RT-DETR-l tops the detector sweep
               (56.2% test mAP50, +8.0 points over YOLO26m) but costs 2&times; the training time;
@@ -1735,10 +1735,10 @@
               and that is the honest reading of both boards.</p>
           </div>
 
-          <div class="viz-card reveal-on-scroll">
+          <div class="viz-card">
             <div class="viz-head">
               <strong>Fig 9.2. Detector sweep: validation vs test mAP50.</strong>
-              <span class="fig-type" aria-hidden="true">&#128202; live chart</span>
+              <span class="fig-type">live chart</span>
             </div>
             <div class="viz-body" id="nmSweepBars" role="img" aria-label="Grouped bar chart of validation and test mAP50 for seven detector architectures"></div>
             <p class="viz-caption">Validation (muted) and unseen-session test (solid) mAP50 for each
@@ -1751,10 +1751,10 @@
 <p class="story-lead">Two stories in one chart: who wins, and how far every bar falls from validation to test.</p><p>Before naming any winner, look at the gap between each model&rsquo;s pale bar and solid bar. Every architecture drops <strong>15&ndash;24 points</strong> from validation to the unseen-session test set. That gap is a property of the dataset&rsquo;s domain shift, not of any model, and no architecture in the sweep closes it. Within that ceiling, RT-DETR-l is the clear winner at <strong>56.2%</strong> test mAP50 &mdash; eight points over the deployed YOLO26m at the same budget.</p><p><strong>Why is YOLO26m still the deployed detector?</strong> The sweep is a 30-epoch matched-budget comparison; the production model is a 100-epoch retrain tuned to a field-recall operating point, and RT-DETR-l costs 3.2 training hours against YOLO26m&rsquo;s 1.6 for the same 30 epochs. RT-DETR is the strongest candidate for a future promotion &mdash; not evidence the current choice was wrong.</p>
 </div>
 
-          <div class="viz-card reveal-on-scroll">
+          <div class="viz-card">
             <div class="viz-head">
               <strong>Fig 9.3. Training curves: mAP50 per epoch, four Ultralytics-family runs.</strong>
-              <span class="fig-type" aria-hidden="true">&#128200; live chart</span>
+              <span class="fig-type">live chart</span>
             </div>
             <div class="viz-body" id="nmSweepCurves"></div>
             <p class="viz-caption">Per-epoch validation mAP50 for the four runs with curve logs
@@ -1762,7 +1762,7 @@
               30-epoch schedule.</p>
           </div>
 
-          <div class="callout tone-warn reveal-on-scroll">
+          <div class="callout tone-warn">
             <span class="callout-icon" aria-hidden="true">!</span>
             <p><strong>The per-class floor is the real finding.</strong> On the merged dataset&rsquo;s
               unseen-session test split, Glass AP collapses for every architecture
@@ -1776,14 +1776,14 @@
           </div>
 
           <div class="section-heading">
-            <h3>C &middot; Six backbones vs the deployed classifier</h3>
+            <h3>Six backbones vs the deployed classifier</h3>
             <p>Same 637 handcrafted features, same MLP head, same quarantined split &mdash; only the frozen backbone changes.</p>
           </div>
 
-          <div class="viz-card reveal-on-scroll">
+          <div class="viz-card">
             <div class="viz-head">
               <strong>Fig 9.4. Stage-2 rematch leaderboard: test accuracy and CPU latency.</strong>
-              <span class="fig-type" aria-hidden="true">&#128202; live chart</span>
+              <span class="fig-type">live chart</span>
             </div>
             <div class="viz-body" id="nmBoard"></div>
             <p class="viz-caption">Test accuracy on the 2,696-crop hard-case split; the
@@ -1802,10 +1802,10 @@
 <p class="story-lead">The deployed model survives its own rematch &mdash; and the two challengers that beat it pay for the privilege.</p><p>Find the deployed row first, then the two rows above it. Swin-Tiny and ConvNeXtV2 win by seven-tenths of a point, but both pay for it in CPU latency: measured against the deployed model in each candidate&rsquo;s own benchmark session, Swin-Tiny costs <strong>+7&nbsp;ms (+12%)</strong> and ConvNeXtV2 <strong>+15&nbsp;ms (+30%)</strong> per crop, for a margin inside day-to-day noise. MobileNetV3-L is the interesting one: <strong>92.1%</strong> at <strong>18.5&nbsp;ms</strong> median, roughly 2.7&times; faster than production &mdash; 2.4&times; on the report&rsquo;s mean basis, and either way the obvious pick if this ever moves on-device for 1.7 points of accuracy.</p><p><strong>What about EfficientNetV2-S at 80.2%?</strong> It is uniformly weak across all seven classes on both validation and test, so it is not a bad split or a broken run. Its frozen features simply separate this domain poorly without fine-tuning; the benchmark freezes every backbone on purpose, and this is the failure mode that policy exposes.</p>
 </div>
 
-          <div class="viz-card reveal-on-scroll">
+          <div class="viz-card">
             <div class="viz-head">
               <strong>Fig 9.5. Per-class F1 heatmap, all seven models.</strong>
-              <span class="fig-type" aria-hidden="true">&#128293; live heatmap</span>
+              <span class="fig-type">live heatmap</span>
             </div>
             <div class="viz-body" id="nmHeat"></div>
             <p class="viz-caption">Test-split F1 per class. Organic is nearly every model&rsquo;s
@@ -1814,12 +1814,12 @@
               single-class explanation.</p>
           </div>
 
-          <div class="viz-card reveal-on-scroll">
+          <div class="viz-card">
             <div class="viz-head">
               <strong>Fig 9.6. Confusion matrices, recomputed from the stored test features.</strong>
-              <span class="fig-type" aria-hidden="true">&#129513; live matrix</span>
+              <span class="fig-type">live matrix</span>
             </div>
-            <div class="viz-tabs" id="nmCmTabs" role="tablist" aria-label="Choose a model's confusion matrix"></div>
+            <div class="viz-tabs" id="nmCmTabs" role="tablist" aria-label="Choose a model&rsquo;s confusion matrix"></div>
             <div class="viz-body" id="nmCm"></div>
             <p class="viz-caption">Rows are true classes, columns are predictions; each cell shows
               the raw count, colour shows the row-normalized rate (green diagonal = correct, red
@@ -1832,14 +1832,14 @@
 </div>
 
           <div class="section-heading">
-            <h3>D &middot; The raw training logs</h3>
+            <h3>The raw training logs</h3>
             <p>Unedited logs from the new runs, served straight from the repository.</p>
           </div>
 
-          <div class="viz-card reveal-on-scroll">
+          <div class="viz-card">
             <div class="viz-head">
               <strong>Fig 9.7. Training logs.</strong>
-              <span class="fig-type" aria-hidden="true">&#128220; raw log</span>
+              <span class="fig-type">raw log</span>
             </div>
             <div class="viz-tabs" id="nmLogTabs" role="tablist" aria-label="Choose a training log"></div>
             <pre class="log-view" id="nmLog" tabindex="0">Loading log&hellip;</pre>
@@ -1850,7 +1850,7 @@
               are highlighted.</p>
           </div>
 
-          <div class="callout tone-success reveal-on-scroll">
+          <div class="callout tone-success">
             <span class="callout-icon" aria-hidden="true">&#10003;</span>
             <p><strong>What this round actually decided.</strong> Keep ConvNeXt-Tiny + 637 in
               production; shortlist RT-DETR-l for the next detector promotion once a
@@ -1907,7 +1907,7 @@
             </article>
           </section>
 
-          <div class="callout tone-warn reveal-on-scroll">
+          <div class="callout tone-warn">
             <span class="callout-icon" aria-hidden="true">!</span>
             <p><strong>Three numbers for one classifier, and they are not interchangeable.</strong> 92.93% is the ground-truth-crop-trained baseline on the 2,151-crop clean test split; 93.77% is the deployed crop-mix fine-tune on clean ground-truth crops; 88.88% is that same deployed model on the detector&rsquo;s own production crops. Quote the second for model quality and the third for what a user experiences &mdash; mixing them is how numbers get inflated by accident.</p>
           </div>
@@ -1921,7 +1921,7 @@
             <article class="evidence-card span-4 tone-warning">
               <span class="metric-label">Detector recall</span>
               <strong class="big-number" id="yoloRecall">67.2%</strong>
-              <p>Clean-val recall dipped slightly from YOLO26s's 69.0% while promoting to the 100-epoch YOLO26m retrain, but field recall, the metric that matters more, rose 70.9% to 78.1% at the same confidence threshold.</p>
+              <p>Clean-val recall dipped slightly from YOLO26s&rsquo;s 69.0% while promoting to the 100-epoch YOLO26m retrain, but field recall, the metric that matters more, rose 70.9% to 78.1% at the same confidence threshold.</p>
             </article>
             <article class="evidence-card span-4 tone-info">
               <span class="metric-label">Detector mAP50-95</span>
@@ -1938,7 +1938,7 @@
               <figcaption><strong>Fig 10.1. Precision&ndash;recall curve.</strong>
                 <em class="fig-talk">The four cards above are single points; this is the full surface they were picked from.</em>
                 Per-class and mean PR curves for the detector. The area under each curve is that
-                class's AP; the confidence threshold picks the live operating point along it.
+                class&rsquo;s AP; the confidence threshold picks the live operating point along it.
               </figcaption>
               
             </figure>
@@ -1952,9 +1952,9 @@
 <figure class="fig reveal-on-scroll">
               <img src="assets/figures/metric_boxf1_curve.png" alt="F1-confidence curve" loading="lazy" />
               <figcaption><strong>Fig 10.2. F1&ndash;confidence curve.</strong>
-                <em class="fig-talk">And here's why the threshold sits off the peak, on purpose.</em>
+                <em class="fig-talk">And here&rsquo;s why the threshold sits off the peak, on purpose.</em>
                 F1 as a function of the confidence threshold. The deployed threshold sits near the
-                curve's peak, lowered deliberately for the field domain, trading a little
+                curve&rsquo;s peak, lowered deliberately for the field domain, trading a little
                 precision for the recall the use case needs.
               </figcaption>
               
@@ -1980,7 +1980,7 @@
             </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">The expected result here was a trade-off. There isn't one, and that is worth pausing on.</p><p>Read the field small-box row left to right: <strong>31.8</strong>, <strong>35.6</strong>, <strong>39.0</strong>, <strong>43.2</strong>. Then watch the studio row do the same thing. The assumption going in was that tuning the detector towards field conditions would cost studio performance. It does not. Both domains gain, and the small-box rows gain fastest, because small objects are exactly the detections that sit just under a high confidence bar. This is the cheapest improvement in the entire project: no retraining, one config value.</p><p><strong>What does it cost?</strong> Precision, which is not on this chart and deserves to be stated rather than skipped. More boxes are proposed, so more of them are wrong. For this application that is the right side to err on, and the Background veto in stage two removes a large share of the extra false alarms before the user sees them.</p>
+<p class="story-lead">The expected result here was a trade-off. There isn&rsquo;t one, and that is worth pausing on.</p><p>Read the field small-box row left to right: <strong>31.8</strong>, <strong>35.6</strong>, <strong>39.0</strong>, <strong>43.2</strong>. Then watch the studio row do the same thing. The assumption going in was that tuning the detector towards field conditions would cost studio performance. It does not. Both domains gain, and the small-box rows gain fastest, because small objects are exactly the detections that sit just under a high confidence bar. This is the cheapest improvement in the entire project: no retraining, one config value.</p><p><strong>What does it cost?</strong> Precision, which is not on this chart and deserves to be stated rather than skipped. More boxes are proposed, so more of them are wrong. For this application that is the right side to err on, and the Background veto in stage two removes a large share of the extra false alarms before the user sees them.</p>
 </div>
 </div>
             <div class="scene">
@@ -1988,7 +1988,7 @@
 <figure class="fig span-full reveal-on-scroll ar-square">
               <img src="assets/figures/heat_classifier_per_class.png" alt="Heatmap of per-class precision, recall and F1 for the deployed classifier" loading="lazy" />
               <figcaption><strong>Fig 10.4. Per-class precision, recall and F1 (deployed classifier).</strong>
-                <em class="fig-talk">And the classifier's side of the ledger, one row per class.</em>
+                <em class="fig-talk">And the classifier&rsquo;s side of the ledger, one row per class.</em>
                 Every per-class score for the ground-truth-crop-trained ConvNeXt + 637-feature
                 baseline on the clean hard-case test split (2,151 crops, 92.93% accuracy,
                 macro-F1 0.929) &mdash; the checkpoint the deployed crop-mix fine-tune is measured
@@ -2000,7 +2000,7 @@
             </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">Read this as a floor, not an average. The question it answers is &ldquo;is any class quietly broken?&rdquo;</p><p>Start with the two lightest cells: Metal precision <strong>0.884</strong> and Paper recall <strong>0.882</strong>. Those are the worst numbers on the whole grid. A headline accuracy can hide a class sitting at 40% if the others carry it. Here the weakest single cell is 0.882, so nothing is being carried. The asymmetry is readable too: Metal's precision is lower than its recall, meaning the model over-assigns Metal, while Paper is the reverse &mdash; under-assigned, because some of it is being called Cardboard.</p><p><strong>Why does this differ from the 3,194-crop matrix in the Deep Learning chapter?</strong> Different evaluation set. This is the clean hard-case split from <code>convnext_clean_eval.json</code>; Fig 8.4 is the merged clean test split. Both are leakage-quarantined, both use the same weights, and each figure states its own n so the two are never confused.</p>
+<p class="story-lead">Read this as a floor, not an average. The question it answers is &ldquo;is any class quietly broken?&rdquo;</p><p>Start with the two lightest cells: Metal precision <strong>0.884</strong> and Paper recall <strong>0.882</strong>. Those are the worst numbers on the whole grid. A headline accuracy can hide a class sitting at 40% if the others carry it. Here the weakest single cell is 0.882, so nothing is being carried. The asymmetry is readable too: Metal&rsquo;s precision is lower than its recall, meaning the model over-assigns Metal, while Paper is the reverse &mdash; under-assigned, because some of it is being called Cardboard.</p><p><strong>Why does this differ from the 3,194-crop matrix in the Deep Learning chapter?</strong> Different evaluation set. This is the clean hard-case split from <code>convnext_clean_eval.json</code>; Fig 8.4 is the merged clean test split. Both are leakage-quarantined, both use the same weights, and each figure states its own n so the two are never confused.</p>
 </div>
 </div>
           </div>
@@ -2022,7 +2022,7 @@
           <p class="kicker"><span class="flow-num">11 / 14</span> Experimental Results</p>
           <h2 class="page-title">What the experiments actually changed.</h2>
           <p class="page-intro">
-            The headline experiments: fine-tuning the classifier on the detector's own crops lifted
+            The headline experiments: fine-tuning the classifier on the detector&rsquo;s own crops lifted
             production-distribution accuracy from <strong>76.91% to 88.88%</strong> while
             clean-crop accuracy also improved (92.93% &rarr; 93.77%). Promoting YOLO26s to a 100-epoch YOLO26m
             retrain lifted field recall from <strong>70.9% to 78.1%</strong> and field small-object
@@ -2032,7 +2032,7 @@
           </p>
           </header>
 
-          <div class="callout tone-success reveal-on-scroll">
+          <div class="callout tone-success">
             <span class="callout-icon" aria-hidden="true">&#10003;</span>
             <p><strong>Every lift in this section came from data, not architecture:</strong> crop fine-tuning +12.0 points, hard-negative mining +16.1 points, the YOLO26m promotion +7.2 points of field recall. That pattern &mdash; data is the lever &mdash; is the project&rsquo;s main lesson, and the new training round in the Model Comparison chapter confirms it from the architecture side.</p>
           </div>
@@ -2067,7 +2067,7 @@
             </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">Next, the exact regime the EDA warned about: several small objects in one frame.</p><p>Find the smallest can in the frame &mdash; and note honestly any object the detector missed. This is where localize-first pays off most visibly. A whole-image classifier returns one label for this photo. The two-stage pipeline returns one verified material per can, each with its own confidence, because each crop is judged on its own.</p><p><strong>What about the misses?</strong> Field small-object recall is <strong>68.2%</strong> at the deployed operating point, so roughly one small object in three is still missed. That is the project's largest open weakness, and the Discussion chapter states it as such.</p>
+<p class="story-lead">Next, the exact regime the EDA warned about: several small objects in one frame.</p><p>Find the smallest can in the frame &mdash; and note honestly any object the detector missed. This is where localize-first pays off most visibly. A whole-image classifier returns one label for this photo. The two-stage pipeline returns one verified material per can, each with its own confidence, because each crop is judged on its own.</p><p><strong>What about the misses?</strong> Field small-object recall is <strong>68.2%</strong> at the deployed operating point, so roughly one small object in three is still missed. That is the project&rsquo;s largest open weakness, and the Discussion chapter states it as such.</p>
 </div>
 </div>
             <div class="scene flip">
@@ -2091,8 +2091,8 @@
 <figure class="fig reveal-on-scroll ar-tall">
               <img src="assets/figures/result_gradcam_1.jpg" alt="Grad-CAM heatmap example 1" loading="lazy" />
               <figcaption><strong>Fig 11.4. Grad-CAM: where the classifier looks.</strong>
-                <em class="fig-talk">Now a different question: not whether it's right, but where it's looking.</em>
-                Class-activation heatmap over a verified crop: the hot region sits on the object's
+                <em class="fig-talk">Now a different question: not whether it&rsquo;s right, but where it&rsquo;s looking.</em>
+                Class-activation heatmap over a verified crop: the hot region sits on the object&rsquo;s
                 material surface, not the background. This is evidence the classifier learned
                 material texture rather than scene context.
               </figcaption>
@@ -2100,7 +2100,7 @@
             </figure>
 </div>
 <div class="scene-story">
-<p class="story-lead">Now a different question entirely. Not &ldquo;is it right?&rdquo; but &ldquo;is it right for the right reason?&rdquo;</p><p>Notice the hot region &mdash; and, just as importantly, the cool background around it. This directly answers the worry raised back at Fig 2.5. If the classifier had learned studio backgrounds instead of materials, the heat would sit on the surroundings. It sits on the object surface. This is the deep branch independently agreeing with the classical branch's feature importances in Fig 5.6 and Fig 5.7, which found colour and gradient structure dominant and explicit geometry negligible on both decompositions of the feature vector.</p><p><strong>How much weight should Grad-CAM carry?</strong> It is supporting evidence, not proof. Saliency maps are known to be reconstructions rather than the model's actual reasoning. It is convincing here because it agrees with a second, independent line of evidence.</p>
+<p class="story-lead">Now a different question entirely. Not &ldquo;is it right?&rdquo; but &ldquo;is it right for the right reason?&rdquo;</p><p>Notice the hot region &mdash; and, just as importantly, the cool background around it. This directly answers the worry raised back at Fig 2.5. If the classifier had learned studio backgrounds instead of materials, the heat would sit on the surroundings. It sits on the object surface. This is the deep branch independently agreeing with the classical branch&rsquo;s feature importances in Fig 5.6 and Fig 5.7, which found colour and gradient structure dominant and explicit geometry negligible on both decompositions of the feature vector.</p><p><strong>How much weight should Grad-CAM carry?</strong> It is supporting evidence, not proof. Saliency maps are known to be reconstructions rather than the model&rsquo;s actual reasoning. It is convincing here because it agrees with a second, independent line of evidence.</p>
 </div>
 </div>
             <div class="scene flip">
@@ -2191,13 +2191,13 @@
           </header>
 
           <div class="limit-stack">
-            <article class="tone-warn reveal-on-scroll">
+            <article class="tone-warn">
               <div>
                 <span>Domain shift</span>
                 <strong>Partly fixed, partly open</strong>
               </div>
               <p>
-                Fixed: the classifier was fine-tuned on the detector's own crops, lifting
+                Fixed: the classifier was fine-tuned on the detector&rsquo;s own crops, lifting
                 production-distribution accuracy from 76.9% to 88.9%. The detector was re-tuned
                 for the field domain too: lowering the confidence threshold and hard-negative
                 mining on new field data (PlastOPol) lifted held-out field small-object recall
@@ -2207,7 +2207,7 @@
                 data, not fully closed.
               </p>
             </article>
-            <article class="tone-info reveal-on-scroll">
+            <article class="tone-info">
               <div>
                 <span>Tiny objects</span>
                 <strong>Resolution ruled out; new data confirmed as the lever</strong>
@@ -2221,7 +2221,7 @@
                 is the binding constraint.
               </p>
             </article>
-            <article class="tone-success reveal-on-scroll">
+            <article class="tone-success">
               <div>
                 <span>Material-first routing</span>
                 <strong>No disposability judgment</strong>
@@ -2257,7 +2257,7 @@
           <p class="page-intro">
             The project delivers a deployed two-stage pipeline (93.77% clean-test material
             accuracy, 74.9% detector mAP50) and, just as importantly, a worked example of
-            finding and fixing one's own evaluation bug. The classical branch keeps every headline
+            finding and fixing one&rsquo;s own evaluation bug. The classical branch keeps every headline
             claim explainable; the audit trail keeps it honest.
           </p>
           </header>
@@ -2441,7 +2441,7 @@
 <figure class="fig reveal-on-scroll">
             <img src="assets/figures/app_screenshot_2.png" alt="Screenshot of scan results detail" loading="lazy" />
             <figcaption><strong>Fig 14.2. Per-class score breakdown.</strong>
-              <em class="fig-talk">And the score panel underneath it, same numbers you'd see live.</em>
+              <em class="fig-talk">And the score panel underneath it, same numbers you&rsquo;d see live.</em>
               The score panel after a scan: all 7 class probabilities including the Background
               veto, plus latency and scene context.
             </figcaption>
